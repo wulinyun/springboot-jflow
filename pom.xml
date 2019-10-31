@@ -17,7 +17,7 @@
     <module>springboot-jflow</module>
   </modules>
   <properties>
-    <java.version>1.8</java.version>
+    <jdk.version>1.8</jdk.version>
     <javax.transaction.version>1.0.1B</javax.transaction.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <org.apache.poi.version>3.11</org.apache.poi.version>
