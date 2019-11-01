@@ -16,7 +16,7 @@ import BP.WF.Data.*;
  WF 的摘要说明。
  工作流
  这里包含了两个方面
- 工作的信息．DoDeleteSubThread
+ 工作的信息．
  流程的信息．
  
 */

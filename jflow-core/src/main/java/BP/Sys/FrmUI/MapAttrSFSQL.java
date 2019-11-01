@@ -139,17 +139,11 @@ public class MapAttrSFSQL extends EntityMyPK
          rm.refMethodType = RefMethodType.RightFrameOpen;
          map.AddRefMethod(rm);
 
-//         rm = new RefMethod();
-//         rm.Title = "填充其他控件";
-//         rm.ClassMethodName = this.toString() + ".DoDDLFullCtrl()";
-//         rm.refMethodType= RefMethodType.RightFrameOpen;
-//         map.AddRefMethod(rm);
-
-			rm = new RefMethod();
-			rm.Title = "填充其他控件";
-			rm.ClassMethodName = this.toString() + ".DoDDLFullCtrl2019()";
-			rm.refMethodType = RefMethodType.RightFrameOpen;
-			map.AddRefMethod(rm);
+         rm = new RefMethod();
+         rm.Title = "填充其他控件";
+         rm.ClassMethodName = this.toString() + ".DoDDLFullCtrl()";
+         rm.refMethodType= RefMethodType.RightFrameOpen;
+         map.AddRefMethod(rm);
 
          rm = new RefMethod();
          rm.Title = "外键表属性";
@@ -214,10 +208,6 @@ public class MapAttrSFSQL extends EntityMyPK
 	public final String DoDDLFullCtrl()
 	{
 		return "../../Admin/FoolFormDesigner/MapExt/DDLFullCtrl.htm?FK_MapData=" + this.getFK_MapData() + "&ExtType=AutoFull&KeyOfEn=" + this.getKeyOfEn();
-	}
-	public String DoDDLFullCtrl2019()
-	{
-		return "../../Admin/FoolFormDesigner/MapExt/DDLFullCtrl2019.htm?FK_MapData=" + this.getFK_MapData() + "&ExtType=AutoFull&KeyOfEn=" + this.getKeyOfEn() + "&RefNo=" + this.getMyPK();
 	}
 	/** 
 	 设置下拉框显示过滤

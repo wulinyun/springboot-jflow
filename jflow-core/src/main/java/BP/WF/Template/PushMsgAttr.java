@@ -103,17 +103,5 @@ public class PushMsgAttr
 	 
 	*/
 	public static final String MailNodes = "MailNodes";
-	/**
-	 * 短消息发送设置
-	 */
-	public static final String SMSPushModel="SMSPushModel";
-	/**
-	 * 按指定的SQL发送
-	 */
-	public static final String BySQL="BySQL";
-	/**
-	 * 发送给指定的人员
-	 */
-	public static final String ByEmps="ByEmps";
 
 }

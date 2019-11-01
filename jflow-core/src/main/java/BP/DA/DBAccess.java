@@ -1,6 +1,11 @@
 package BP.DA;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -85,12 +90,9 @@ public class DBAccess {
 			}
 
 			// 数据库字段类型不一致增加盘断
-			if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.MySQL
-					|| BP.Sys.SystemConfig.getAppCenterDBType() == DBType.MSSQL) {
+			if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.MySQL) {
 				pstmt.setString(1, line);
 			} else {
-
-				//ByteArrayInputStream  stream = new ByteArrayInputStream(bytes);
 				pstmt.setBytes(1, bytes);
 			}
 			pstmt.setString(2, pkVal);
@@ -111,6 +113,9 @@ public class DBAccess {
 				ex.printStackTrace();
 			}
 		}
+		
+		SaveBytesToDB(bytes,   line,   tableName,   tablePK,   pkVal,
+			  saveToFileField);
 		return; 
 	}
 
@@ -179,7 +184,7 @@ public class DBAccess {
 			return;
 		}
 		
-		SaveBytesToDB(docs.getBytes("UTF-8"), docs, tableName, tablePK, pkVal, saveToFileField);
+		SaveBytesToDB(docs.getBytes(), docs, tableName, tablePK, pkVal, saveToFileField);
 		return;
 		 
 
@@ -1150,14 +1155,13 @@ public class DBAccess {
 	}
 
 	private static int RunSQL_200705_Ora(String sql, Paras paras) {
-		int i = 0;
 		ResultSet rs = null;
 		Connection conn = null;
 		Statement stmt = null;
 		NamedParameterStatement pstmt = null;
 		try {
-
 			conn = DBAccess.getGetAppCenterDBConn_Oracle();
+			int i = 0;
 			if (null != paras && paras.size() > 0) {
 				pstmt = new NamedParameterStatement(conn, sql);
 				PrepareCommand(pstmt, paras);
@@ -1170,6 +1174,7 @@ public class DBAccess {
 				Log.DefaultLogWriteLineDebug("SQL: " + sql);
 				Log.DefaultLogWriteLineDebug("Param: " + paras.getDebugInfo() + ", Result: Rows=" + i);
 			}
+			return i;
 		} catch (Exception ex) {
 			String msg = "@运行更新在(RunSQL_200705_Ora)出错。\n  @SQL: " + sql + "\n  @Param: " + paras.getDebugInfo()
 					+ "\n  @异常信息: " + StringUtils.replace(ex.getMessage(), "\n", " ");
@@ -1189,7 +1194,6 @@ public class DBAccess {
 				ex.printStackTrace();
 			}
 		}
-		return i;
 	}
 
 	/**
@@ -2700,17 +2704,12 @@ public class DBAccess {
 	 *            保存字段
 	 * @return
 	 */
-	public static String GetBigTextFromDB(String tableName, String tablePK, String pkVal, String fileSaveField)throws Exception {
-		if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.MSSQL
-				|| BP.Sys.SystemConfig.getAppCenterDBType() == DBType.MySQL){
-			String strSQL = "SELECT " + fileSaveField + " FROM " + tableName + " WHERE " + tablePK + "='" + pkVal + "'";
-			return DBAccess.RunSQLReturnStringIsNull(strSQL,"");
-		}
+	public static String GetBigTextFromDB(String tableName, String tablePK, String pkVal, String fileSaveField) {
 		byte[] byteFile = GetByteFromDB(tableName, tablePK, pkVal, fileSaveField);
 		if (byteFile == null) {
 			return null;
 		}
-		return new String(byteFile,"UTF-8");
+		return new String(byteFile);
 	}
 
 	/**
@@ -2725,46 +2724,93 @@ public class DBAccess {
 	 * @param fileSaveField
 	 *            字段
 	 */
-	public static byte[] GetByteFromDB(String tableName, String tablePK, String pkVal, String fileSaveField)  throws Exception{
-		Connection conn = null; //数据库连接
-		PreparedStatement pstmt = null; //数据库SQL执行
-		ResultSet rs = null; // 执行结果
-		if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.MSSQL)
-			conn = BP.DA.DBAccess.getGetAppCenterDBConn_MSSQL();
-		if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.Oracle)
-			conn = BP.DA.DBAccess.getGetAppCenterDBConn_Oracle();
-		if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.MySQL)
-			conn = BP.DA.DBAccess.getGetAppCenterDBConn_MySQL();
-		String strSQL = "SELECT " + fileSaveField + " FROM " + tableName + " WHERE " + tablePK + "='" + pkVal + "'";
-		pstmt = conn.prepareStatement(strSQL);
-		// 执行它.
-		try
-		{
-			rs = pstmt.executeQuery();
-			byte[] byteFile = null;
-			if (rs.next())
-			{
-				byteFile = rs.getBytes(fileSaveField);
-			}
-			return byteFile;
-		}
-		catch (Exception e)
-		{
-			if (!BP.DA.DBAccess.IsExitsTableCol(tableName, fileSaveField))
-			{
-				/*如果没有此列，就自动创建此列.*/
-				String sql = "ALTER TABLE " + tableName + " ADD  " + fileSaveField + " image ";
-				BP.DA.DBAccess.RunSQL(sql);
-			}
-			return GetByteFromDB(tableName, tablePK, pkVal, fileSaveField);
-		}finally {
-			if(rs != null)
-				rs.close();
-			if(pstmt!=null)
-				pstmt.close();
-			if(conn!=null)
-				conn.close();
-		}
+	public static byte[] GetByteFromDB(String tableName, String tablePK, String pkVal, String fileSaveField) {
+		return null;
+		/*
+		 * if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.MSSQL) {
+		 * SqlConnection cn = (SqlConnection)((BP.DA.DBAccess.GetAppCenterDBConn
+		 * instanceof SqlConnection) ? BP.DA.DBAccess.GetAppCenterDBConn :
+		 * null); if (cn.State != ConnectionState.Open) { cn.Open(); }
+		 * 
+		 * String strSQL = "SELECT [" + fileSaveField + "] FROM " + tableName +
+		 * " WHERE " + tablePK + "='" + pkVal + "'";
+		 * 
+		 * SqlDataReader dr = null; SqlCommand cm = new SqlCommand();
+		 * cm.Connection = cn; cm.CommandText = strSQL; cm.CommandType =
+		 * CommandType.Text;
+		 * 
+		 * // 执行它. try { dr = cm.ExecuteReader(); } catch (RuntimeException ex)
+		 * { if (!BP.DA.DBAccess.IsExitsTableCol(tableName, fileSaveField)) {
+		 * 如果没有此列，就自动创建此列. String sql = "ALTER TABLE " + tableName + " ADD  " +
+		 * fileSaveField + " image "; BP.DA.DBAccess.RunSQL(sql); } throw new
+		 * RuntimeException("@缺少此字段,有可能系统自动修复." + ex.getMessage()); }
+		 * 
+		 * 
+		 * //ORIGINAL LINE: byte[] byteFile = null; byte[] byteFile = null; if
+		 * (dr.Read()) { if (dr[0] == null ||
+		 * tangible.DotNetToJavaStringHelper.isNullOrEmpty(dr[0].toString())) {
+		 * return null; } byteFile = (byte[])dr[0]; } return byteFile;
+		 * 
+		 * 
+		 * }
+		 * 
+		 * //增加对oracle数据库的逻辑 qin if (BP.Sys.SystemConfig.getAppCenterDBType() ==
+		 * DBType.Oracle) { OracleConnection cn =
+		 * (OracleConnection)((BP.DA.DBAccess.GetAppCenterDBConn instanceof
+		 * OracleConnection) ? BP.DA.DBAccess.GetAppCenterDBConn : null); if
+		 * (cn.State != ConnectionState.Open) { cn.Open(); }
+		 * 
+		 * String strSQL = "SELECT " + fileSaveField + " FROM " + tableName +
+		 * " WHERE " + tablePK + "='" + pkVal + "'";
+		 * 
+		 * OracleDataReader dr = null; OracleCommand cm = new OracleCommand();
+		 * cm.Connection = cn; cm.CommandText = strSQL; cm.CommandType =
+		 * CommandType.Text;
+		 * 
+		 * 
+		 * // 执行它. try { dr = cm.ExecuteReader(); } catch (RuntimeException ex)
+		 * { if (BP.DA.DBAccess.IsExitsTableCol(tableName, fileSaveField) ==
+		 * false) { 如果没有此列，就自动创建此列. String sql = "ALTER TABLE " + tableName +
+		 * " ADD  " + fileSaveField + " blob "; BP.DA.DBAccess.RunSQL(sql); }
+		 * throw new RuntimeException("@缺少此字段,有可能系统自动修复." + ex.getMessage()); }
+		 * byte[] byteFile = null; if (dr.Read()) { if (dr[0] == null ||
+		 * tangible.DotNetToJavaStringHelper.isNullOrEmpty(dr[0].toString())) {
+		 * return null; } byteFile = (byte[])dr[0]; }
+		 * 
+		 * return byteFile; }
+		 * 
+		 * //added by liuxc,2016-12-7,增加对mysql数据库的逻辑 if
+		 * (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.MySQL) {
+		 * MySqlConnection cn =
+		 * (MySqlConnection)((BP.DA.DBAccess.GetAppCenterDBConn instanceof
+		 * MySqlConnection) ? BP.DA.DBAccess.GetAppCenterDBConn : null); if
+		 * (cn.State != ConnectionState.Open) { cn.Open(); }
+		 * 
+		 * String strSQL = "SELECT " + fileSaveField + " FROM " + tableName +
+		 * " WHERE " + tablePK + "='" + pkVal + "'";
+		 * 
+		 * MySqlDataReader dr = null; MySqlCommand cm = new MySqlCommand();
+		 * cm.Connection = cn; cm.CommandText = strSQL; cm.CommandType =
+		 * CommandType.Text;
+		 * 
+		 * 
+		 * // 执行它. try { dr = cm.ExecuteReader(); } catch (RuntimeException ex)
+		 * { if (BP.DA.DBAccess.IsExitsTableCol(tableName, fileSaveField) ==
+		 * false) { 如果没有此列，就自动创建此列. String sql = "ALTER TABLE " + tableName +
+		 * " ADD  " + fileSaveField + " LONGBLOB NULL ";
+		 * BP.DA.DBAccess.RunSQL(sql); } throw new
+		 * RuntimeException("@缺少此字段,有可能系统自动修复." + ex.getMessage()); }
+		 * 
+		 * byte[] byteFile = null; if (dr.Read()) { if (dr[0] == null ||
+		 * tangible.DotNetToJavaStringHelper.isNullOrEmpty(dr[0].toString())) {
+		 * return null; }
+		 * 
+		 * byteFile = (byte[])dr[0]; }
+		 * 
+		 * return byteFile; }
+		 * 
+		 * //最后仍然没有找到. throw new RuntimeException("@没有判断的数据库类型.");
+		 */
 	}
 
 	/**

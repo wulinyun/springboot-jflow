@@ -171,7 +171,7 @@ public class BillTemplate extends EntityNoName
     /// </summary>
     /// <param name="oid"></param>
     /// <returns></returns>
-    public byte[]  GenerTemplateFile() throws Exception
+    public byte[]  GenerTemplateFile()
     {
     	 byte[] bytes = BP.DA.DBAccess.GetByteFromDB(this.getEnMap().getPhysicsTable(), "No", this.getNo(), "DBFile");
          if (bytes != null)

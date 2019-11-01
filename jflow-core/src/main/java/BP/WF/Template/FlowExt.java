@@ -430,9 +430,9 @@ public class FlowExt extends EntityNoName
         map.AddTBString(FlowAttr.DesignerName, null, "设计者名称", true, false, 0, 50, 10, false);
         map.AddTBStringDoc(FlowAttr.Note, null, "流程描述", true, false, true);
        // #endregion 开发者信息.
-
-
-
+		
+		
+ 
 			///#region 基本功能.
 			//map.AddRefMethod(rm);
 		RefMethod rm = new RefMethod();

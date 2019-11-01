@@ -5,13 +5,7 @@ import java.text.ParseException;
 import BP.DA.DBAccess;
 import BP.DA.DataRow;
 import BP.DA.DataType;
-import BP.En.Attr;
-import BP.En.Attrs;
-import BP.En.Entity;
-import BP.En.EntityOIDAttr;
-import BP.En.FieldType;
-import BP.En.QueryObject;
-import BP.En.SqlBuilder;
+import BP.En.*;
 import BP.Port.Emp;
 import BP.Sys.EventListOfNode;
 import BP.Sys.FrmAttachments;
@@ -467,7 +461,24 @@ public abstract class Work extends Entity
 		this.SetValByKey("OID", oid);
 		this.RunSQL(SqlBuilder.Insert(this));
 	}
+	/**
+	 重写基类方法
+	 */
+	@Override
+	public Map getEnMap()
+	{
+		Map map =this.get_enMap();
+		if  (map!=null)
+			return map;
 
+		try {
+			map = BP.Sys.MapData.GenerHisMap(this.NodeFrmID);
+		} catch (Exception ex) {
+			return null;
+		}
+
+		return map;
+	}
 	/** 
 	 按照指定的OID 保存
 	 

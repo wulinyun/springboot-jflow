@@ -4579,8 +4579,6 @@ public class WorkNode {
 
 		QueryObject qo = new QueryObject(ffs);
 		qo.AddWhere(FrmFieldAttr.FK_Node, this.getHisNode().getNodeID());
-		qo.addAnd();
-		qo.AddWhere(FrmFieldAttr.IsWriteToFlowTable,1);
 		qo.DoQuery();
 
 		BP.WF.Template.FrmNodes frmNDs = new FrmNodes(this.getHisNode().getFK_Flow(), this.getHisNode().getNodeID());
@@ -4643,12 +4641,17 @@ public class WorkNode {
 				if (!ff.getFK_MapData().equals(item.getFK_Frm())) {
 					continue;
 				}
+
 				// 获得数据.
 				String val = "";
 				val = dt.Rows.get(0).getValue(ff.getKeyOfEn()).toString();
-				// 判断是否需要写入流程数据表.
-				this.getHisWork().SetValByKey(ff.getKeyOfEn(), val);
 
+				// 判断是否需要写入流程数据表.
+				// if (ff.IsWriteToFlowTable == true)
+				// {
+				this.getHisWork().SetValByKey(ff.getKeyOfEn(), val);
+				// this.rptGe.SetValByKey(ff.KeyOfEn, val);
+				// }
 			}
 		}
 
@@ -7137,7 +7140,6 @@ public class WorkNode {
 		case ForwardFL:
 		case ForwardHL:
 		case TeampUp:
-        case Order:
 			// 判断是否有焦点字段，如果有就把它记录到日志里。
 			if (this.getHisNode().getFocusField().length() > 1) {
 				String exp = this.getHisNode().getFocusField();
@@ -7283,7 +7285,6 @@ public class WorkNode {
 		case ForwardFL:
 		case ForwardHL:
 		case TeampUp:
-		case Order:
 			// 判断是否有焦点字段，如果有就把它记录到日志里。
 			if (this.getHisNode().getFocusField().length() > 1) {
 				String exp = this.getHisNode().getFocusField();

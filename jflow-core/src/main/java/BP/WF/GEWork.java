@@ -57,35 +57,17 @@ public class GEWork extends Work
 	 @param nodeid 节点ID
 	 @param _oid OID
 	*/
-	public GEWork(int nodeid, String nodeFrmID, long _oid)
+	public GEWork(int nodeid, String nodeFrmID, long _oid) throws Exception
 	{
 		this.NodeFrmID = nodeFrmID;
 		this.setNodeID(nodeid);
 		this.setOID(_oid);
 		this.setSQLCash(null);
-		
-		try {
+
 			Map map= BP.Sys.MapData.GenerHisMap(this.NodeFrmID);		  
-			this.set_enMap(map);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
 	}
-	/** 
-	 重写基类方法
-	*/
-	@Override
-	public Map getEnMap()
-	{
-		try {
-			this.set_enMap(BP.Sys.MapData.GenerHisMap(this.NodeFrmID));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return this.get_enMap();
-	}
+
 	/** 
 	 GEWorks
 	*/

@@ -74,16 +74,8 @@ public class WF_MyFlow extends WebContralBase {
 			wk.RetrieveFromDBSources();
 		}
 
-		// 获取表单树的数据
-		BP.WF.WorkNode workNode = new WorkNode(this.getWorkID(), this.getFK_Node());
-		Work treeWork = workNode.CopySheetTree();
-		if (treeWork != null) {
-			wk.Copy(treeWork);
-			wk.Update();
-		}
-
 		//获取该节点是是否是绑定表单方案, 如果流程节点中的字段与绑定表单的字段相同时赋值
-		/*if (nd.getFormType() == NodeFormType.SheetTree)
+		if (nd.getFormType() == NodeFormType.SheetTree)
 		{
 			FrmNodes nds = new FrmNodes(this.getFK_Flow(), this.getFK_Node());
 			for(FrmNode item : nds.ToJavaList())
@@ -130,7 +122,7 @@ public class WF_MyFlow extends WebContralBase {
 
 			}
 			wk.Update();
-		}*/
+		}
 
          // 为开始工作创建待办.
 		if (nd.getIsStartNode() == true )

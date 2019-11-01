@@ -66,31 +66,6 @@ public class GEStartWork extends StartWork
 	
 	}
 	 
-	/** 
-	 重写基类方法
-	 
-	*/
-	@Override
-	public Map getEnMap()
-	{
-		  
-		 
-			try {
-				
-				Map map= BP.Sys.MapData.GenerHisMap(this.NodeFrmID);
-				  
-			this.set_enMap(map);
-			
-			return map;
-				//return map;
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
-		 
-		return this.get_enMap();
-	}
 	@Override
 	public Entities getGetNewEntities()
 	{

@@ -43,20 +43,18 @@ public class Dev2Interface {
 	/**
 	 * 写入消息 用途可以处理提醒.
 	 * 
-	 * @param tel
+	 * @param sendToUserNo
 	 *            发送给的操作员ID
-	 * @param smsDoc
+	 * @param sendDT
 	 *            发送时间，如果null 则表示立刻发送。
-	 * @param msgType
+	 * @param title
 	 *            标题
-	 * @param msgGroupFlag
+	 * @param doc
 	 *            内容
-	 * @param sender
-	 *            发送消息
-	 * @param sendEmpNo
-	 *            接收人
+	 * @param msgFlag
+	 *            消息标记
 	 * @return 写入成功或者失败.
-	 * @throws Exception
+	 * @throws ExceptionNode_AddNextStepAccepters
 	 */
 	public static void Port_SendSMS(String tel, String smsDoc, String msgType, String msgGroupFlag, String sender,
 			String msgPK, String sendEmpNo) throws Exception {
@@ -104,7 +102,9 @@ public class Dev2Interface {
 			}
 
 			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			// throw new Exception(ps.SQL);
 
+			// BP.DA.Log.DebugWriteInfo(ps.SQL);
 			return BP.DA.DBAccess.RunSQLReturnValInt(ps);
 		}
 
@@ -161,6 +161,36 @@ public class Dev2Interface {
 		return DBAccess.RunSQLReturnValInt(ps, 0);
 	}
 
+	/**
+	 * 获取抄送人员的
+	 * 
+	 * @param node
+	 * @return
+	 */
+	/*
+	 * public static String GetNode_CCList(WorkNode wn) { String ccers = null;
+	 * 
+	 * if (wn.getHisNode().getHisCCRole() == CCRole.AutoCC ||
+	 * wn.getHisNode().getHisCCRole() == CCRole.HandAndAuto) { try { //如果是自动抄送
+	 * CC cc = wn.getHisNode().getHisCC();
+	 * 
+	 * DataTable table = cc.GenerCCers(wn.rptGe); if (table.Rows.size() > 0) {
+	 * String ccMsg = "@消息自动抄送给";
+	 * 
+	 * for (DataRow dr : table.Rows) { ccers += dr.getValue(0) + ","; } } }
+	 * catch (RuntimeException ex) { throw new RuntimeException("@处理操送时出现错误:" +
+	 * ex.getMessage()); } }
+	 * 
+	 * 
+	 * ///#region 执行抄送 BySysCCEmps if (wn.getHisNode().getHisCCRole() ==
+	 * CCRole.BySysCCEmps) { CC cc = wn.getHisNode().getHisCC();
+	 * 
+	 * //取出抄送人列表 String temps = wn.rptGe.GetValStrByKey("SysCCEmps"); if
+	 * (!StringHelper.isNullOrEmpty(temps)) { String[] cclist =
+	 * temps.split("[|]", -1); java.util.Hashtable ht = new
+	 * java.util.Hashtable(); for (String item : cclist) { String[] tmp =
+	 * item.split("[,]", -1); ccers += tmp[0] + ","; } } } return ccers; }
+	 */
 	/**
 	 * 返回挂起流程数量
 	 * 
@@ -242,11 +272,17 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static int getTodolist_Sharing() throws Exception {
+		// if (BP.WF.Glo.IsEnableTaskPool == false)
+		// return 0
+		// throw new Exception("@你必须在Web.config中启用IsEnableTaskPool才可以执行此操作。");
+
 		Paras ps = new Paras();
 		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
 		String wfSql = "  (WFState=" + WFState.Askfor.getValue() + " OR WFState=" + WFState.Runing.getValue()
 				+ " OR WFState=" + WFState.Shift.getValue() + " OR WFState=" + WFState.ReturnSta.getValue()
 				+ ") AND TaskSta=" + TaskSta.Sharing.getValue();
+		String sql;
+		String realSql = null;
 		if (WebUser.getIsAuthorize() == false) {
 			// 不是授权状态
 			ps.SQL = "SELECT COUNT(WorkID) FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr + "FK_Emp ";
@@ -293,7 +329,18 @@ public class Dev2Interface {
 		String sql;
 		String realSql;
 		if (WebUser.getIsAuthorize() == false) {
+			/* 不是授权状态 */
+			// ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql +
+			// ") AND FK_Emp=" + dbstr + "FK_Emp ORDER BY FK_Flow,ADT DESC ";
+			// ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql +
+			// ") AND FK_Emp=" + dbstr + "FK_Emp ORDER BY ADT DESC ";
 			ps.SQL = "SELECT COUNT(WorkID) FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr + "FK_Emp";
+
+			// ps.SQL = "select v1.*,v2.name,v3.name as ParentName from (" +
+			// realSql +
+			// ") as v1 left join JXW_Inc v2 on v1.WorkID=v2.OID left join
+			// Jxw_Inc V3 on v1.PWorkID = v3.OID ORDER BY v1.ADT DESC";
+
 			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
 			return BP.DA.DBAccess.RunSQLReturnValInt(ps);
 		}
@@ -326,6 +373,70 @@ public class Dev2Interface {
 	 */
 	public static String DTS_DealDeferredWork() {
 		return "";
+
+		/*
+		 * //string sql =
+		 * "SELECT * FROM WF_EmpWorks WHERE FK_Node IN (SELECT NodeID FROM WF_Node WHERE OutTimeDeal >0 ) AND SDT <='"
+		 * + DataType.CurrentData + "' ORDER BY FK_Emp"; //改成小于号SDT <'" +
+		 * DataType.CurrentData String sql =
+		 * "SELECT * FROM WF_EmpWorks WHERE FK_Node IN (SELECT NodeID FROM WF_Node WHERE OutTimeDeal >0 ) AND SDT <'"
+		 * + DataType.getCurrentData() + "' ORDER BY FK_Emp"; //string sql =
+		 * "SELECT * FROM WF_EmpWorks WHERE FK_Node IN (SELECT NodeID FROM WF_Node WHERE OutTimeDeal >0 ) AND SDT <='2013-12-30' ORDER BY FK_Emp"
+		 * ; DataTable dt = DBAccess.RunSQLReturnTable(sql); String msg = "";
+		 * String dealWorkIDs = ""; for (DataRow dr : dt.Rows) { String FK_Emp =
+		 * dr.getValue("FK_Emp").toString(); String fk_flow =
+		 * dr.getValue("FK_Flow").toString(); int fk_node =
+		 * Integer.parseInt(dr.getValue("FK_Node").toString()); long workid =
+		 * Long.parseLong(dr.getValue("WorkID").toString()); long fid =
+		 * Long.parseLong(dr.getValue("FID").toString());
+		 * 
+		 * // 方式两个人同时处理一件工作, 一个人处理后，另外一个人还可以处理的情况. if (dealWorkIDs.contains(","
+		 * + workid + ",")) { continue; } dealWorkIDs += "," + workid + ",";
+		 * 
+		 * if (!FK_Emp.equals(WebUser.getNo())) { Emp emp = new Emp(FK_Emp);
+		 * BP.Web.WebUser.SignInOfGener(emp); }
+		 * 
+		 * BP.WF.Node nd = new BP.WF.Node(); nd.setNodeID(fk_node);
+		 * nd.Retrieve();
+		 * 
+		 * // 首先判断是否有启动的表达式, 它是是否自动执行的总阀门。
+		 * 
+		 * if (StringHelper.isNullOrEmpty(nd.getDoOutTimeCond()) == false) {
+		 * Node nodeN = new Node(nd.getNodeID()); Work wk = nodeN.getHisWork();
+		 * wk.setOID(workid); wk.Retrieve(); //Object tempVar =
+		 * nd.getDoOutTimeCond(); String exp = (String)((tempVar instanceof
+		 * String) ? tempVar : null); if (Glo.ExeExp(exp, wk) == false) {
+		 * continue; // 不能通过条件的设置. } }
+		 * 
+		 * switch (nd.getHisOutTimeDeal()) { case None: break; case
+		 * AutoTurntoNextStep: //自动转到下一步骤. if
+		 * (StringHelper.isNullOrEmpty(nd.getDoOutTime())) {
+		 * //如果是空的,没有特定的点允许，就让其它向下执行。 msg +=
+		 * BP.WF.Dev2Interface.Node_SendWork(fk_flow, workid).ToMsgOfText(); }
+		 * else { int nextNode = Dev2Interface.Node_GetNextStepNode(fk_flow,
+		 * workid); if (nd.getDoOutTime().contains((new
+		 * Integer(nextNode)).toString())) //如果包含了当前点的ID,就让它执行下去. { msg +=
+		 * BP.WF.Dev2Interface.Node_SendWork(fk_flow, workid).ToMsgOfText(); } }
+		 * break; case AutoJumpToSpecNode: //自动的跳转下一个节点. if
+		 * (StringHelper.isNullOrEmpty(nd.getDoOutTime())) { throw new
+		 * RuntimeException("@设置错误,没有设置要跳转的下一步节点."); } int nextNodeID =
+		 * Integer.parseInt(nd.getDoOutTime()); msg +=
+		 * BP.WF.Dev2Interface.Node_SendWork(fk_flow, workid, null, null,
+		 * nextNodeID, null).ToMsgOfText(); break; case AutoShiftToSpecUser:
+		 * //移交给指定的人员. msg += BP.WF.Dev2Interface.Node_Shift(fk_flow, fk_node,
+		 * workid, fid, nd.getDoOutTime(), "来自ccflow的自动消息:(" +
+		 * BP.Web.WebUser.getName() + ")工作未按时处理(" + nd.getName() + "),现在移交给您。");
+		 * break; case SendMsgToSpecUser: //向指定的人员发消息.
+		 * BP.WF.Dev2Interface.Port_SendMsg(nd.getDoOutTime(), "来自ccflow的自动消息:("
+		 * + BP.Web.WebUser.getName() + ")工作未按时处理(" + nd.getName() + ")",
+		 * "感谢您选择ccflow.", "SpecEmp" + workid); break; case DeleteFlow: //删除流程.
+		 * msg += BP.WF.Dev2Interface.Flow_DoDeleteFlowByReal(fk_flow, workid,
+		 * true); break; case RunSQL: msg +=
+		 * BP.DA.DBAccess.RunSQL(nd.getDoOutTime()); break; default: throw new
+		 * RuntimeException("@错误没有判断的超时处理方式." + nd.getHisOutTimeDeal()); } } Emp
+		 * emp1 = new Emp("admin"); BP.Web.WebUser.SignInOfGener(emp1); return
+		 * msg;
+		 */
 	}
 
 	/**
@@ -685,6 +796,41 @@ public class Dev2Interface {
 	}
 
 	/**
+	 * 获取当前节点可抄送人员列表
+	 * 
+	 * @param fk_node
+	 * @param workid
+	 * @return
+	 */
+	/*
+	 * public static DataTable DB_CanCCEmps(int fk_node, long workid) {
+	 * DataTable table = new DataTable(); String ccers = null;
+	 * 
+	 * WorkNode node = new WorkNode(workid, fk_node);
+	 * 
+	 * if (node.getHisNode().getHisCCRole() == CCRole.AutoCC ||
+	 * node.getHisNode().getHisCCRole() == CCRole.HandAndAuto) { try { //如果是自动抄送
+	 * CC cc = node.getHisNode().getHisCC();
+	 * 
+	 * table = cc.GenerCCers(node.rptGe); } catch (RuntimeException ex) { throw
+	 * new RuntimeException("@处理操送时出现错误:" + ex.getMessage()); } } if
+	 * (node.getHisNode().getHisCCRole() == CCRole.BySysCCEmps) { CC cc =
+	 * node.getHisNode().getHisCC();
+	 * 
+	 * //取出抄送人列表 String temps = node.rptGe.GetValStrByKey("SysCCEmps"); if
+	 * (!StringHelper.isNullOrEmpty(temps)) { String[] cclist =
+	 * temps.split("[|]", -1);
+	 * 
+	 * if (!table.Columns.contains("No")) { table.Columns.Add("No"); } if
+	 * (!table.Columns.contains("Name")) { table.Columns.Add("Name"); } for
+	 * (String item : cclist) { String[] tmp = item.split("[,]", -1);
+	 * 
+	 * DataRow row = table.NewRow();
+	 * 
+	 * row.setValue("No",tmp[0]); row.setValue("Name",tmp[1]);
+	 * table.Rows.Add(row); } } } return table; }
+	 */
+	/**
 	 * 获取可以执行指定节点人的列表
 	 * 
 	 * @param fk_node
@@ -736,6 +882,9 @@ public class Dev2Interface {
 		return ds;
 	}
 
+	/// #endregion 获取能够发送或者抄送人员的列表.
+
+	/// #region 获取操送列表
 	/**
 	 * 获取指定人员的抄送列表 说明:可以根据这个列表生成指定用户的抄送数据.
 	 * 
@@ -751,6 +900,8 @@ public class Dev2Interface {
 			ps.SQL = "SELECT a.MyPK,A.Title,A.FK_Flow,A.FlowName,A.WorkID,A.Doc,A.Rec,A.RDT,A.FID,B.FK_Node,B.NodeName FROM WF_CCList A, WF_GenerWorkFlow B WHERE A.CCTo="
 					+ SystemConfig.getAppCenterDBVarStr() + "FK_Emp AND B.WorkID=A.WorkID";
 
+			// ps.SQL = "SELECT * FROM WF_CCList WHERE CCTo=" +
+			// SystemConfig.getAppCenterDBVarStr() + "FK_Emp";
 			ps.Add("FK_Emp", FK_Emp);
 		}
 		DataTable dt = DBAccess.RunSQLReturnTable(ps);
@@ -841,6 +992,10 @@ public class Dev2Interface {
 	public static DataTable DB_CCList_CheckOver(String FK_Emp) {
 		return DB_CCList(FK_Emp, CCSta.CheckOver);
 	}
+
+	/// #endregion
+
+	/// #region 获取当前操作员可以发起的流程集合
 	/**
 	 * 获取指定人员能够发起流程的集合. 说明:利用此接口可以生成用户的发起的流程列表.
 	 * 
@@ -886,6 +1041,14 @@ public class Dev2Interface {
 			sql += " UNION  "; // 按部门计算.
 			sql += "SELECT A.FK_Flow FROM WF_Node A,WF_NodeDept B WHERE A.NodePosType=0 AND ( A.WhoExeIt=0 OR A.WhoExeIt=2 ) AND  A.NodeID=B.FK_Node AND B.FK_Dept IN ("
 					+ BP.Web.WebUser.getHisDeptsStr() + ") ";
+
+			//// 采用新算法.
+			// if (BP.WF.Glo.OSModel == BP.Sys.OSModel.OneOne)
+			// sql = "SELECT FK_Flow FROM V_FlowStarter WHERE FK_Emp='" + userNo
+			//// + "'";
+			// else
+			// sql = "SELECT FK_Flow FROM V_FlowStarterBPM WHERE FK_Emp='" +
+			//// userNo + "'";
 
 			Flows fls = new Flows();
 			BP.En.QueryObject qo = new BP.En.QueryObject(fls);
@@ -1045,6 +1208,9 @@ public class Dev2Interface {
 
 	/**
 	 * 获取当前操作员的指定流程的流程草稿数据
+	 * 
+	 * @param fk_flow
+	 *            流程编号
 	 * @return 返回草稿数据集合,列信息. OID=工作ID,Title=标题,RDT=记录日期,FK_Flow=流程编号,FID=流程ID,
 	 *         FK_Node=节点ID
 	 * @throws Exception
@@ -1367,8 +1533,11 @@ public class Dev2Interface {
 
 	/**
 	 * 获取当前人员待处理的工作
-	 * @param userNo
-	 * @param fk_flow 流程编号
+	 * 
+	 * @param fk_flow
+	 *            流程编号
+	 * @param fk_node
+	 *            节点编号
 	 * @return 共享工作列表
 	 * @throws Exception
 	 */
@@ -1640,6 +1809,8 @@ public class Dev2Interface {
 		return BP.DA.DBAccess.RunSQLReturnTable(ps);
 	}
 
+	// ORIGINAL LINE: public static DataTable DB_Todolist(string userNo, int
+	// fk_node = 0)
 	public static DataTable DB_Todolist(String userNo, int fk_node) {
 		String sql = "";
 		sql = "SELECT A.* FROM WF_GenerWorkFlow A, WF_FlowSort B, WF_Flow C, WF_GENERWORKERLIST D ";
@@ -1663,6 +1834,7 @@ public class Dev2Interface {
 			dt.Columns.get("PRI").ColumnName = "PRI";
 			dt.Columns.get("WORKID").ColumnName = "WorkID";
 			dt.Columns.get("TITLE").ColumnName = "Title";
+			// dt.Columns.get("ISREAD").ColumnName = "IsRead";
 			dt.Columns.get("STARTER").ColumnName = "Starter";
 			dt.Columns.get("STARTERNAME").ColumnName = "StarterName";
 			dt.Columns.get("WFSTATE").ColumnName = "WFState";
@@ -1674,6 +1846,11 @@ public class Dev2Interface {
 			dt.Columns.get("PFLOWNO").ColumnName = "PFlowNo";
 			dt.Columns.get("FK_NODE").ColumnName = "FK_Node";
 			dt.Columns.get("NODENAME").ColumnName = "NodeName";
+			// dt.Columns.get("WORKERDEPT").ColumnName = "WorkerDept";
+			// dt.Columns.get("RDT").ColumnName = "RDT";
+			// dt.Columns.get("ADT").ColumnName = "ADT";
+			// dt.Columns.get("SDT").ColumnName = "SDT";
+			// dt.Columns.get("FK_EMP").ColumnName = "FK_Emp";
 			dt.Columns.get("FID").ColumnName = "FID";
 			dt.Columns.get("FK_FLOWSORT").ColumnName = "FK_FlowSort";
 			dt.Columns.get("SYSTYPE").ColumnName = "SysType";
@@ -1872,6 +2049,9 @@ public class Dev2Interface {
 
 	/**
 	 * 查询指定流程中已完成的公告流程
+	 * 
+	 * @param pageCount
+	 *            页数
 	 * @param pageSize
 	 *            每页条数
 	 * @param pageIdx
@@ -2765,6 +2945,8 @@ public class Dev2Interface {
 	 *            操作员
 	 * @param fk_flow
 	 *            流程编号
+	 * @param isMyStarter
+	 *            是否仅仅查询我发起的在途流程
 	 * @return 返回从数据视图WF_GenerWorkflow查询出来的数据.
 	 * @throws Exception
 	 */
@@ -3037,7 +3219,8 @@ public class Dev2Interface {
 
 	/**
 	 * 获取内部系统消息
-	 * @param type
+	 * 
+	 * @param myPK
 	 * @return
 	 * @throws Exception
 	 */
@@ -3092,6 +3275,14 @@ public class Dev2Interface {
 	 */
 	public static DataTable DB_GenerRuning() throws Exception {
 		DataTable dt = DB_GenerRuning(BP.Web.WebUser.getNo(), null);
+		/*
+		 * dt.Columns.Add("Type");
+		 * 
+		 * for (DataRow row : dt.Rows) { row.setValue("Type", "RUNNING"); }
+		 */
+
+		// dt.DefaultView.Sort = "RDT DESC";
+		// return dt.DefaultView.ToTable();
 		return dt;
 	}
 
@@ -3109,6 +3300,9 @@ public class Dev2Interface {
 		for (DataRow row : dt.Rows) {
 			row.setValue("Type", "RUNNING");
 		}
+		/*
+		 * dt.DefaultView.Sort = "RDT DESC"; return dt.DefaultView.ToTable();
+		 */
 		return dt;
 	}
 
@@ -3143,6 +3337,9 @@ public class Dev2Interface {
 			newRow.setValue("Type", "CC");
 			dt.Rows.add(newRow);
 		}
+		/*
+		 * dt.DefaultView.Sort = "RDT DESC"; return dt.DefaultView.ToTable();
+		 */
 		return dt;
 	}
 
@@ -3162,6 +3359,9 @@ public class Dev2Interface {
 		for (DataRow row : dt.Rows) {
 			row.setValue("Type", "RUNNING");
 		}
+
+		// dt.DefaultView.Sort = "RDT DESC";
+		// return dt.DefaultView.ToTable();
 		return dt;
 	}
 
@@ -3190,6 +3390,9 @@ public class Dev2Interface {
 			newRow.setValue("Type", "CC");
 			dt.Rows.add(newRow);
 		}
+		/*
+		 * dt.DefaultView.Sort = "RDT DESC"; return dt.DefaultView.ToTable();
+		 */
 		return dt;
 	}
 
@@ -3214,6 +3417,8 @@ public class Dev2Interface {
 		String sql = "SELECT a.*, b.Starter,b.Title as STitle,b.ADT,b.WorkID FROM " + fromTable
 				+ " a , WF_EmpWorks b WHERE a.OID=B.WorkID AND b.WFState Not IN (7) AND b.FK_Node=" + nd.getNodeID()
 				+ " AND b.FK_Emp='" + WebUser.getNo() + "'";
+		// string sql = "SELECT Title,RDT,ADT,SDT,FID,WorkID,Starter FROM
+		// WF_EmpWorks WHERE FK_Emp='" + WebUser.getNo() + "'";
 		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
 		return dt;
 	}
@@ -3238,8 +3443,8 @@ public class Dev2Interface {
 	 * 
 	 * @param userNo
 	 *            用户名
-	 * @param sid 安全ID,请参考流程设计器操作手册
-	 *
+	 * @param SID
+	 *            安全ID,请参考流程设计器操作手册
 	 * @throws Exception
 	 */
 	public static void Port_Login(String userNo, String sid) throws Exception {
@@ -3275,7 +3480,7 @@ public class Dev2Interface {
 	 *            人员编号
 	 * @param userName
 	 *            名称
-	 * @param deptNo
+	 * @param fk_dept
 	 *            所在部门
 	 * @param deptName
 	 *            部门名称
@@ -3437,6 +3642,13 @@ public class Dev2Interface {
 	 * @return SID
 	 */
 	public static boolean Port_SetSID(String userNo, String sid) {
+		// Paras ps = new Paras();
+		// ps.SQL = "UPDATE Port_Emp SET SID=" +
+		// BP.Sys.SystemConfig.getAppCenterDBVarStr() + "SID WHERE No=" +
+		// BP.Sys.SystemConfig.getAppCenterDBVarStr() + "No";
+		// ps.Add("SID", sid);
+		// ps.Add("No", userNo);
+
 		// 判断是否更新的是用户表中的SID
 		if (Glo.getUpdataSID().contains("UPDATE Port_Emp SET SID=") == true) {
 			// 判断是否视图，如果为视图则不进行修改 @于庆海 需要翻译
@@ -3444,6 +3656,7 @@ public class Dev2Interface {
 				return false;
 			}
 		}
+
 		String sql = "";
 		sql = BP.Sys.SystemConfig.GetValByKey("UpdateSID", sql);
 		if (sql.equals("")) {
@@ -3493,57 +3706,6 @@ public class Dev2Interface {
 		String para = "@FK_Flow=" + flowNo + "@WorkID=" + workID + "@FK_Node=" + nodeID + "@Sender="
 				+ BP.Web.WebUser.getNo();
 		BP.WF.SMS.SendMsg(userNo, title, msgDoc, msgFlag, msgType, para);
-	}
-
-	public static void Port_SendMessage(String sendToEmpNo, String smsDoc, String emailTitle, String msgType, String msgGroupFlag,
-		String sendEmpNo, String openUrl, String pushModel, String atParas,String msgPK ) throws Exception
-	{
-		BP.WF.Port.WFEmp emp = new BP.WF.Port.WFEmp(sendToEmpNo);
-		SMS sms = new SMS();
-		if (DataType.IsNullOrEmpty(msgPK) == false)
-		{
-			/*如果有唯一标志,就判断是否有该数据，没有该数据就允许插入.*/
-			if (sms.IsExit(SMSAttr.MyPK, msgPK) == true)
-				return;
-			sms.setMyPK(msgPK);
-		}
-		else
-		{
-			sms.setMyPK(DBAccess.GenerGUID());
-		}
-
-		sms.setHisEmailSta(MsgSta.UnRun);
-		sms.setHisMobileSta(MsgSta.UnRun);
-
-		if (sendEmpNo == null)
-			sms.setSender(WebUser.getNo());
-		else
-			sms.setSender(sendEmpNo);
-		//发送给人员ID , 有可能这个人员空的.
-		sms.setSendToEmpNo(sendToEmpNo) ;
-		//begin邮件信息
-		//邮件地址.
-		sms.setEmail(emp.getEmail());
-		//邮件标题.
-		sms.setTitle(emailTitle);
-		sms.setDocOfEmail(smsDoc);
-        //end邮件信息
-
-        //begin短消息信息
-		sms.setMobile(emp.getTel());
-		sms.setMobileInfo(smsDoc);
-		sms.setTitle(emailTitle);
-        //end 短消息信息
-
-		// 其他属性.
-		sms.setRDT(BP.DA.DataType.getCurrentDataTime());
-		sms.setMsgType(msgType); // 消息类型.
-		sms.setMsgFlag(msgGroupFlag); // 消息分组标志,用于批量删除.
-		sms.setAtPara(atParas);
-		sms.SetPara("OpenUrl", openUrl);
-		sms.SetPara("PushModel", pushModel);
-		// 先保留本机一份.
-		sms.Insert();
 	}
 
 	/**
@@ -3624,13 +3786,13 @@ public class Dev2Interface {
 	 *            短信内容
 	 * @param msgType
 	 *            消息类型
-	 * @param msgGroupFlag
+	 * @param msgGroupFloag
 	 *            消息分组
 	 * @param sender
 	 *            发送人
 	 * @param msgPK
 	 *            唯一标志,防止发送重复.
-	 * @param sendToEmpNo
+	 * @param sendEmpNo
 	 *            发送给人员.
 	 * @param atParas
 	 *            参数.
@@ -3683,7 +3845,7 @@ public class Dev2Interface {
 	/**
 	 * 转化流程Code到流程编号
 	 * 
-	 * @param flowMark
+	 * @param FlowMark
 	 *            流程编号
 	 * @return 返回编码
 	 */
@@ -3933,7 +4095,7 @@ public class Dev2Interface {
 	 *            当前节点ID
 	 * @param workid
 	 *            工作ID
-	 * @param fid
+	 * @param FID
 	 *            FID
 	 * @param msg
 	 *            审核信息
@@ -5244,7 +5406,7 @@ public class Dev2Interface {
 	/**
 	 * 获得正在运行中的子流程的数量
 	 * 
-	 * @param pWorkID
+	 * @param workID
 	 *            父流程的workid
 	 * @return 获得正在运行中的子流程的数量。如果是0，表示所有的流程的子流程都已经结束。
 	 */
@@ -5261,6 +5423,8 @@ public class Dev2Interface {
 	 *            父流程的workid
 	 * @param currWorkID
 	 *            不包含当前的工作节点ID
+	 * @param workID
+	 *            父流程的workid
 	 * @return 获得正在运行中的子流程的数量。如果是0，表示所有的流程的子流程都已经结束。
 	 */
 	public static int Flow_NumOfSubFlowRuning(long pWorkID, long currWorkID) {
@@ -5446,7 +5610,14 @@ public class Dev2Interface {
 
 		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
-
+		// ps.SQL = "SELECT c.RunModel FROM WF_GenerWorkFlow a ,
+		// WF_GenerWorkerlist b, WF_Node c WHERE a.FK_Node=" + dbstr + "FK_Node
+		// AND b.FK_Node=c.NodeID AND a.WorkID=b.WorkID AND a.FK_Node=b.FK_Node
+		// AND b.FK_Emp=" + dbstr + "FK_Emp AND b.IsEnable=1 AND a.workid=" +
+		// dbstr + "WorkID";
+		// ps.Add("FK_Node", nodeID);
+		// ps.Add("FK_Emp", userNo);
+		// ps.Add("WorkID", workID);
 		String sql = "SELECT c.RunModel, a.TaskSta FROM WF_GenerWorkFlow a , WF_GenerWorkerlist b, WF_Node c WHERE a.FK_Node='"
 				+ nodeID + "'  AND b.FK_Node=c.NodeID AND a.WorkID=b.WorkID AND a.FK_Node=b.FK_Node  AND b.GuestNo='"
 				+ userNo + "' AND b.IsEnable=1 AND a.WorkID=" + workID;
@@ -5487,9 +5658,12 @@ public class Dev2Interface {
 	/**
 	 * 是否可以查看流程数据 用于判断是否可以查看流程轨迹图. edit: stone 2015-03-25
 	 * 
-	 * @param flowNo 流程编号
-	 * @param workid 工作ID
-	 * @param userNo
+	 * @param flowNo
+	 *            流程编号
+	 * @param workid
+	 *            工作ID
+	 * @param fid
+	 *            FID
 	 * @return
 	 * @throws Exception
 	 */
@@ -5749,6 +5923,15 @@ public class Dev2Interface {
 		ps.Add(GenerWorkFlowAttr.Title, title);
 		ps.Add(GenerWorkFlowAttr.WorkID, workid);
 		int num = DBAccess.RunSQL(ps);
+
+		if (fl.getHisDataStoreModel() == DataStoreModel.ByCCFlow) {
+			// ps = new Paras();
+			// ps.SQL = "UPDATE ND" + int.Parse(flowNo + "01") + " SET Title=" +
+			// dbstr + "Title WHERE OID=" + dbstr + "WorkID";
+			// ps.Add(GenerWorkFlowAttr.Title, title);
+			// ps.Add(GenerWorkFlowAttr.WorkID, workid);
+			// DBAccess.RunSQL(ps);
+		}
 
 		if (num == 0) {
 			return false;
@@ -6589,10 +6772,10 @@ public class Dev2Interface {
 	 *            父流程的FID,如果没有父流程就传入为0.
 	 * @param parentFlowNo
 	 *            父流程的流程编号,如果没有父流程就传入为null.
-	 * @param parentNodeID 父流程的节点编号
-	 * @param parentEmp 父流程的处理人
 	 * @param jumpToNode
 	 *            要跳转到的节点,如果没有则为0.
+	 * @param jumpToEmp
+	 *            要跳转到的人员,如果没有则为null.
 	 * @return 为开始节点创建工作后产生的WorkID.
 	 */
 
@@ -7178,6 +7361,10 @@ public class Dev2Interface {
 	 *            工作编号
 	 * @param workID
 	 *            工作ID
+	 * @param ht
+	 *            节点表单数据
+	 * @param dsDtl
+	 *            节点表单从表数据
 	 * @return 返回发送结果
 	 * @throws Exception
 	 */
@@ -7199,8 +7386,8 @@ public class Dev2Interface {
 	/**
 	 * 发送工作
 	 * 
-	 * @param fk_flow
-	 *            流程编号
+	 * @param nodeID
+	 *            节点编号
 	 * @param workID
 	 *            工作ID
 	 * @param toNodeID
@@ -7299,12 +7486,15 @@ public class Dev2Interface {
 		Glo.setSendHTOfTemp(htWork);
 
 		// 转化成编号.
+		// fk_flow = TurnFlowMarkToFlowNo(fk_flow);
 		int currNodeId = Dev2Interface.Node_GetCurrentNodeID(fk_flow, workID);
 		if (htWork != null) {
 			BP.WF.Dev2Interface.Node_SaveWork(fk_flow, currNodeId, workID, htWork, workDtls);
 		}
+
 		// 变量.
 		Node nd = new Node(currNodeId);
+		// nd.WorkID = workID;
 		Work sw = nd.getHisWork();
 		sw.setOID(workID);
 		sw.RetrieveFromDBSources();
@@ -7436,8 +7626,8 @@ public class Dev2Interface {
 	/**
 	 * 把抄送写入待办列表
 	 * 
-	 * @param ndFrom 节点从ID
-	 * @param ndTo   节点到D
+	 * @param nodeID
+	 *            节点ID
 	 * @param workID
 	 *            工作ID
 	 * @param ccToEmpNo
@@ -7455,8 +7645,8 @@ public class Dev2Interface {
 	/**
 	 * 执行抄送
 	 * 
-	 * @param fk_node
-	 *            节点编号
+	 * @param flowNo
+	 *            流程编号
 	 * @param workID
 	 *            工作ID
 	 * @param toEmpNo
@@ -7485,8 +7675,10 @@ public class Dev2Interface {
 		Node fromNode = new Node(fk_node);
 
 		CCList list = new CCList();
-		list.setMyPK(String.valueOf(DBAccess.GenerOIDByGUID()));
-
+		list.setMyPK(String.valueOf(DBAccess.GenerOIDByGUID())); // workID + "_"
+																	// + fk_node
+																	// + "_" +
+																	// empNo;
 		list.setFK_Flow(gwf.getFK_Flow());
 		list.setFlowName(gwf.getFlowName());
 		list.setFK_Node(fk_node);
@@ -7505,12 +7697,13 @@ public class Dev2Interface {
 		list.setFID(gwf.getFID());
 		list.setPFlowNo(gwf.getPFlowNo());
 		list.setPWorkID(gwf.getPWorkID());
+		// list.NDFrom = ndFrom;
 
 		// 是否要写入待办.
 		if (fromNode.getCCWriteTo() == CCWriteTo.CCList) {
-			list.setInEmpWorks(false);
+			list.setInEmpWorks(false); // added by liuxc,2015.7.6
 		} else {
-			list.setInEmpWorks(true);
+			list.setInEmpWorks(true); // added by liuxc,2015.7.6
 		}
 
 		// 写入待办和写入待办与抄送列表,状态不同
@@ -7546,15 +7739,22 @@ public class Dev2Interface {
 	/**
 	 * 执行抄送
 	 * 
-	 * @param ndFrom 节点从ID
-	 * @param ndTo 节点到ID
+	 * @param fk_node
+	 *            节点
 	 * @param workID
 	 *            工作ID
-	 * @param toEmpNo
+	 * @param title
+	 *            标题
+	 * @param doc
+	 *            内容
+	 * @param toEmps
 	 *            到人员(zhangsan,张三;lisi,李四;wangwu,王五;)
-	 * @param toEmpName
-	 * @param msgTitle
-	 * @param msgDoc 内容
+	 * @param toDepts
+	 *            到部门，格式:001,002,003
+	 * @param toStations
+	 *            到岗位 格式:001,002,003
+	 * @param toStations
+	 *            到权限组 格式:001,002,003
 	 * @throws Exception
 	 */
 	public static String Node_CC_WriteTo_CClist(int ndFrom, int ndTo, long workID, String toEmpNo, String toEmpName,
@@ -7570,7 +7770,10 @@ public class Dev2Interface {
 		}
 		Node fromNode = new Node(ndFrom);
 		CCList list = new CCList();
-		list.setMyPK(String.valueOf(DBAccess.GenerOIDByGUID()));
+		list.setMyPK(String.valueOf(DBAccess.GenerOIDByGUID())); // workID + "_"
+																	// + fk_node
+																	// + "_" +
+																	// empNo);
 		list.setFK_Flow(gwf.getFK_Flow());
 		list.setFlowName(gwf.getFlowName());
 		list.setFK_Node(ndTo);
@@ -7590,8 +7793,9 @@ public class Dev2Interface {
 		list.setPFlowNo(gwf.getPFlowNo());
 		list.setPWorkID(gwf.getPWorkID());
 		list.setNDFrom(ndFrom);
-		list.setInEmpWorks(fromNode.getCCWriteTo() == CCWriteTo.CCList ? false : true);
-
+		list.setInEmpWorks(fromNode.getCCWriteTo() == CCWriteTo.CCList ? false : true); // added
+																						// by
+																						// liuxc,2015.7.6
 		// 写入待办和写入待办与抄送列表,状态不同
 		if (fromNode.getCCWriteTo() == CCWriteTo.All || fromNode.getCCWriteTo() == CCWriteTo.Todolist) {
 			list.setHisSta(fromNode.getCCWriteTo() == CCWriteTo.All ? CCSta.UnRead : CCSta.Read);
@@ -7660,7 +7864,16 @@ public class Dev2Interface {
 				}
 
 				CCList list = new CCList();
-				list.setMyPK(String.valueOf(DBAccess.GenerOIDByGUID()));
+				list.setMyPK(String.valueOf(DBAccess.GenerOIDByGUID())); // workID
+																			// +
+																			// "_"
+																			// +
+																			// fk_node
+																			// +
+																			// "_"
+																			// +
+																			// empNo);
+																			// list.setFK_Flow(gwf.getFK_Flow());
 				list.setFlowName(gwf.getFlowName());
 				list.setFK_Node(fk_node);
 				list.setNodeName(gwf.getNodeName());
@@ -7729,7 +7942,15 @@ public class Dev2Interface {
 					}
 
 					CCList list = new CCList();
-					list.setMyPK(String.valueOf(DBAccess.GenerOIDByGUID()));
+					list.setMyPK(String.valueOf(DBAccess.GenerOIDByGUID())); // workID
+																				// +
+																				// "_"
+																				// +
+																				// fk_node
+																				// +
+																				// "_"
+																				// +
+																				// empNo);
 					list.setFK_Flow(gwf.getFK_Flow());
 					list.setFlowName(gwf.getFlowName());
 					list.setFK_Node(fk_node);
@@ -7803,7 +8024,15 @@ public class Dev2Interface {
 					}
 
 					CCList list = new CCList();
-					list.setMyPK(String.valueOf(DBAccess.GenerOIDByGUID()));
+					list.setMyPK(String.valueOf(DBAccess.GenerOIDByGUID())); // workID
+																				// +
+																				// "_"
+																				// +
+																				// fk_node
+																				// +
+																				// "_"
+																				// +
+																				// empNo);
 					list.setFK_Flow(gwf.getFK_Flow());
 					list.setFlowName(gwf.getFlowName());
 					list.setFK_Node(fk_node);
@@ -7883,7 +8112,15 @@ public class Dev2Interface {
 					}
 
 					CCList list = new CCList();
-					list.setMyPK(String.valueOf(DBAccess.GenerOIDByGUID()));
+					list.setMyPK(String.valueOf(DBAccess.GenerOIDByGUID())); // workID
+																				// +
+																				// "_"
+																				// +
+																				// fk_node
+																				// +
+																				// "_"
+																				// +
+																				// empNo);
 					list.setFK_Flow(gwf.getFK_Flow());
 					list.setFlowName(gwf.getFlowName());
 					list.setFK_Node(fk_node);
@@ -7938,6 +8175,11 @@ public class Dev2Interface {
 
 		return ccRec;
 
+		//// 记录日志.
+		// Glo.AddToTrack(ActionType.CC, gwf.FK_Flow, workID, gwf.FID,
+		//// gwf.FK_Node, gwf.NodeName,
+		// WebUser.getNo(), WebUser.Name, gwf.FK_Node, gwf.NodeName, toAllEmps,
+		//// toAllEmps, title, null);
 	}
 
 	/**
@@ -8069,7 +8311,9 @@ public class Dev2Interface {
 		list.setDoc(msgDoc);
 		list.setCCTo(toEmpNo);
 		list.setCCToName(toEmpName);
-		list.setInEmpWorks(nd.getCCWriteTo() == CCWriteTo.CCList ? false : true);
+		list.setInEmpWorks(nd.getCCWriteTo() == CCWriteTo.CCList ? false : true); // added
+																					// by
+																					// liuxc,2015.7.6
 		// 写入待办和写入待办与抄送列表,状态不同
 		if (nd.getCCWriteTo() == CCWriteTo.All || nd.getCCWriteTo() == CCWriteTo.Todolist) {
 			list.setHisSta(nd.getCCWriteTo() == CCWriteTo.All ? CCSta.UnRead : CCSta.Read);
@@ -8315,14 +8559,16 @@ public class Dev2Interface {
 	/**
 	 * 保存
 	 * 
-	 * @param fk_node节点ID
-	 * @param workID 工作ID
-	 * @param htWork 工作数据
-	 * @param dsDtls
+	 * @param nodeID
+	 *            节点ID
+	 * @param workID
+	 *            工作ID
+	 * @param htWork
+	 *            工作数据
 	 * @return 返回执行信息
 	 * @throws Exception
 	 */
-	public static String Node_SaveWork(String fk_flow, int fk_node, long workID, Hashtable htWork,
+	public static String Node_SaveWork(String fk_flow, int fk_node, long workID, java.util.Hashtable htWork,
 			DataSet dsDtls) throws Exception {
 		if (htWork == null) {
 			return "参数错误，保存失败。";
@@ -8460,11 +8706,10 @@ public class Dev2Interface {
 			Work treeWork = workNode.CopySheetTree();
 			if (treeWork != null) {
 				wk.Copy(treeWork);
-				wk.Update();
 			}
 
 			// 获取该节点是是否是绑定表单方案, 如果流程节点中的字段与绑定表单的字段相同时赋值
-			/*if (nd.getFormType() == NodeFormType.SheetTree || nd.getFormType() == NodeFormType.RefOneFrmTree) {
+			if (nd.getFormType() == NodeFormType.SheetTree || nd.getFormType() == NodeFormType.RefOneFrmTree) {
 				FrmNodes nds = new FrmNodes(fk_flow, fk_node);
 				for (FrmNode item : nds.ToJavaList()) {
 					GEEntity en = null;
@@ -8503,7 +8748,7 @@ public class Dev2Interface {
 				}
 				wk.Update();
 			}
-*/
+
 			/// #region 处理保存后事件
 			boolean isHaveSaveAfter = false;
 			try {
@@ -8683,8 +8928,13 @@ public class Dev2Interface {
 
 	/**
 	 * 从任务池里取出来一个子任务
+	 * 
+	 * @param nodeid
+	 *            节点编号
 	 * @param workid
 	 *            工作ID
+	 * @param empNo
+	 *            取出来的人员编号
 	 * @throws Exception
 	 */
 	public static boolean Node_TaskPoolTakebackOne(long workid) throws Exception {
@@ -8739,7 +8989,13 @@ public class Dev2Interface {
 
 	/**
 	 * 放入一个任务
-	 * @param workid 工作ID
+	 * 
+	 * @param nodeid
+	 *            节点编号
+	 * @param workid
+	 *            工作ID
+	 * @param empNo
+	 *            人员ID
 	 * @throws Exception
 	 */
 	public static void Node_TaskPoolPutOne(long workid) throws Exception {
@@ -8812,62 +9068,62 @@ public class Dev2Interface {
 	 * 
 	 * @param workID
 	 *            工作ID
-	 * @param toNodeID
+	 * @param formNodeID
 	 *            节点ID
 	 * @param emps
 	 *            如果多个就用逗号分开
-	 * @param del_Selected
+	 * @param Del_Selected
 	 *            是否删除历史选择
 	 * @throws Exception
 	 */
 	public static void Node_AddNextStepAccepters(long workID, int toNodeID, String emps, boolean del_Selected)
-			throws Exception {
-		
-		
-		 if (DataType.IsNullOrEmpty(emps) == true)
-             return;
+		      throws Exception {
+		   
+		   
+		    if (DataType.IsNullOrEmpty(emps) == true)
+		            return;
 
-         SelectAccper sa = new SelectAccper();
-         //删除历史选择
-         if (del_Selected == true)
-         {
-             sa.Delete(SelectAccperAttr.FK_Node, toNodeID, SelectAccperAttr.WorkID, workID);
-         }
+		        SelectAccper sa = new SelectAccper();
+		        //删除历史选择
+		        if (del_Selected == true)
+		        {
+		            sa.Delete(SelectAccperAttr.FK_Node, toNodeID, SelectAccperAttr.WorkID, workID);
+		        }
 
-         //检查是否是单选？
-         BP.WF.Template.Selector st = new Selector(toNodeID);
-		SelectAccpers sas = new SelectAccpers();
-         if (st.getIsSimpleSelector() == true)
-         {
-             sa.Delete(SelectAccperAttr.FK_Node, toNodeID, SelectAccperAttr.WorkID, workID);
-         }else{
-			 sas.Retrieve(SelectAccperAttr.FK_Node, toNodeID, SelectAccperAttr.WorkID, workID);
-		 }
+		        //检查是否是单选？
+		        BP.WF.Template.Selector st = new Selector(toNodeID);
+		   SelectAccpers sas = new SelectAccpers();
+		        if (st.getIsSimpleSelector() == true)
+		        {
+		            sa.Delete(SelectAccperAttr.FK_Node, toNodeID, SelectAccperAttr.WorkID, workID);
+		        }else{
+		       sas.Retrieve(SelectAccperAttr.FK_Node, toNodeID, SelectAccperAttr.WorkID, workID);
+		    }
+		        
+		        String[] empArr = emps.split(",");
+		        for(String empNo : empArr)
+		        {
+		            if (DataType.IsNullOrEmpty(empNo) == true)
+		                continue;
+		            Emp emp = new Emp();
+		            emp.setNo(empNo);
+		            if (emp.RetrieveFromDBSources() == 0)
+		                return;
 
-         String[] empArr = emps.split(",");
-         for(String empNo : empArr)
-         {
-             if (DataType.IsNullOrEmpty(empNo) == true)
-                 continue;
-             Emp emp = new Emp();
-             emp.setNo(empNo);
-             if (emp.RetrieveFromDBSources() == 0)
-                 return;
-
-             
-             sa.setFK_Emp(emp.getNo());
-             sa.setEmpName(emp.getName());
-             sa.setDeptName(emp.getFK_DeptText());
-             sa.setFK_Node(toNodeID);
-             sa.setWorkID(workID);
-             sa.setIdx(sas.size()+1);
-             sa.ResetPK();
-             if (sa.getIsExits()== false)
-             {
-                 sa.Insert();
-             }
-         }
-	}
+		            
+		            sa.setFK_Emp(emp.getNo());
+		            sa.setEmpName(emp.getName());
+		            sa.setDeptName(emp.getFK_DeptText());
+		            sa.setFK_Node(toNodeID);
+		            sa.setWorkID(workID);
+		            sa.setIdx(sas.size()+1);
+		            sa.ResetPK();
+		            if (sa.getIsExits()== false)
+		            {
+		                sa.Insert();
+		            }
+		        }
+		}
 
 	/**
 	 * 增加下一步骤的接受人(用于当前步骤向下一步骤发送时增加接受人)
@@ -8912,7 +9168,7 @@ public class Dev2Interface {
 	 *            流程编号
 	 * @param workid
 	 *            工作ID
-	 * @param wayInt
+	 * @param way
 	 *            挂起方式
 	 * @param reldata
 	 *            解除挂起日期(可以为空)
@@ -8993,10 +9249,14 @@ public class Dev2Interface {
 	/**
 	 * 执行加签
 	 * 
-	 * @param workid 工作ID
-	 * @param askforSta 加签方式
-	 * @param askForEmp 请求人员
-	 * @param askForNote 内容
+	 * @param workid
+	 *            工作ID
+	 * @param askfor
+	 *            加签方式
+	 * @param askForEmp
+	 *            请求人员
+	 * @param askForNote
+	 *            内容
 	 * @return
 	 * @throws Exception
 	 */
@@ -9048,6 +9308,7 @@ public class Dev2Interface {
 				Flow_SetFlowTitle(gwf.getFK_Flow(), workid, "来自" + WebUser.getName() + "的工作加签.");
 			}
 		}
+		// endWarning.
 
 		// 处理状态.
 		for (GenerWorkerList item : gwls.ToJavaList()) {
@@ -9056,8 +9317,10 @@ public class Dev2Interface {
 			}
 
 			if (item.getFK_Emp().equals(WebUser.getNo())) {
+				// GenerWorkerList gwl = gwls[0] as GenerWorkerList;
 				item.setIsPassInt(askforSta.getValue());
 				item.Update();
+
 				// 更换主键后，执行insert ,让被加签人有代办工作.
 				item.setIsPassInt(0);
 				item.setFK_Emp(emp.getNo());
@@ -9077,7 +9340,12 @@ public class Dev2Interface {
 				ActionType.AskforHelp, "", null, null, emp.getNo(), emp.getName());
 
 		Flow fl = new Flow(gwf.getFK_Flow());
-
+		// 暂时住掉
+		// BP.WF.Dev2Interface.Port_SendMsg(askForEmp, gwf.getTitle(),
+		// askForNote,
+		// "AK" + gwf.getFK_Node() + "_" + gwf.getWorkID(), SMSMsgType.AskFor,
+		// gwf.getFK_Flow(), gwf.getFK_Node(),
+		// workid, gwf.getFID());
 		// 更新状态.
 		DBAccess.RunSQL(
 				"UPDATE " + fl.getPTable() + " SET WFState=" + WFState.Askfor.getValue() + " WHERE OID=" + workid);
@@ -9184,7 +9452,7 @@ public class Dev2Interface {
 	/**
 	 * 工作移交
 	 * 
-	 * @param workID
+	 * @param workid
 	 *            工作ID
 	 * @param toEmp
 	 *            移交到人员(只给移交给一个人)
@@ -9736,8 +10004,13 @@ public class Dev2Interface {
 
 	/**
 	 * 设置工作未读取
-	 * @param workid 工作ID
-	 * @param userNo 要设置的人
+	 * 
+	 * @param nodeID
+	 *            节点ID
+	 * @param workid
+	 *            工作ID
+	 * @param userNo
+	 *            要设置的人
 	 */
 	public static void Node_SetWorkUnRead(long workid, String userNo) {
 		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
@@ -9751,7 +10024,11 @@ public class Dev2Interface {
 
 	/**
 	 * 设置工作未读取
-	 * @param workid 工作ID
+	 * 
+	 * @param nodeID
+	 *            节点ID
+	 * @param workid
+	 *            工作ID
 	 * @throws Exception
 	 */
 	public static void Node_SetWorkUnRead(long workid) throws Exception {
@@ -9968,7 +10245,7 @@ public class Dev2Interface {
 	 *            流程主键
 	 * @return 返回当时的表单json字符串
 	 */
-	public static String CCFrom_GetFrmDBJson(String flowNo, String mypk) throws Exception {
+	public static String CCFrom_GetFrmDBJson(String flowNo, String mypk) {
 		return DBAccess.GetBigTextFromDB("ND" + Integer.parseInt(flowNo) + "Track", "MyPK", mypk, "FrmDB");
 	}
 
@@ -10481,7 +10758,7 @@ public class Dev2Interface {
 	 * 发送到节点
 	 * 
 	 * @param flowNo
-	 * @param nodeID
+	 * @param node
 	 * @param workid
 	 * @param fid
 	 * @param toNodes
@@ -10655,7 +10932,8 @@ public class Dev2Interface {
 
 	/**
 	 * 获取接收人选择器，按部门绑定
-	 * @param nodeID
+	 * 
+	 * @param ToNode
 	 * @return
 	 */
 	private static DataSet WorkOpt_Accepter_ByDept(int nodeID) {
@@ -10746,11 +11024,10 @@ public class Dev2Interface {
 	 * 发送到节点
 	 * 
 	 * @param flowNo
-	 * @param nodeID
+	 * @param node
 	 * @param workid
 	 * @param fid
-	 * @param toNodeID
-	 * @param toEmps
+	 * @param toNodes
 	 * @throws Exception
 	 */
 	public static SendReturnObjs WorkOpt_SendToEmps(String flowNo, int nodeID, long workid, long fid, int toNodeID,
@@ -10768,6 +11045,41 @@ public class Dev2Interface {
 		SendReturnObjs objs = firstwn.NodeSend();
 		return objs;
 	}
+
+	/// #region 附件上传
+	public static String SaveImageAsFile(byte[] img, String pkval, String fk_Frm_Ele) {
+		/*
+		 * FrmEle fe = new FrmEle(fk_Frm_Ele); System.Drawing.Image newImage;
+		 * MemoryStream ms = new MemoryStream(img, 0, img.length); try {
+		 * ms.Write(img, 0, img.length); newImage = Image.FromStream(ms, true);
+		 * Bitmap bitmap = new Bitmap(newImage, new Size(fe.WOfInt, fe.HOfInt));
+		 * 
+		 * if (System.IO.Directory.Exists(fe.HandSigantureSavePath +
+		 * "\\" + fe.FK_MapData + "\\") == false) {
+		 * System.IO.Directory.CreateDirectory(fe.HandSigantureSavePath +
+		 * "\\" + fe.FK_MapData + "\\"); }
+		 * 
+		 * String saveTo = fe.HandSigantureSavePath +
+		 * "\\" + fe.FK_MapData + "\\" + pkval + ".jpg"; bitmap.Save(saveTo,
+		 * ImageFormat.Jpeg);
+		 * 
+		 * String pathFile = BP.Sys.Glo.Request.ApplicationPath +
+		 * fe.HandSiganture_UrlPath + fe.FK_MapData + "/" + pkval + ".jpg";
+		 * FrmEleDB ele = new FrmEleDB(); ele.FK_MapData = fe.FK_MapData;
+		 * ele.EleID = fe.EleID; ele.RefPKVal = pkval; ele.Tag1 =
+		 * pathFile.replace("\\\\", "\\"); ele.Tag1 = pathFile.replace("////",
+		 * "//");
+		 * 
+		 * ele.Tag2 = saveTo.replace("\\\\", "\\"); ele.Tag2 =
+		 * saveTo.replace("////", "//");
+		 * 
+		 * ele.GenerPKVal(); ele.Save();
+		 * 
+		 * return pathFile; } finally { ms.dispose(); }
+		 */
+		return "";
+	}
+
 	/**
 	 * 上传文件.
 	 * 
@@ -10776,6 +11088,9 @@ public class Dev2Interface {
 	 * @return
 	 */
 	public static String UploadFile(byte[] FileByte, String fileName) {
+		// String path =
+		// System.Web.HttpContext.Current.Request.PhysicalApplicationPath +
+		// "\\DataUser\\UploadFile";
 		String path = ContextHolderUtils.getRequest().getSession().getServletContext().getRealPath("/")
 				+ "/DataUser/UploadFile";
 		if (!(new java.io.File(path)).isDirectory()) {
@@ -10785,6 +11100,12 @@ public class Dev2Interface {
 		if ((new java.io.File(filePath)).isFile()) {
 			(new java.io.File(filePath)).delete();
 		}
+
+		// 这里使用绝对路径来索引
+		// FileStream stream = new FileStream(filePath, FileMode.CreateNew);
+		// stream.Write(FileByte, 0, FileByte.length);
+		// stream.Close();
+
 		return filePath;
 	}
 

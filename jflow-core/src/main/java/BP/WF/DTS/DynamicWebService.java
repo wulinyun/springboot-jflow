@@ -45,7 +45,7 @@ public class DynamicWebService
 	// public static Object InvokeWebService(String url, String className,
 	// String methodName, Object[] args)
 	// {
-	// String namespace = "EnterpriseServerBase.com.landasoft.demo.springboot.jflow.springbootjflow.WebService.DynamicWebCalling";
+	// String namespace = "EnterpriseServerBase.WebService.DynamicWebCalling";
 	// if ((className == null) || (className.equals("")))
 	// {
 	// className = DynamicWebService.GetWsClassName(url);

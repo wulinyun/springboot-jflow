@@ -41,15 +41,21 @@ public class SMS extends EntityMyPK
 		SMS sms = new SMS();
 		sms.setMyPK(DBAccess.GenerGUID());
 		sms.setHisEmailSta(MsgSta.UnRun);
+
 		sms.setSender(WebUser.getNo());
 		sms.setSendToEmpNo(userNo);
+
 		sms.setTitle(msgTitle);
 		sms.setDocOfEmail(msgDoc);
+
 		sms.setSender(BP.Web.WebUser.getNo());
 		sms.setRDT(BP.DA.DataType.getCurrentDataTime());
+
 		sms.setMsgFlag(msgFlag); // 消息标志.
 		sms.setMsgType(msgType); // 消息类型.'
+
 		sms.setAtPara(paras);
+//		sms.afterInsert();
 		sms.Insert();
 	}
 	/** 
@@ -69,15 +75,18 @@ public class SMS extends EntityMyPK
 		sms.setSender(WebUser.getNo());
 		sms.setRDT(BP.DA.DataType.getCurrentDataTimess());
 		sms.setSendToEmpNo(guestNo);
+
 		// 邮件信息
 		sms.setHisEmailSta(MsgSta.UnRun);
 		sms.setTitle(title);
 		sms.setDocOfEmail(infoBody);
+
 		//手机信息.
 		sms.setMobile(mobileNum);
 		sms.setHisMobileSta(MsgSta.UnRun);
 		sms.setMobileInfo(mobileInfo);
 		sms.setMsgFlag(msgFlag); // 消息标志.
+
 		if (DotNetToJavaStringHelper.isNullOrEmpty(msgFlag))
 		{
 			sms.setMyPK(DBAccess.GenerGUID());
@@ -85,9 +94,15 @@ public class SMS extends EntityMyPK
 		}
 		else
 		{
-			sms.setMyPK(msgFlag);
-			sms.Insert();
-
+			// 如果已经有该PK,就不让插入了.
+			try
+			{
+				sms.setMyPK(msgFlag);
+				sms.Insert();
+			}
+			catch (java.lang.Exception e)
+			{
+			}
 		}
 	}
 	/** 
@@ -114,6 +129,7 @@ public class SMS extends EntityMyPK
 	}
 	/** 
 	 手机信息
+	 
 	*/
 	public final String getMobileInfo()
 	{
@@ -123,8 +139,13 @@ public class SMS extends EntityMyPK
 	{
 		SetValByKey(SMSAttr.MobileInfo, value);
 	}
+
+		///#endregion
+ 
+		///#region  邮件属性
 	/** 
 	 参数
+	 
 	*/
 	public final String getAtPara()
 	{
@@ -136,6 +157,7 @@ public class SMS extends EntityMyPK
 	}
 	/** 
 	 邮件状态
+	 
 	*/
 	public final MsgSta getHisEmailSta()
 	{
@@ -147,6 +169,7 @@ public class SMS extends EntityMyPK
 	}
 	/** 
 	 Email
+	 
 	*/
 	public final String getEmail()
 	{
@@ -158,6 +181,7 @@ public class SMS extends EntityMyPK
 	}
 	/** 
 	 发送给
+	 
 	*/
 	public final String getSendToEmpNo()
 	{
@@ -185,6 +209,7 @@ public class SMS extends EntityMyPK
 	}
 	/** 
 	 消息标记(可以用它来避免发送重复)
+	 
 	*/
 	public final String getMsgFlag()
 	{
@@ -196,6 +221,7 @@ public class SMS extends EntityMyPK
 	}
 	/** 
 	 类型
+	 
 	*/
 	public final String getMsgType()
 	{
@@ -207,6 +233,7 @@ public class SMS extends EntityMyPK
 	}
 	/** 
 	 发送人
+	 
 	*/
 	public final String getSender()
 	{
@@ -218,6 +245,7 @@ public class SMS extends EntityMyPK
 	}
 	/** 
 	 记录日期
+	 
 	*/
 	public final String getRDT()
 	{
@@ -229,6 +257,7 @@ public class SMS extends EntityMyPK
 	}
 	/** 
 	 标题
+	 
 	*/
 	public final String getTitle()
 	{
@@ -240,6 +269,7 @@ public class SMS extends EntityMyPK
 	}
 	/** 
 	 邮件内容
+	 
 	*/
 	public final String getDocOfEmail()
 	{
@@ -256,6 +286,7 @@ public class SMS extends EntityMyPK
 	}
 	/** 
 	 邮件内容.
+	 
 	*/
 	public final String getDoc()
 	{
@@ -271,15 +302,13 @@ public class SMS extends EntityMyPK
 		SetValByKey(SMSAttr.EmailDoc, value);
 	}
 
-	public final String getPushModel(){
-		return this.GetParaString(SMSAttr.PushModel);
-	}
-	public final String getOpenURL(){
-		return this.GetParaString("OpenURL");
-	}
+		///#endregion
+
+
 		
 	/** 
 	 UI界面上的访问控制
+	 
 	*/
 	@Override
 	public UAC getHisUAC()
@@ -290,12 +319,14 @@ public class SMS extends EntityMyPK
 	}
 	/** 
 	 消息
+	 
 	*/
 	public SMS()
 	{
 	}
 	/** 
 	 Map
+	 
 	*/
 	@Override
 	public Map getEnMap()
@@ -352,6 +383,7 @@ public class SMS extends EntityMyPK
 			 return false;
 		//邮件地址.return
         final String  emailAddr = SystemConfig.GetValByKey("SendEmailAddress", "ccbpmtester@tom.com");
+       
 
        final String emailPassword = SystemConfig.GetValByKey("SendEmailPass", "ccbpm123");
 		// 第一步：配置javax.mail.Session对象  
@@ -367,27 +399,35 @@ public class SMS extends EntityMyPK
 		};
 
 		Session mailSession = Session.getInstance(props,auth);
+	       		 
 		InternetAddress fromAddress = new InternetAddress(emailAddr);
         InternetAddress toAddress = new InternetAddress(mail);
 
 		// 3. 创建一封邮件
         MimeMessage message = new MimeMessage(mailSession);
+        
         message.setFrom(fromAddress);
         message.addRecipient(RecipientType.TO, toAddress);
+        
         message.setSentDate(BP.Tools.DateUtils.currentDate());
         message.setSubject(mailTitle);
         message.setText(mailDoc);
         
         //4.发送Email,
         Transport transport = mailSession.getTransport("smtp");//定义发送协议
+   
+		//transport.connect(SystemConfig.GetValByKey("SendEmailHost", "smtp.gmail.com"),emailAddr, emailPassword);
 		//登录邮箱
         transport.send(message, message.getRecipients(RecipientType.TO));//发送邮件
         
         return true;
+		
+		
 	}
 	/** 
 	 插入之后执行的方法.
-	 * @throws Exception
+	 * @throws Exception 
+	 
 	*/
 	@Override
 	protected void afterInsert() throws Exception
@@ -395,40 +435,53 @@ public class SMS extends EntityMyPK
 		/* 发送消息开关 */
 		if (BP.WF.Glo.getIsEnableSysMessage() == false)		
 			return;
-		if (this.getHisEmailSta() != MsgSta.UnRun)
-			return;
+		
+		
+		try
+		{
+			//PortalInterfaceWSImpl soap = new PortalInterfaceWSImpl();
+			String xmlStr = "";
+			if (this.getHisEmailSta() == MsgSta.UnRun)
+			{
+				//发送邮件
+				SendEmailNow(this.getEmail(), this.getTitle(), this.getDocOfEmail());
+				return;
+			}
 
-		//发送邮件
-		if (this.getPushModel().contains("Email") == true && DataType.IsNullOrEmpty(this.getEmail()) == false)
-			SendEmailNow(this.getEmail(), this.getTitle(), this.getDocOfEmail());
-		//begin 发送短消息 调用接口
-		PortalWebService service = new PortalWebService();
-		//end 发送短消息 调用接口
-		//站内消息
-		if (this.getPushModel().contains("CCMsg") == true)
-		{
-			service.SendToCCMSG(this.getMyPK(), WebUser.getNo(), this.getSendToEmpNo(), this.getMobile(), this.getMobileInfo(), this.getTitle(), this.getOpenURL());
+			if (this.getHisMobileSta() == MsgSta.UnRun)
+			{
+				String tag = "@MsgFlag=" + this.getMsgFlag() + "@MsgType=" + this.getMsgType() + this.getatPara() + "@Sender=" + this.getSender() + "@SenderName=" + BP.Web.WebUser.getName();
+				PortalWebService service = new PortalWebService();
+				switch (BP.WF.Glo.getShortMessageWriteTo())
+				{
+					case ToSMSTable: //写入消息表。
+						break;
+					case ToWebservices: // 写入webservices.
+						
+						service.SendToWebServices(this.getSender(), this.getSendToEmpNo(), this.getTitle(),this.getMobileInfo(),this.GetParaString("OpenUrl") , this.getMsgType());
+						//soap.SendToWebServices(this.getMyPK(), WebUser.getNo(), this.getSendToEmpNo(), this.getMobile(), this.getMobileInfo(),tag);
+						break;
+					case ToDingDing: // 写入dingding.
+						service.SendToDingDing(this.getSender(), this.getSendToEmpNo(), this.getTitle(),this.getMobileInfo(),this.GetParaString("OpenUrl") , this.getMsgType());
+						
+						break;
+					case ToWeiXin: // 写入微信.
+						service.SendToWeiXin(this.getSender(), this.getSendToEmpNo(), this.getTitle(),this.getMobileInfo(),this.GetParaString("OpenUrl") , this.getMsgType());
+						//soap.SendToWeiXin(this.getMyPK(), WebUser.getNo(), this.getSendToEmpNo(), this.getMobile(), this.getMobileInfo());
+						break;
+					case CCIM: // 写入即时通讯系统.
+						service.SendToCCIM(this.getSender(), this.getSendToEmpNo(), this.getTitle(),this.getMobileInfo(),this.GetParaString("OpenUrl") , this.getMsgType());
+						
+						//soap.SendToCCIM(this.getMyPK(), WebUser.getNo(), this.getSendToEmpNo(), this.getMobileInfo(),tag);
+						break;
+					default:
+						break;
+				}
+			}
 		}
-		//短信
-		if (this.getPushModel().contains("SMS") == true)
+		catch(RuntimeException ex)
 		{
-			service.SendToWebServices(this.getMyPK(), WebUser.getNo(), this.getSendToEmpNo(), this.getMobile(), this.getMobileInfo(), this.getTitle(), this.getOpenURL());
-		}
-		//钉钉
-		if (this.getPushModel().contains("DingDing") == true)
-		{
-
-			service.SendToDingDing(this.getMyPK(), WebUser.getNo(), this.getSendToEmpNo(), this.getMobile(), this.getMobileInfo(), this.getTitle(), this.getOpenURL());
-		}
-		//微信
-		if (this.getPushModel().contains("WeiXin") == true)
-		{
-			service.SendToWeiXin(this.getMyPK(), WebUser.getNo(), this.getSendToEmpNo(), this.getMobile(), this.getMobileInfo(), this.getTitle(), this.getOpenURL());
-		}
-		//com.landasoft.demo.springboot.jflow.springbootjflow.WebService
-		if (this.getPushModel().contains("WS") == true)
-		{
-			service.SendToWebServices(this.getMyPK(), WebUser.getNo(), this.getSendToEmpNo(), this.getMobile(), this.getMobileInfo(), this.getTitle(), this.getOpenURL());
+			BP.DA.Log.DebugWriteError("@消息机制没有配置成功."+ex.getMessage());
 		}
 		super.afterInsert();
 	}

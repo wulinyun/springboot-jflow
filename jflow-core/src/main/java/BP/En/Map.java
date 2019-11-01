@@ -2562,8 +2562,6 @@ public class Map
 	}
 	
 	private AttrFiles _HisAttrFiles = null;
-
-	public String IndexField=null;
 	
 	public final AttrFiles getHisAttrFiles()
 	{

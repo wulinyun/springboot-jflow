@@ -2780,7 +2780,7 @@ public class MapData extends EntityNoName
 	 @param oid
 	 @return 
 	*/
-	public final boolean ExcelGenerFile(int oid, RefObject<byte[]> bytes) throws Exception
+	public final boolean ExcelGenerFile(int oid, RefObject<byte[]> bytes)
 	{
 		byte[] by = BP.DA.DBAccess.GetByteFromDB(this.getPTable(), this.getEnPK(), (new Integer(oid)).toString(), "DBFile");
 		if (by != null)

@@ -288,8 +288,9 @@ public class WebUser {
 			String sid1 = formatter.format(new Date());
 			DBAccess.RunSQL("UPDATE Port_Emp SET SID='" + sid1 + "' WHERE No='" + WebUser.getNo() + "'");
 			WebUser.setSID(sid1);
-			}
 		}
+		}
+
 		WebUser.setSysLang(lang);
 		if (BP.Sys.SystemConfig.getIsBSsystem())
 		{
@@ -689,6 +690,7 @@ public class WebUser {
 	 * 名称
 	 */
 	public static String getName() {
+		//		String val = GetValFromCookie("Name", null, true);
 		String val = GetSessionByKey("Name", "");
 		if (val == null) {
 			throw new RuntimeException("@err-002 Name 登录信息丢失。");

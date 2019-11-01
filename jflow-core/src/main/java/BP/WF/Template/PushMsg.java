@@ -1,13 +1,19 @@
 package BP.WF.Template;
 
-import BP.DA.*;
+import BP.DA.AtPara;
+import BP.DA.DBAccess;
+import BP.DA.DataRow;
+import BP.DA.DataTable;
+import BP.DA.DataType;
 import BP.En.Entity;
 import BP.En.EntityMyPK;
 import BP.En.Map;
 import BP.En.Row;
 import BP.Sys.EventListOfNode;
 import BP.Tools.StringHelper;
-import BP.WF.*;
+import BP.WF.Dev2Interface;
+import BP.WF.Node;
+import BP.WF.SendReturnObjs;
 import BP.WF.Port.WFEmp;
 import BP.Web.WebUser;
 
@@ -370,41 +376,6 @@ public class PushMsg extends EntityMyPK
 	{
 		this.SetValByKey(PushMsgAttr.SMSPushWay, value);
 	}
-
-	/**
-	 * 按照SQL计算发送
-	 * @return
-	 */
-	public final String getBySQL()
-	{
-		return this.GetValStringByKey(PushMsgAttr.BySQL);
-	}
-	public final void setBySQL(String value)
-	{
-		this.SetValByKey(PushMsgAttr.BySQL, value);
-	}
-
-	/**
-	 * 按照指定的人员计算
-	 * @return
-	 */
-	public final String getByEmps()
-	{
-		return this.GetValStringByKey(PushMsgAttr.ByEmps);
-	}
-	public final void setByEmps(String value)
-	{
-		this.SetValByKey(PushMsgAttr.ByEmps, value);
-	}
-
-	public final String getSMSPushModel()
-	{
-		return this.GetValStringByKey(PushMsgAttr.SMSPushModel);
-	}
-	public final void setSMSPushModel(String value)
-	{
-		this.SetValByKey(PushMsgAttr.SMSPushModel, value);
-	}
 	/** 
 	 发送消息标签
 	 
@@ -583,8 +554,7 @@ public class PushMsg extends EntityMyPK
 			//设置内容.
 		map.AddTBString(PushMsgAttr.PushDoc, null, "推送保存内容", true, false, 0, 3500, 10);
 		map.AddTBString(PushMsgAttr.Tag, null, "Tag", true, false, 0, 500, 10);
-		//@0=站内消息@1=短信@2=钉钉@3=微信@4=即时通
-		map.AddTBString(PushMsgAttr.SMSPushModel, null, "短消息发送设置", true, false, 0, 50, 10);
+
 			///#endregion 将要删除.
 
 
@@ -593,9 +563,6 @@ public class PushMsg extends EntityMyPK
 		map.AddTBString(PushMsgAttr.SMSField, null, "短信字段", true, false, 0, 100, 10);
 		map.AddTBStringDoc(PushMsgAttr.SMSDoc, null, "短信内容模版", true, false, true);
 		map.AddTBString(PushMsgAttr.SMSNodes, null, "SMS节点s", true, false, 0, 100, 10);
-
-		map.AddTBString(PushMsgAttr.BySQL, null, "按照SQL计算", true, false, 0, 500, 10);
-		map.AddTBString(PushMsgAttr.ByEmps, null, "发送给指定的人员", true, false, 0, 100, 10);
 
 			///#endregion 短信.
 
@@ -612,8 +579,13 @@ public class PushMsg extends EntityMyPK
 		this.set_enMap(map);
 		return this.get_enMap();
 	}
+
+		///#endregion
+
+
 	/** 
 	 生成提示信息.
+	 
 	 @return 
 	*/
 	private String generAlertMessage=null;
@@ -633,9 +605,12 @@ public class PushMsg extends EntityMyPK
 	public final String DoSendMessage(Node currNode, Entity en, String atPara, SendReturnObjs objs, Node jumpToNode, String jumpToEmps) throws Exception
 	{
 		if (en == null)
+		{
 			return "";
+		}
 
-		//处理参数.
+
+			///#region 处理参数.
 		Row r = en.getRow();
 		try
 		{
@@ -644,7 +619,7 @@ public class PushMsg extends EntityMyPK
 		}
 		catch (java.lang.Exception e)
 		{
-			r.put("FK_MapData", en.getClassID());
+			r.put("FK_MapData",en.getClassID());
 		}
 
 		if (atPara != null)
@@ -654,11 +629,11 @@ public class PushMsg extends EntityMyPK
 			{
 				try
 				{
-					r.put(s, ap.GetValStrByKey(s));
+					r.put(s,ap.GetValStrByKey(s));
 				}
 				catch (java.lang.Exception e2)
 				{
-					r.put(s, ap.GetValStrByKey(s));
+					r.put(s,ap.GetValStrByKey(s));
 				}
 			}
 		}
@@ -669,10 +644,6 @@ public class PushMsg extends EntityMyPK
 		if (en.getRow().containsKey("Title") == true)
 		{
 			title = en.GetValStringByKey("Title"); // 获得工作标题.
-			if(DataType.IsNullOrEmpty(title))
-			{
-				title = BP.DA.DBAccess.RunSQLReturnStringIsNull("SELECT Title FROM WF_GenerWorkFlow WHERE WorkID=" + en.getPKVal(), "标题");
-			}
 		}
 		else
 		{
@@ -681,13 +652,12 @@ public class PushMsg extends EntityMyPK
 
 		//生成URL.
 		String hostUrl = BP.WF.Glo.getHostURL();
-		String sid = "{EmpStr}_" + workid + "_" + currNode.getNodeID() + "_" + DataType.getCurrentDate();
+		String sid = "{EmpStr}_" + workid + "_" + currNode.getNodeID() + "_" + DataType.getCurrentDataTime();
 		String openWorkURl = hostUrl + "WF/Do.htm?DoType=OF&SID=" + sid;
 		openWorkURl = openWorkURl.replace("//", "/");
-		openWorkURl = openWorkURl.replace("//", "/");
-		///#endregion
+		openWorkURl = openWorkURl.replace("http:/", "http://");
 
-		// 有可能是退回信息. 翻译.
+		// 有可能是退回信息. @于庆海翻译.
 		if (jumpToEmps == null)
 		{
 			if (atPara != null)
@@ -696,329 +666,14 @@ public class PushMsg extends EntityMyPK
 				jumpToEmps = ap.GetValStrByKey("SendToEmpIDs");
 			}
 		}
-		//发送消息
-		String msg = this.SendMessage(title,en,currNode,workid,jumpToEmps,openWorkURl,objs,r);
+
 		//发送短消息.
-		///String msg1 = this.SendShortMessageToSpecNodes(title, openWorkURl, en, currNode, workid, objs, null, jumpToEmps);
+		String msg1 = this.SendShortMessageToSpecNodes(title, openWorkURl, en, jumpToEmps, currNode, workid, objs, r);
 		//发送邮件.
-		//String msg2 = this.SendEmail(title, openWorkURl, en, jumpToEmps, currNode, workid, objs, r);
-		return msg;
+		String msg2 = this.SendEmail(title, openWorkURl, en, jumpToEmps, currNode, workid, objs, r);
+
+		return msg1 + msg2;
 	}
-
-	/**
-	 *
-	 * @param title 标题
-	 * @param en 数据实体
-	 * @param currNode 当前节点
-	 * @param workid 流程WORKID
-	 * @param jumpToEmps 下一个节点的接收人
-	 * @param openUrl 链接的URL
-	 * @param objs
-	 * @param r
-	 * @return
-	 * @throws Exception
-	 */
-	private String SendMessage(String title,Entity en,Node currNode,long workid,String jumpToEmps,
-							   String openUrl, SendReturnObjs objs,Row r) throws Exception
-	{
-		//不启用消息
-		if (this.getSMSPushWay() == 0)
-			return "";
-		String generAlertMessage = ""; //定义要返回的提示消息.
-		String mailTitle = this.getMailTitle();// 邮件标题
-		String smsDoc = this.getSMSDoc();//消息模板
-
-		//begin 邮件标题
-		mailTitle = this.getMailTitle();
-		mailTitle = mailTitle.replace("{Title}", title);
-		mailTitle = mailTitle.replace("@WebUser.No", WebUser.getNo());
-		mailTitle = mailTitle.replace("@WebUser.Name", WebUser.getName());
-
-		//end 邮件标题
-
-		//begin 处理消息内容
-		smsDoc = smsDoc.replace("{Title}", title);
-		smsDoc = smsDoc.replace("{Url}", openUrl);
-		smsDoc = smsDoc.replace("@WebUser.No", WebUser.getNo());
-		smsDoc = smsDoc.replace("@WebUser.Name", WebUser.getName());
-		smsDoc = smsDoc.replace("@WorkID", en.getPKVal().toString());
-		smsDoc = smsDoc.replace("@OID", en.getPKVal().toString());
-
-		/*如果仍然有没有替换下来的变量.*/
-		if (smsDoc.contains("@") == true)
-			smsDoc = BP.WF.Glo.DealExp(smsDoc, en, null);
-
-		if (this.getFK_Event() == BP.Sys.EventListOfNode.ReturnAfter)
-		{
-			//获取退回原因
-			Paras ps = new Paras();
-			ps.SQL = "SELECT BeiZhu,ReturnerName,IsBackTracking FROM WF_ReturnWork WHERE WorkID=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "WorkID  ORDER BY RDT DESC";
-			ps.Add(ReturnWorkAttr.WorkID, Long.parseLong(en.getPKVal().toString()));
-			DataTable retunWdt = DBAccess.RunSQLReturnTable(ps);
-			if (retunWdt.Rows.size() != 0)
-			{
-				String returnMsg = retunWdt.Rows.get(0).getValue("BeiZhu").toString();
-				String returner = retunWdt.Rows.get(0).getValue("ReturnerName").toString();
-				smsDoc = smsDoc.replace("ReturnMsg", returnMsg);
-			}
-		}
-		// end 处理消息内容
-
-		// begin 消息发送
-		String toEmpIDs = "";
-		// begin表单字段作为接受人
-		if (this.getSMSPushWay() == 2)
-		{
-			/*从字段里取数据. */
-			String toEmp = r.get(this.getSMSField()).toString();
-			//修改内容
-			smsDoc = smsDoc.replace("{EmpStr}", toEmp);
-			openUrl = openUrl.replace("{EmpStr}", toEmp);
-
-			//发送消息
-			BP.WF.Dev2Interface.Port_SendMessage(toEmp, smsDoc, mailTitle, this.getFK_Event(), "WKAlt" + currNode.getNodeID() + "_" + workid, BP.Web.WebUser.getNo(), openUrl, this.getSMSPushModel(),null,null);
-			return "@已向:{" + toEmp + "}发送提醒信息.";
-		}
-		// end表单字段作为接受人
-
-		//begin 如果发送给指定的节点处理人,就计算出来直接退回,任何方式的处理人都是一致的.
-		if (this.getSMSPushWay() == 3)
-		{
-			/*如果向指定的字段作为发送邮件的对象, 从字段里取数据. */
-			String[] nodes = this.getSMSNodes().split(",");
-
-			String msg = "";
-			for(String nodeID : nodes)
-			{
-				if (DataType.IsNullOrEmpty(nodeID) == true)
-					continue;
-
-				String sql = "SELECT EmpFromT AS Name,EmpFrom AS No FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track A  WHERE  A.ActionType=1 AND A.WorkID=" + workid + " AND A.NDFrom=" + nodeID ;
-				DataTable dt = DBAccess.RunSQLReturnTable(sql);
-				if (dt.Rows.size() == 0)
-					continue;
-
-				for(DataRow dr : dt.Rows)
-				{
-					String empName = dr.getValue("Name").toString();
-					String empNo = dr.getValue("No").toString();
-
-
-					// 因为要发给不同的人，所有需要clone 一下，然后替换发送.
-					String smsDocReal = smsDoc;
-					smsDocReal = smsDocReal.replace("{EmpStr}", empName);
-					openUrl = openUrl.replace("{EmpStr}", empNo);
-
-					String paras = "@FK_Flow=" + this.getFK_Flow() + "@WorkID=" + workid + "@FK_Node=" + this.getFK_Node();
-
-					//发送消息
-					BP.WF.Dev2Interface.Port_SendMessage(empNo, smsDoc, mailTitle, this.getFK_Event(), "WKAlt" + currNode.getNodeID() + "_" + workid, BP.Web.WebUser.getNo(), openUrl, this.getSMSPushModel(),null,null);
-					//处理短消息.
-					toEmpIDs += empName + ",";
-				}
-			}
-			return "@已向:{" + toEmpIDs + "}发送了短消息提醒.";
-		}
-		//end 如果发送给指定的节点处理人, 就计算出来直接退回, 任何方式的处理人都是一致的.
-
-		// begin 按照SQL计算
-		if(this.getSMSPushWay() == 4)
-		{
-			String bySQL = this.getBySQL();
-			if(DataType.IsNullOrEmpty(bySQL) == true)
-			{
-				return "按照指定的SQL发送消息，SQL数据不能为空";
-			}
-			bySQL = bySQL.replace("~", "'");
-			//替换SQL中的参数
-			bySQL = bySQL.replace("@WebUser.No", WebUser.getNo());
-			bySQL = bySQL.replace("@WebUser.Name", WebUser.getName());
-			bySQL = bySQL.replace("@WebUser.FK_DeptNameOfFull", WebUser.getFK_DeptNameOfFull());
-			bySQL = bySQL.replace("@WebUser.FK_DeptName", WebUser.getFK_DeptName());
-			bySQL = bySQL.replace("@WebUser.FK_Dept", WebUser.getFK_Dept());
-			/*如果仍然有没有替换下来的变量.*/
-			if (bySQL.contains("@") == true)
-				bySQL = BP.WF.Glo.DealExp(bySQL, en, null);
-			DataTable dt = DBAccess.RunSQLReturnTable(bySQL);
-			for(DataRow dr : dt.Rows)
-			{
-				String empName = dr.getValue("Name").toString();
-				String empNo = dr.getValue("No").toString();
-
-				// 因为要发给不同的人，所有需要clone 一下，然后替换发送.
-				String smsDocReal = smsDoc;
-				smsDocReal = smsDocReal.replace("{EmpStr}", empName);
-				openUrl = openUrl.replace("{EmpStr}", empNo);
-				String paras = "@FK_Flow=" + this.getFK_Flow() + "@WorkID=" + workid + "@FK_Node=" + this.getFK_Node();
-
-				//发送消息
-				BP.WF.Dev2Interface.Port_SendMessage(empNo, smsDoc, mailTitle, this.getFK_Event(), "WKAlt" + currNode.getNodeID() + "_" + workid, BP.Web.WebUser.getNo(), openUrl, this.getSMSPushModel(),null,null);
-
-				//处理短消息.
-				toEmpIDs += empName + ",";
-			}
-
-		}
-		// end按照SQL计算
-
-		//begin 发送给指定的接收人
-		if (this.getSMSPushWay() == 5)
-		{
-			if (DataType.IsNullOrEmpty(this.getByEmps()) == true)
-			{
-				return "发送给指定的人员，则人员集合不能为空。";
-			}
-			//以逗号分割开
-			String[] toEmps = this.getByEmps().split(",");
-			for(String empNo : toEmps)
-			{
-				if (DataType.IsNullOrEmpty(empNo) == true)
-					continue;
-				BP.WF.Port.WFEmp emp = new BP.WF.Port.WFEmp(empNo);
-				// 因为要发给不同的人，所有需要clone 一下，然后替换发送.
-				String smsDocReal = smsDoc;
-				smsDocReal = smsDocReal.replace("{EmpStr}", emp.getName());
-				openUrl = openUrl.replace("{EmpStr}", emp.getNo());
-				//发送消息
-				BP.WF.Dev2Interface.Port_SendMessage(empNo, smsDoc, mailTitle, this.getFK_Event(), "WKAlt" + currNode.getNodeID() + "_" + workid, BP.Web.WebUser.getNo(), openUrl, this.getSMSPushModel(),null,null);
-				//处理短消息.
-				toEmpIDs += emp.getName() + ",";
-			}
-		}
-		//end 发送给指定的接收人
-
-		//begin 不同的消息事件，接收人不同的处理
-		if (this.getSMSPushWay() == 1)
-		{
-			//工作到达、退回、移交、撤销
-			if ((this.getFK_Event().equals(BP.Sys.EventListOfNode.WorkArrive)
-					|| this.getFK_Event().equals(BP.Sys.EventListOfNode.ReturnAfter)
-					|| this.getFK_Event().equals(BP.Sys.EventListOfNode.ShitAfter)
-					|| this.getFK_Event().equals(BP.Sys.EventListOfNode.UndoneAfter))
-					&& DataType.IsNullOrEmpty(jumpToEmps) == false)
-			{
-				/*当前节点的处理人.*/
-				toEmpIDs = jumpToEmps;
-				String[] emps = toEmpIDs.split(",");
-				for(String empNo : emps)
-				{
-					if (DataType.IsNullOrEmpty(empNo))
-						continue;
-
-					// 因为要发给不同的人，所有需要clone 一下，然后替换发送.
-					String smsDocReal = smsDoc;
-					smsDocReal = smsDocReal.replace("{EmpStr}", empNo);
-					openUrl = openUrl.replace("{EmpStr}", empNo);
-
-					BP.WF.Dev2Interface.Port_SendMessage(empNo, smsDoc, mailTitle, this.getFK_Event(), "WKAlt" + currNode.getNodeID() + "_" + workid, BP.Web.WebUser.getNo(), openUrl, this.getSMSPushModel(),null,null);
-				}
-				return "@已向:{" + toEmpIDs + "}发送提醒信息.";
-			}
-			//end 工作到达、退回、移交、撤销
-
-			//begin 节点发送成功后
-			if (this.getFK_Event().equals(BP.Sys.EventListOfNode.SendSuccess) && objs.getVarAcceptersID() != null)
-			{
-				/*如果向接受人发送消息.*/
-				toEmpIDs = objs.getVarAcceptersID();
-				String[] emps = toEmpIDs.split(",");
-				for(String empNo : emps)
-				{
-					if (DataType.IsNullOrEmpty(empNo))
-						continue;
-					if (empNo == WebUser.getNo())
-						continue;
-					// 因为要发给不同的人，所有需要clone 一下，然后替换发送.
-					String smsDocReal = smsDoc;
-					smsDocReal = smsDocReal.replace("{EmpStr}", empNo);
-					openUrl = openUrl.replace("{EmpStr}", empNo);
-					String paras = "@FK_Flow=" + currNode.getFK_Flow() + "&FK_Node=" + currNode.getNodeID() + "@WorkID=" + workid;
-					BP.WF.Dev2Interface.Port_SendMessage(empNo, smsDoc, mailTitle, this.getFK_Event(), "WKAlt" + currNode.getNodeID() + "_" + workid, BP.Web.WebUser.getNo(), openUrl, this.getSMSPushModel(), paras,null);
-
-				}
-				return "@已向:{" + toEmpIDs + "}发送提醒信息.";
-			}
-			//end 节点发送成功后
-
-
-			//begin 流程结束后、流程删除后
-			if (this.getFK_Event().equals(BP.Sys.EventListOfNode.FlowOverAfter)
-					|| this.getFK_Event().equals(BP.Sys.EventListOfNode.AfterFlowDel))
-			{
-				/*向所有参与人发送消息. */
-				DataTable dt = DBAccess.RunSQLReturnTable("SELECT Emps,TodoEmps FROM WF_GenerWorkFlow WHERE WorkID=" + workid);
-				if (dt.Rows.size() == 0)
-					return "";
-				String empsStrs = "";
-				for(DataRow dr : dt.Rows)
-				{
-					empsStrs += dr.getValue("Emps");
-					String todoEmps = dr.getValue("TodoEmps").toString();
-					if (DataType.IsNullOrEmpty(todoEmps) == false)
-					{
-						String[] strs = todoEmps.split(";");
-						todoEmps = "";
-						for(String str : strs)
-						{
-							if (DataType.IsNullOrEmpty(str) == true || empsStrs.contains(str) == true)
-								continue;
-							empsStrs += str.split(",")[0]+"@";
-						}
-					}
-				}
-				String[] emps = empsStrs.split("@");
-
-				for(String empNo : emps)
-				{
-					if (DataType.IsNullOrEmpty(empNo))
-						continue;
-
-					// 因为要发给不同的人，所有需要clone 一下，然后替换发送.
-					String smsDoccReal = smsDoc;
-					smsDoc = smsDoc.replace("{EmpStr}", empNo);
-					openUrl = openUrl.replace("{EmpStr}", empNo);
-					String paras = "@FK_Flow=" + currNode.getFK_Flow() + "&FK_Node=" + currNode.getNodeID() + "@WorkID=" + workid;
-
-					//发送消息
-					BP.WF.Dev2Interface.Port_SendMessage(empNo, smsDoc, mailTitle, this.getFK_Event(), "WKAlt" + currNode.getNodeID() + "_" + workid, BP.Web.WebUser.getNo(), openUrl, this.getSMSPushModel(), paras,null);
-				}
-				return "@已向:{" + empsStrs + "}发送提醒信息.";
-			}
-			//end 流程结束后、流程删除后
-
-			//begin 节点预警、逾期
-			if(this.getFK_Event().equals(BP.Sys.EventListOfNode.NodeWarning)
-					|| this.getFK_Event().equals(BP.Sys.EventListOfNode.NodeOverDue))
-			{
-				//获取当前节点的接收人
-				GenerWorkFlow gwf = new GenerWorkFlow(workid);
-				String[] emps = gwf.getTodoEmps().split(";");
-				for(String emp : emps)
-				{
-					if (DataType.IsNullOrEmpty(emp))
-						continue;
-					String[] empA = emp.split(",");
-					if (DataType.IsNullOrEmpty(empA[0]) ==true || empA[0] == WebUser.getNo())
-						continue;
-					// 因为要发给不同的人，所有需要clone 一下，然后替换发送.
-					String smsDocReal = smsDoc;
-					smsDocReal = smsDocReal.replace("{EmpStr}", empA[0]);
-					openUrl = openUrl.replace("{EmpStr}", empA[0]);
-					String paras = "@FK_Flow=" + currNode.getFK_Flow() + "&FK_Node=" + currNode.getNodeID() + "@WorkID=" + workid;
-					BP.WF.Dev2Interface.Port_SendMessage(empA[0], smsDoc, mailTitle, this.getFK_Event(), "WKAlt" + currNode.getNodeID() + "_" + workid, BP.Web.WebUser.getNo(), openUrl, this.getSMSPushModel(), paras,null);
-				}
-			}
-			//end 节点预警、逾期
-
-		}
-		//end 不同的消息事件，接收人不同的处理
-
-		//end 消息发送
-
-		return "";
-
-	}
-
 	/** 
 	 发送邮件
 	 
@@ -1078,7 +733,7 @@ public class PushMsg extends EntityMyPK
 		if (this.getMailPushWay() == 3)
 		{
 			//如果向指定的字段作为发送邮件的对象, 从字段里取数据. 
-			String[] nodes = this.getSMSNodes().split("[,]", -1);
+			String[] nodes = this.getSMSNodes().split("[,)", -1);
 
 			String msg = "";
 			for (String nodeID : nodes)
@@ -1127,7 +782,7 @@ public class PushMsg extends EntityMyPK
 			{
 				//如果向接受人发送邮件.
 				toEmpIDs = jumpToEmps;
-				String[] emps = toEmpIDs.split("[,]", -1);
+				String[] emps = toEmpIDs.split("[,)", -1);
 				for (String emp : emps)
 				{
 					if (StringHelper.isNullOrEmpty(emp))
@@ -1167,7 +822,7 @@ public class PushMsg extends EntityMyPK
 			{
 				//如果向接受人发送邮件.
 				toEmpIDs = objs.getVarAcceptersID();
-				String[] emps = toEmpIDs.split("[,]", -1);
+				String[] emps = toEmpIDs.split("[,)", -1);
 				for (String emp : emps)
 				{
 					if (StringHelper.isNullOrEmpty(emp))
@@ -1222,7 +877,7 @@ public class PushMsg extends EntityMyPK
 				//如果向接受人发送邮件.
 				//向所有参与人. 
 				String empsStrs = DBAccess.RunSQLReturnStringIsNull("SELECT Emps FROM WF_GenerWorkFlow WHERE WorkID=" + workid, "");
-				String[] emps = empsStrs.split("[@]", -1);
+				String[] emps = empsStrs.split("[@)", -1);
 
 				for (String emp : emps)
 				{
@@ -1323,7 +978,7 @@ public class PushMsg extends EntityMyPK
 		if (this.getSMSPushWay() == 3)
 		{
 			 //如果向指定的字段作为发送邮件的对象, 从字段里取数据. 
-			String[] nodes = this.getSMSNodes().split("[,]", -1);
+			String[] nodes = this.getSMSNodes().split("[,)", -1);
 
 			String msg = "";
 			for (String nodeID : nodes)
@@ -1379,7 +1034,7 @@ public class PushMsg extends EntityMyPK
 			{
 				//如果向接受人发送短信.
 				toEmpIDs = jumpToEmps;
-				String[] emps = toEmpIDs.split("[,]", -1);
+				String[] emps = toEmpIDs.split("[,)", -1);
 				for (String emp : emps)
 				{
 					if (StringHelper.isNullOrEmpty(emp))
@@ -1419,7 +1074,7 @@ public class PushMsg extends EntityMyPK
 			{
 				//如果向接受人发送短信.
 				toEmpIDs = objs.getVarAcceptersID();
-				String[] emps = toEmpIDs.split("[,]", -1);
+				String[] emps = toEmpIDs.split("[,)", -1);
 				for (String empID : emps)
 				{
 					if (StringHelper.isNullOrEmpty(empID))
@@ -1468,7 +1123,7 @@ public class PushMsg extends EntityMyPK
 			{
 				//向所有参与人. 
 				String empsStrs = DBAccess.RunSQLReturnStringIsNull("SELECT Emps FROM WF_GenerWorkFlow WHERE WorkID=" + workid, "");
-				String[] emps = empsStrs.split("[@]", -1);
+				String[] emps = empsStrs.split("[@)", -1);
 				for (String empID : emps)
 				{
 					if (StringHelper.isNullOrEmpty(empID))
@@ -1528,6 +1183,8 @@ public class PushMsg extends EntityMyPK
 	@Override
 	protected boolean beforeUpdateInsertAction() throws Exception
 	{
+	   //  this.MyPK = this.FK_Event + "_" + this.FK_Node + "_" + this.PushWay;
+
 		String sql = "UPDATE WF_PushMsg SET FK_Flow=(SELECT FK_Flow FROM WF_Node WHERE NodeID= WF_PushMsg.FK_Node)";
 		BP.DA.DBAccess.RunSQL(sql);
 

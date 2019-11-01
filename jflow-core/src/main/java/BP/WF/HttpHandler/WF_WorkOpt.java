@@ -9,10 +9,6 @@ import java.util.List;
 
 import BP.Tools.DateUtils;
 import BP.WF.*;
-import BP.WF.Template.*;
-import BP.WF.Template.SelectorModel;
-import BP.WF.TransferCustom;
-import BP.WF.TransferCustoms;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.protocol.HttpContext;
 import BP.DA.AtPara;
@@ -54,6 +50,28 @@ import BP.Sys.SysEnums;
 import BP.Sys.SystemConfig;
 import BP.WF.Data.Bill;
 import BP.WF.Rpt.MakeForm2Html;
+import BP.WF.Template.BillFileType;
+import BP.WF.Template.BillOpenModel;
+import BP.WF.Template.BillTemplate;
+import BP.WF.Template.BillTemplateAttr;
+import BP.WF.Template.BillTemplates;
+import BP.WF.Template.BtnLab;
+import BP.WF.Template.CCSta;
+import BP.WF.Template.FWCOrderModel;
+import BP.WF.Template.FWCType;
+import BP.WF.Template.FlowExt;
+import BP.WF.Template.FrmNode;
+import BP.WF.Template.FrmWorkCheck;
+import BP.WF.Template.FrmWorkCheckSta;
+import BP.WF.Template.FrmWorkChecks;
+import BP.WF.Template.NodeAttr;
+import BP.WF.Template.SelectAccper;
+import BP.WF.Template.SelectAccperAttr;
+import BP.WF.Template.SelectAccpers;
+import BP.WF.Template.Selector;
+import BP.WF.Template.SelectorModel;
+import BP.WF.Template.TemplateFileModel;
+import BP.WF.Template.WhoIsPK;
 import BP.Web.WebUser;
 
 public class WF_WorkOpt extends WebContralBase {
@@ -234,7 +252,7 @@ public class WF_WorkOpt extends WebContralBase {
 		String checkerPassed = ",";
 		if (gwf.getWFState() != WFState.Complete) {
 			String sql = "SELECT FK_Emp FROM WF_Generworkerlist where workid=" + this.getWorkID()
-					+ " AND IsPass=1 AND FK_Node=" + this.getFK_Node()+" Order By RDT,CDT";
+					+ " AND IsPass=1 AND FK_Node=" + this.getFK_Node()+"Order By RDT,CDT";
 			DataTable checkerPassedDt = DBAccess.RunSQLReturnTable(sql);
 			for (DataRow dr : checkerPassedDt.Rows) {
 				checkerPassed += dr.getValue("FK_Emp") + ",";
@@ -548,7 +566,7 @@ public class WF_WorkOpt extends WebContralBase {
 				row.setValue("IsDoc", true);
 				row.setValue("ParentNode", 0);
 				row.setValue("RDT", "");
-				row.setValue("Msg", Dev2Interface.GetCheckInfo(this.getFK_Flow(), this.getWorkID(), this.getFK_Node(),wcDesc.getFWCDefInfo()));
+				row.setValue("Msg", Dev2Interface.GetCheckInfo(this.getFK_Flow(), this.getWorkID(), this.getFK_Node()));
 				row.setValue("EmpFrom", WebUser.getNo());
 				row.setValue("EmpFromT", WebUser.getName());
 				row.setValue("T_NodeIndex", ++idx);
@@ -3430,22 +3448,4 @@ public class WF_WorkOpt extends WebContralBase {
    }
 
    //节点备注的设置
-
-	public String StartGuideFrms_Init() throws Exception
-	{
-		BP.WF.Template.FrmNodes fns = new BP.WF.Template.FrmNodes();
-
-		QueryObject qo = new QueryObject(fns);
-		qo.AddWhere(FrmNodeAttr.FK_Node, Integer.parseInt(this.getFK_Flow() + "01"));
-		qo.addAnd();
-		qo.AddWhere(FrmNodeAttr.FrmEnableRole, BP.WF.Template.FrmEnableRole.WhenHaveFrmPara.getValue());
-		qo.addOrderBy(FrmNodeAttr.Idx);
-		qo.DoQuery();
-
-		for(BP.WF.Template.FrmNode item : fns.ToJavaList())
-		{
-			item.setGuanJianZiDuan(item.getHisFrm().getName());
-		}
-		return fns.ToJson();
-	}
 }

@@ -1990,6 +1990,10 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	public final String PushMsgEntity_Init() throws Exception {
 		DataSet ds = new DataSet();
 
+		// 字段下拉框.
+		// select * from Sys_MapAttr where FK_MapData='ND102' and LGType = 0 AND
+		// MyDataType =1
+
 		BP.Sys.MapAttrs attrs = new BP.Sys.MapAttrs();
 		attrs.Retrieve(BP.Sys.MapAttrAttr.FK_MapData, "ND" + this.getFK_Node(), "LGType", 0, "MyDataType", 1);
 		ds.Tables.add(attrs.ToDataTableField("FrmFields"));
@@ -2017,65 +2021,56 @@ public class WF_Admin_AttrNode extends WebContralBase {
 		msg.setFK_Event(this.getFK_Event());
 		msg.setFK_Node(this.getFK_Node());
 
-
 		BP.WF.Node nd = new BP.WF.Node(this.getFK_Node());
-		BP.WF.Nodes nds = new BP.WF.Nodes(nd.getFK_Flow());
 		msg.setFK_Flow(nd.getFK_Flow());
+		BP.WF.Nodes nds = new BP.WF.Nodes(nd.getFK_Flow());
 
-		//推送方式。
-		msg.setSMSPushWay(Integer.parseInt(this.GetRequestVal("RB_SMS").replace("RB_SMS_", "")));
-
-		//表单字段作为接收人.
-		msg.setSMSField(this.GetRequestVal("DDL_SMS_Fields"));
-
-		///#region 其他节点的处理人方式（求选择的节点）
 		String nodesOfSMS = "";
+		String nodesOfEmail = "";
 		for (BP.WF.Node mynd : nds.ToJavaList()) {
+			@SuppressWarnings("unchecked")
 			Enumeration<String> enums = getRequest().getParameterNames();
 			while (enums.hasMoreElements()) {
 				String key = (String) enums.nextElement();
 				if (key.contains("CB_SMS_" + mynd.getNodeID()) && nodesOfSMS.contains(mynd.getNodeID() + "") == false) {
 					nodesOfSMS += mynd.getNodeID() + ",";
 				}
+
+				if (key.contains("CB_Email_" + mynd.getNodeID())
+						&& nodesOfEmail.contains(mynd.getNodeID() + "") == false) {
+					nodesOfEmail += mynd.getNodeID() + ",";
+				}
 			}
 		}
 
+		// 节点.
+		msg.setMailNodes(nodesOfEmail);
 		msg.setSMSNodes(nodesOfSMS);
-		//#endregion 其他节点的处理人方式（求选择的节点）
 
-		//按照SQL
-		msg.setBySQL(this.GetRequestVal("TB_SQL"));
+		// 短信推送方式。
+		msg.setSMSPushWay(Integer.parseInt(this.GetRequestVal("RB_SMS").replace("RB_SMS_", "")));
 
-		//发给指定的人员
-		msg.setByEmps(this.GetRequestVal("TB_Emps"));
+		// 短信手机字段.
+		msg.setSMSField(this.GetRequestVal("DDL_SMS_Fields"));
+		// 替换变量
+		String smsstr = this.GetRequestVal("TB_SMS");
 
-		//短消息发送设备
-		msg.setSMSPushModel(this.GetRequestVal("PushModel"));
+		// 短信内容模版.
+		msg.setSMSDoc_Real(smsstr);
 
-		//邮件标题
-		msg.setMailTitle_Real(this.GetRequestVal("TB_Title"));
+		// 邮件.
+		msg.setMailPushWay(Integer.parseInt(this.GetRequestVal("RB_Email").replace("RB_Email_", "")));
 
-		//短信内容模版.
-		msg.setSMSDoc_Real(this.GetRequestVal("TB_SMS"));
+		// 邮件标题与内容.
+		msg.setMailTitle_Real(this.GetRequestVal("TB_Email_Title"));
+		msg.setMailDoc_Real(this.GetRequestVal("TB_Email_Doc"));
 
-		//节点预警
-		if (this.getFK_Event() == BP.Sys.EventListOfNode.NodeWarning) {
-			int noticeType = Integer.parseInt(this.GetRequestVal("RB_NoticeType").replace("RB_NoticeType", ""));
-			msg.SetPara("NoticeType", noticeType);
-			int hour = Integer.parseInt(this.GetRequestVal("TB_NoticeHour"));
-			msg.SetPara("NoticeHour", hour);
-		}
+		// 邮件地址.
+		msg.setMailAddress(this.GetRequestVal("DDL_Email_Fields"));
 
-		//节点逾期
-		if (this.getFK_Event() == BP.Sys.EventListOfNode.NodeOverDue) {
-			int noticeType = Integer.parseInt(this.GetRequestVal("RB_NoticeType").replace("RB_NoticeType", ""));
-			msg.SetPara("NoticeType", noticeType);
-			int day = Integer.parseInt(this.GetRequestVal("TB_NoticeDay"));
-			msg.SetPara("NoticeDay", day);
-		}
 
-		//保存.
-		if (DataType.IsNullOrEmpty(msg.getMyPK()) == true) {
+		// 保存.
+		if (DotNetToJavaStringHelper.isNullOrEmpty(msg.getMyPK()) == true) {
 			msg.setMyPK(BP.DA.DBAccess.GenerGUID());
 			msg.Insert();
 		} else {
@@ -2083,8 +2078,6 @@ public class WF_Admin_AttrNode extends WebContralBase {
 		}
 
 		return "保存成功..";
-
-
 	}
 
 }

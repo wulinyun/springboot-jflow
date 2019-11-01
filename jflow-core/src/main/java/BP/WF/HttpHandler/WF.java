@@ -883,10 +883,11 @@ public class WF extends WebContralBase {
             em.Insert();
         }
         String json="";
-        json = BP.DA.DBAccess.GetBigTextFromDB("WF_Emp", "No", WebUser.getNo(), "StartFlows");
+        //获取存取在WF_Emp中的StartFlows的数据
+       /* String sql = "SELECT StartFlows From WF_Emp WHERE No='" + WebUser.getNo() + "'";
+        String json = DBAccess.RunSQLReturnString(sql);
         if (DataType.IsNullOrEmpty(json) == false)
-            return json;
-
+            return json;*/
         //流程类别.
         FlowSorts fss = new FlowSorts();
         fss.RetrieveAll();
@@ -900,17 +901,17 @@ public class WF extends WebContralBase {
         dtStart.TableName = "Start";
         ds.Tables.add(dtStart);
         json = BP.Tools.Json.ToJson(ds);
-       //把json存入数据表，避免下一次再取.
+        /*//把json存入数据表，避免下一次再取.
         if (json.length() > 40)
         {
-            BP.DA.DBAccess.SaveBigTextToDB(json, "WF_Emp", "No", WebUser.getNo(), "StartFlows");
+            //byte[] bigTextByte = json.getBytes("UTF-8");
 
-          /*  Paras ps = new Paras();
+            Paras ps = new Paras();
             ps.SQL = "UPDATE WF_Emp SET StartFlows=" + ps.getDBStr() + "StartFlows WHERE No=" + ps.getDBStr() + "No";
             ps.Add("StartFlows", json);
             ps.Add("No", WebUser.getNo());
-            DBAccess.RunSQL(ps);*/
-        }
+            DBAccess.RunSQL(ps);
+        }*/
 
         //返回组合
         return json;

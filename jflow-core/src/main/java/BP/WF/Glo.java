@@ -416,27 +416,29 @@ public class Glo {
             BP.WF.Port.WFEmp wfemp = new BP.WF.Port.WFEmp();
             wfemp.CheckPhysicsTable();
             //#region 更新wf_emp. 的字段类型. 2019.06.19
-            DBType dbtype = BP.Sys.SystemConfig.getAppCenterDBType();
+            DBType dbType = BP.Sys.SystemConfig.getAppCenterDBType();
+            if (dbType == DBType.Oracle)
+            {
+                DBAccess.RunSQL("ALTER TABLE  WF_EMP add startFlows_temp BLOB");
+                //将需要改成大字段的项内容copy到大字段中
+                DBAccess.RunSQL("UPDate WF_EMP set startFlows_temp=STARTFLOWS");
+                //删除原有字段
+                 DBAccess.RunSQL("ALTER TABLE  WF_EMP drop column STARTFLOWS");
+                //将大字段名改成原字段名
+                 DBAccess.RunSQL("ALTER TABLE  WF_EMP rename column startFlows_temp to STARTFLOWS");
+                
+            }
+            if (dbType == DBType.MySQL)
+                DBAccess.RunSQL("ALTER TABLE WF_Emp modify StartFlows longtext ");
+            if (dbType == DBType.MSSQL)
+            {
+                DataTable dtYueSu = DBAccess.RunSQLReturnTable("SELECT b.name, a.name FName from sysobjects b join syscolumns a on b.id = a.cdefault where a.id = object_id('WF_Emp') and a.Name='StartFlows' ");
+                if (dtYueSu.Rows.size() != 0)
+                    DBAccess.RunSQL(" ALTER TABLE WF_Emp drop  constraint " + dtYueSu.Rows.get(0).getValue(0));
 
-
-			if (dbtype == DBType.Oracle)
-			{
-				if (DBAccess.IsExitsTableCol("WF_Emp", "StartFlows") == true){
-					DBAccess.RunSQL("ALTER TABLE WF_Emp DROP Column StartFlows");
-				}
-                DBAccess.RunSQL("ALTER TABLE WF_Emp Add StartFlows BLOB");
-
-			}
-			if (dbtype == DBType.MySQL)
-				DBAccess.RunSQL("ALTER TABLE WF_Emp modify StartFlows longtext ");
-			if (dbtype == DBType.MSSQL)
-			{
-				DataTable dtYueSu = DBAccess.RunSQLReturnTable("SELECT b.name, a.name FName from sysobjects b join syscolumns a on b.id = a.cdefault where a.id = object_id('WF_Emp') and a.Name='StartFlows' ");
-				if (dtYueSu.Rows.size() != 0)
-					DBAccess.RunSQL(" ALTER TABLE WF_Emp drop  constraint " + dtYueSu.Rows.get(0).getValue(0));
-
-				DBAccess.RunSQL(" ALTER TABLE WF_Emp ALTER column  StartFlows text");
-			}
+                DBAccess.RunSQL(" ALTER TABLE WF_Emp ALTER column  StartFlows text");
+            }
+           
             //#endregion 更新wf_emp 的字段类型.
 
 			// /#region 标签Ext

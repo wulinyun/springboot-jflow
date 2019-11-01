@@ -166,10 +166,9 @@ public class MapFrmFool extends EntityNoName
 
 		 map.AddDDLSysEnum(MapDataAttr.TableCol, 0, "表单显示列数", true, true, MapDataAttr.TableCol,
                  "@0=4列@1=6列@2=3列");
-//		map.AddTBInt(MapDataAttr.TableWidth, 900, "傻瓜表单宽度", true, false);
-//		map.AddTBInt(MapDataAttr.TableHeight, 900, "傻瓜表单高度", true, false);
-		map.AddTBInt(MapDataAttr.FrmW, 900, "表单宽度", true, false);
-		map.AddTBInt(MapDataAttr.FrmH, 900, "表单高度", true, false);
+		map.AddTBInt(MapDataAttr.TableWidth, 900, "傻瓜表单宽度", true, false);
+		map.AddTBInt(MapDataAttr.TableHeight, 900, "傻瓜表单高度", true, false);
+
 			//数据源.
 		map.AddDDLEntities(MapDataAttr.DBSrc, "local", "数据源", new BP.Sys.SFDBSrcs(), true);
 		map.AddDDLEntities(MapDataAttr.FK_FormTree, "01", "表单类别", new SysFormTrees(), true);

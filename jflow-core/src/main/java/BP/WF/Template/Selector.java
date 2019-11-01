@@ -1,16 +1,23 @@
 package BP.WF.Template;
+
+
 import BP.DA.DBAccess;
 import BP.DA.DBType;
 import BP.DA.DataSet;
 import BP.DA.DataTable;
 import BP.DA.Depositary;
+import BP.DA.Paras;
 import BP.En.Entity;
 import BP.En.Map;
 import BP.En.UAC;
 import BP.GPM.EmpAttr;
 import BP.GPM.StationAttr;
+import BP.Sys.OSModel;
 import BP.Sys.SystemConfig;
+import BP.Tools.StringHelper;
 import BP.WF.DotNetToJavaStringHelper;
+import BP.WF.Work;
+import BP.WF.Port.DeptAttr;
 import BP.Web.WebUser;
 public class Selector extends Entity
 {
@@ -518,7 +525,7 @@ public class Selector extends Entity
 			ds.Tables.add(dt);
 
 			//人员.
-			sql = "SELECT distinct a.No,a.Name, a.FK_Dept,a.Idx FROM Port_Emp a,  WF_NodeStation b, Port_DeptEmpStation c WHERE a.No=c.FK_Emp AND B.FK_Station=C.FK_Station AND b.FK_Node='" + nodeID +"'  ORDER BY a.Idx ";
+			sql = "SELECT distinct a.No,a.Name, a.FK_Dept FROM Port_Emp a,  WF_NodeStation b, Port_DeptEmpStation c WHERE a.No=c.FK_Emp AND B.FK_Station=C.FK_Station AND b.FK_Node=" + nodeID;
 			DataTable dtEmp = BP.DA.DBAccess.RunSQLReturnTable(sql);
 			dtEmp.TableName = "Emps";
 			ds.Tables.add(dtEmp);

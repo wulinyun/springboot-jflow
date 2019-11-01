@@ -6,9 +6,19 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.UUID;
 
-import BP.DA.*;
 import org.apache.commons.lang.StringUtils;
 
+import BP.DA.DBAccess;
+import BP.DA.DBType;
+import BP.DA.DataColumn;
+import BP.DA.DataRow;
+import BP.DA.DataSet;
+import BP.DA.DataTable;
+import BP.DA.DataType;
+import BP.DA.Depositary;
+import BP.DA.Log;
+import BP.DA.Paras;
+import BP.DA.XmlWriteMode;
 import BP.Difference.ContextHolderUtils;
 import BP.En.Attr;
 import BP.En.EditType;
@@ -76,7 +86,70 @@ import BP.Tools.StringHelper;
 import BP.WF.Data.GERpt;
 import BP.WF.Data.GERptAttr;
 import BP.WF.Data.NDXRptBaseAttr;
-import BP.WF.Template.*;
+import BP.WF.Template.BillTemplate;
+import BP.WF.Template.BillTemplates;
+import BP.WF.Template.CC;
+import BP.WF.Template.CCDept;
+import BP.WF.Template.CCDeptAttr;
+import BP.WF.Template.CCDepts;
+import BP.WF.Template.CCEmp;
+import BP.WF.Template.CCEmpAttr;
+import BP.WF.Template.CCEmps;
+import BP.WF.Template.CCStation;
+import BP.WF.Template.Cond;
+import BP.WF.Template.CondModel;
+import BP.WF.Template.CondType;
+import BP.WF.Template.Conds;
+import BP.WF.Template.ConnDataFrom;
+import BP.WF.Template.DTSField;
+import BP.WF.Template.DataStoreModel;
+import BP.WF.Template.Direction;
+import BP.WF.Template.DirectionAttr;
+import BP.WF.Template.Directions;
+import BP.WF.Template.DraftRole;
+import BP.WF.Template.FindWorkerRole;
+import BP.WF.Template.FlowAttr;
+import BP.WF.Template.FlowDTSTime;
+import BP.WF.Template.FlowDTSWay;
+import BP.WF.Template.FlowDeptDataRightCtrlType;
+import BP.WF.Template.FlowSort;
+import BP.WF.Template.FlowSorts;
+import BP.WF.Template.FrmField;
+import BP.WF.Template.FrmFieldAttr;
+import BP.WF.Template.FrmFields;
+import BP.WF.Template.FrmNode;
+import BP.WF.Template.FrmNodeAttr;
+import BP.WF.Template.FrmNodes;
+import BP.WF.Template.FrmWorkCheck;
+import BP.WF.Template.LabNote;
+import BP.WF.Template.LabNotes;
+import BP.WF.Template.MapFrmFool;
+import BP.WF.Template.NodeAttr;
+import BP.WF.Template.NodeDept;
+import BP.WF.Template.NodeDeptAttr;
+import BP.WF.Template.NodeDepts;
+import BP.WF.Template.NodeEmp;
+import BP.WF.Template.NodeEmpAttr;
+import BP.WF.Template.NodeEmps;
+import BP.WF.Template.NodeExt;
+import BP.WF.Template.NodeExts;
+import BP.WF.Template.NodeReturn;
+import BP.WF.Template.NodeReturnAttr;
+import BP.WF.Template.NodeReturns;
+import BP.WF.Template.NodeStation;
+import BP.WF.Template.NodeStationAttr;
+import BP.WF.Template.NodeStations;
+import BP.WF.Template.NodeToolbar;
+import BP.WF.Template.NodeToolbarAttr;
+import BP.WF.Template.NodeToolbars;
+import BP.WF.Template.SubFlowYanXu;
+import BP.WF.Template.SubFlowYanXus;
+import BP.WF.Template.Selector;
+import BP.WF.Template.SelectorModel;
+import BP.WF.Template.Selectors;
+import BP.WF.Template.StartGuideWay;
+import BP.WF.Template.TimelineRole;
+import BP.WF.Template.TurnTo;
 import BP.Web.GuestUser;
 import BP.Web.WebUser;
 
@@ -85,14 +158,59 @@ import BP.Web.WebUser;
  */
 public class Flow extends BP.En.EntityNoName {
 
-	/**
-	 * (当前节点为子流程时)是否检查所有子流程完成后父流程自动发送
-	 * @return
-	 */
+	/// <summary>
+	/// (当前节点为子流程时)是否检查所有子流程完成后父流程自动发送
+	/// </summary>
 	public SubFlowOver SubFlowOver() {
 		return SubFlowOver.forValue(this.GetValIntByKey(FlowAttr.IsAutoSendSubFlowOver));
 	}
 
+	/**
+	 * 最大值x
+	 */
+	public final int getMaxX() {
+		int i = this.GetParaInt("MaxX");
+		if (i == 0) {
+			this.GenerMaxXY();
+		} else {
+			return i;
+		}
+		return this.GetParaInt("MaxX");
+	}
+
+	public final void setMaxX(int value) {
+		this.SetPara("MaxX", value);
+	}
+
+	/**
+	 * 最大值Y
+	 */
+	public final int getMaxY() {
+		int i = this.GetParaInt("MaxY");
+		if (i == 0) {
+			this.GenerMaxXY();
+		} else {
+			return i;
+		}
+
+		return this.GetParaInt("MaxY");
+	}
+
+	public final void setMaxY(int value) {
+		this.SetPara("MaxY", value);
+	}
+
+	private void GenerMaxXY() {
+		// int x1 = DBAccess.RunSQLReturnValInt("SELECT MAX(X) FROM WF_Node
+		// WHERE FK_Flow='" + this.getNo() + "'", 0);
+		// int x2 = DBAccess.RunSQLReturnValInt("SELECT MAX(X) FROM
+		// WF_NodeLabelNode WHERE FK_Flow='" + this.getNo() + "'", 0);
+		// this.MaxY = DBAccess.RunSQLReturnValInt("SELECT MAX(Y) FROM WF_Node
+		// WHERE FK_Flow='" + this.getNo() + "'", 0);
+	}
+
+	/// #endregion 参数属性.
+	/// #region 业务数据表同步属性.
 	/**
 	 * 同步方式
 	 */
@@ -272,6 +390,16 @@ public class Flow extends BP.En.EntityNoName {
 		this.SetValByKey(FlowAttr.StartLimitRole, value.getValue());
 	}
 
+	///// <summary>
+	///// 发起限制文本
+	///// </summary>
+	// public string StartLimitRoleText
+	// {
+	// get
+	// {
+	// return this.GetValRefTextByKey(FlowAttr.StartLimitRole);
+	// }
+	// }
 	/**
 	 * 发起内容
 	 */
@@ -500,7 +628,9 @@ public class Flow extends BP.En.EntityNoName {
 
 	/**
 	 * 创建新工作.web方式调用的
-	 * @param empNo 人员编号
+	 * 
+	 * @param empNo
+	 *            人员编号
 	 * @return
 	 * @throws Exception
 	 */
@@ -1158,8 +1288,7 @@ public class Flow extends BP.En.EntityNoName {
 	 * 初始化一个工作
 	 * 
 	 * @param workid
-	 * @param nd
-	 * @param isPostBack
+	 * @param fk_node
 	 * @return
 	 * @throws Exception
 	 */
@@ -4104,11 +4233,11 @@ public class Flow extends BP.En.EntityNoName {
 
 	public final String DoFlowEventEntity(String doType, Node currNode, Entity en, String atPara, SendReturnObjs objs)
 			throws Exception {
-		return DoFlowEventEntity(doType, currNode, en, atPara, objs, null, null,0,null);
+		return DoFlowEventEntity(doType, currNode, en, atPara, objs, null, null);
 	}
 
 	public final String DoFlowEventEntity(String doType, Node currNode, Entity en, String atPara, SendReturnObjs objs,
-			Node jumpToNode, String jumpToEmps,int toNodeID, String toEmps) throws Exception {
+			Node jumpToNode, String jumpToEmps) throws Exception {
 		if (currNode == null)
 			return null;
 
@@ -4121,6 +4250,10 @@ public class Flow extends BP.En.EntityNoName {
 			str = this.getFEventEntity().DoIt(doType, currNode, en, atPara, jumpToNode, jumpToEmps);
 		}
 
+		// BP.WF.PortalInterface.SendToEmail(mypk, sender, sendToEmpNo, email,
+		// title, maildoc)
+
+		// FrmEvents fes = currNode.getMapData().getFrmEvents();
 		FrmEvents fes = currNode.getFrmEvents();
 
 		if (str == null) {
@@ -4139,26 +4272,16 @@ public class Flow extends BP.En.EntityNoName {
 
 		// 执行消息的发送.
 		PushMsgs pms = currNode.getHisPushMsgs();
-		if(doType == EventListOfNode.UndoneAfter)
-		{
-			AtPara ap = new AtPara(atPara);
-			if (toNodeID == 0)
-				toNodeID = ap.GetValIntByKey("ToNode");
-			if (toNodeID == 0)
-				return str;
-
-			Node toNode = new Node(toNodeID);
-			pms = toNode.getHisPushMsgs();
-		}
 		String msgAlert = ""; // 生成的提示信息.
 		for (PushMsg item : pms.ToJavaList()) {
 			if (!item.getFK_Event().equals(doType))
 				continue;
-			// 如果都没有消息设置，就放过.
-			if (item.getSMSPushWay() == 0)
-				continue;
+
+			if (item.getSMSPushWay() == 0 && item.getMailPushWay() == 0)
+				continue; // 如果都没有消息设置，就放过.
 
 			// 执行发送消息.
+
 			if (doType.equals(EventListOfNode.WorkArrive))
 				msgAlert += item.DoSendMessage(currNode, en, atPara, objs, jumpToNode, objs.getVarAcceptersID());
 			else
@@ -4175,7 +4298,7 @@ public class Flow extends BP.En.EntityNoName {
 
 	public final String DoFlowEventEntity(String doType, Node currNode, Entity en, String atPara, Node jumpToNode,
 			String jumpToEmp) throws Exception {
-		String str = this.DoFlowEventEntity(doType, currNode, en, atPara, null, jumpToNode, jumpToEmp,0,null);
+		String str = this.DoFlowEventEntity(doType, currNode, en, atPara, null, jumpToNode, jumpToEmp);
 		return str;
 	}
  
@@ -4256,6 +4379,9 @@ public class Flow extends BP.En.EntityNoName {
 	public final String getPTable() {
 		String s = this.GetValStringByKey(FlowAttr.PTable);
 		if (StringHelper.isNullOrEmpty(s)) {
+			// sunxd 20170714
+			// Integer.parseInt()中对像为空时Integer.parseInt()会报错
+			// Integer.parseInt()中对像作了空值转换
 			s = "ND" + (this.getNo().equals("") ? "" : Integer.parseInt(this.getNo())) + "Rpt";
 		}
 		return s;
@@ -4557,6 +4683,13 @@ public class Flow extends BP.En.EntityNoName {
 	 */
 	public Flow() {
 	}
+
+	/**
+	 * 流程
+	 * 
+	 * @param _No
+	 *            编号
+	 */
 	/*
 	 * 向上移动
 	 */
@@ -4903,7 +5036,7 @@ public class Flow extends BP.En.EntityNoName {
 	 * @param path
 	 *            流程名称
 	 * @return
-	 * @throws ExceptionNewWork
+	 * @throws Exception
 	 */
 	public static Flow DoLoadFlowTemplate(String fk_flowSort, String path, ImpFlowTempleteModel model)
 			throws Exception {
@@ -6220,7 +6353,7 @@ public class Flow extends BP.En.EntityNoName {
 
 		// 通用的人员选择器.
 		BP.WF.Template.Selector select = new Selector(nd.getNodeID());
-		select.setSelectorModel(BP.WF.Template.SelectorModel.GenerUserSelecter);
+		select.setSelectorModel(SelectorModel.GenerUserSelecter);
 		select.Update();
 
 		// 设置审核组件的高度
@@ -6351,7 +6484,7 @@ public class Flow extends BP.En.EntityNoName {
 			CreatePushMsg(nd);
 			// 通用的人员选择器.
 			BP.WF.Template.Selector select = new Selector(nd.getNodeID());
-			select.setSelectorModel(BP.WF.Template.SelectorModel.GenerUserSelecter);
+			select.setSelectorModel(SelectorModel.GenerUserSelecter);
 			select.Update();
 
 			nd = new Node();
@@ -6391,7 +6524,7 @@ public class Flow extends BP.En.EntityNoName {
 
 			// 通用的人员选择器.
 			select = new Selector(nd.getNodeID());
-			select.setSelectorModel(BP.WF.Template.SelectorModel.GenerUserSelecter);
+			select.setSelectorModel(SelectorModel.GenerUserSelecter);
 			select.Update();
 
 			BP.Sys.MapData md = new BP.Sys.MapData();
@@ -6401,7 +6534,7 @@ public class Flow extends BP.En.EntityNoName {
 
 			// 装载模版.
 			String file = BP.Sys.SystemConfig.getPathOfDataUser() + "XML/TempleteSheetOfStartNode.xml";
-			if (new File(file).exists() == true) {
+			if ((new java.io.File(file)).isFile() && 1 == 2) {
 				// 如果存在开始节点表单模版
 				DataSet ds = new DataSet();
 				ds.readXml(file);
@@ -6410,6 +6543,8 @@ public class Flow extends BP.En.EntityNoName {
 				BP.Sys.MapData.ImpMapData(nodeID, ds);
 			}
 
+			// this.DoCheck_CheckRpt(this.getHisNodes());
+			// Flow.RepareV_FlowData_View();
 			return this.getNo();
 		} catch (RuntimeException ex) {
 			/**

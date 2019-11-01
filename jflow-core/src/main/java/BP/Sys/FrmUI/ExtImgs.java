@@ -1,40 +1,20 @@
 package BP.Sys.FrmUI;
 
-import BP.DA.*;
-import BP.En.*;
-import BP.Sys.*;
-import BP.Sys.*;
 import java.util.*;
 
+import BP.En.EntitiesMyPK;
+import BP.En.Entity;
+
 /** 
- 装饰图片s
+超连接s
 */
 public class ExtImgs extends EntitiesMyPK
 {
-//C# TO JAVA CONVERTER TODO TASK: There is no preprocessor in Java:
-		///#region 构造
 	/** 
-	 装饰图片s
+	 超连接s
 	*/
 	public ExtImgs()
 	{
-	}
-	/** 
-	 装饰图片s
-	 
-	 @param fk_mapdata s
-	 * @throws Exception 
-	*/
-	public ExtImgs(String fk_mapdata) throws Exception
-	{
-		if (SystemConfig.getIsDebug())
-		{
-			this.Retrieve(FrmLineAttr.FK_MapData, fk_mapdata);
-		}
-		else
-		{
-			this.RetrieveFromCash(FrmLineAttr.FK_MapData, (Object)fk_mapdata);
-		}
 	}
 	/** 
 	 得到它的 Entity
@@ -42,13 +22,8 @@ public class ExtImgs extends EntitiesMyPK
 	@Override
 	public Entity getGetNewEntity()
 	{
-		return new FrmImg();
+		return new ExtImg();
 	}
-//C# TO JAVA CONVERTER TODO TASK: There is no preprocessor in Java:
-		///#endregion
-
-//C# TO JAVA CONVERTER TODO TASK: There is no preprocessor in Java:
-		///#region 为了适应自动翻译成java的需要,把实体转换成List.
 	/** 
 	 转化成 java list,C#不能调用.
 	 
@@ -72,6 +47,4 @@ public class ExtImgs extends EntitiesMyPK
 		}
 		return list;
 	}
-//C# TO JAVA CONVERTER TODO TASK: There is no preprocessor in Java:
-		///#endregion 为了适应自动翻译成java的需要,把实体转换成List.
 }
