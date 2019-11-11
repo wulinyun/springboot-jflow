@@ -162,7 +162,7 @@ public class GenerWorkerList extends Entity
 			Dept d = new Dept(this.getFK_Dept());
 			return d.getName();
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			return "";
 		}

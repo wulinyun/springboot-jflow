@@ -131,18 +131,18 @@ public class AppACE extends WebContralBase{
 		StringBuilder append = new StringBuilder();
 		append.append("{");
 		String userPath = SystemConfig.getCCFlowAppPath() + "/DataUser/UserIcon/";
-		String userIcon = userPath + BP.Web.WebUser.getNo() + "Biger.png";
+		String userIcon = userPath + WebUser.getNo() + "Biger.png";
 		File file = new File(userIcon);
 		if (file.exists())
 		{
-			append.append("UserIcon:'" + BP.Web.WebUser.getNo() + "Biger.png'");
+			append.append("UserIcon:'" + WebUser.getNo() + "Biger.png'");
 		}
 		else
 		{
 			append.append("UserIcon:'DefaultBiger.png'");
 		}
-		append.append(",UserName:'" + BP.Web.WebUser.getName() + "'");
-		append.append(",UserDeptName:'" + BP.Web.WebUser.getFK_DeptName() + "'");
+		append.append(",UserName:'" + WebUser.getName() + "'");
+		append.append(",UserDeptName:'" + WebUser.getFK_DeptName() + "'");
 		append.append("}");
 		return append.toString();
 	}
@@ -155,11 +155,11 @@ public class AppACE extends WebContralBase{
     public String Home_Init() throws Exception
     {
     	Hashtable ht = new Hashtable();
-		ht.put("UserNo", BP.Web.WebUser.getNo());
-		ht.put("UserName", BP.Web.WebUser.getName());
+		ht.put("UserNo", WebUser.getNo());
+		ht.put("UserName", WebUser.getName());
 
 		//系统名称.
-		ht.put("SysName", BP.Sys.SystemConfig.getSysName());
+		ht.put("SysName", SystemConfig.getSysName());
 
 
 		ht.put("Todolist_EmpWorks", BP.WF.Dev2Interface.getTodolist_EmpWorks());
@@ -248,7 +248,7 @@ public class AppACE extends WebContralBase{
      */
     public String Index_Init() throws Exception
     {
-    	java.util.Hashtable ht = new java.util.Hashtable();
+    	Hashtable ht = new Hashtable();
 		ht.put("Todolist_Runing", BP.WF.Dev2Interface.getTodolist_Runing()); //运行中.
 		ht.put("Todolist_EmpWorks", BP.WF.Dev2Interface.getTodolist_EmpWorks()); //待办
 		ht.put("Todolist_CCWorks", BP.WF.Dev2Interface.getTodolist_CCWorks()); //抄送.
@@ -278,7 +278,7 @@ public class AppACE extends WebContralBase{
     	String userNo = this.GetRequestVal("TB_No");
 		String pass = this.GetRequestVal("TB_PW");
 
-		BP.Port.Emp emp = new Emp();
+		Emp emp = new Emp();
 		emp.setNo(userNo);
 		if (emp.RetrieveFromDBSources() ==0)
 		{
@@ -341,7 +341,7 @@ public class AppACE extends WebContralBase{
      */
     public String Login_Init() throws Exception
     {
-    	java.util.Hashtable ht = new java.util.Hashtable();
+    	Hashtable ht = new Hashtable();
 		ht.put("SysName", SystemConfig.getSysName());
 		ht.put("ServiceTel", SystemConfig.getServiceTel());
 		ht.put("CustomerName", SystemConfig.getCustomerName());
@@ -411,9 +411,9 @@ public class AppACE extends WebContralBase{
 		{
 			return "err@授权登录失败！";
 		}
-		BP.Port.Emp emp1 = new BP.Port.Emp(this.getNo());
+		Emp emp1 = new Emp(this.getNo());
 		try {
-			BP.Web.WebUser.SignInOfGener(emp1, "CH", false, false, BP.Web.WebUser.getNo(), BP.Web.WebUser.getName());
+			WebUser.SignInOfGener(emp1, "CH", false, false, WebUser.getNo(), WebUser.getName());
 		} catch (UnsupportedEncodingException e) {
 			Log.DebugWriteError("AppACEHandler LoginAs():"+e.getMessage());
 			e.printStackTrace();
@@ -446,7 +446,7 @@ public class AppACE extends WebContralBase{
      */
     public String Load_Author() throws Exception
     {
-    	DataTable dt = BP.DA.DBAccess.RunSQLReturnTable("SELECT * FROM WF_EMP WHERE AUTHOR='" + BP.Web.WebUser.getNo() + "'");
+    	DataTable dt = DBAccess.RunSQLReturnTable("SELECT * FROM WF_EMP WHERE AUTHOR='" + WebUser.getNo() + "'");
 		return BP.Tools.Json.ToJson(dt);
     }
     
@@ -474,24 +474,24 @@ public class AppACE extends WebContralBase{
 
 		//实体查询.
 		BP.WF.SMSs ss = new BP.WF.SMSs();
-		BP.En.QueryObject qo = new BP.En.QueryObject(ss);
+		QueryObject qo = new QueryObject(ss);
 
 		DataTable dt = null;
 		if (sta.equals("-1"))
 		{
-			dt = BP.WF.Dev2Interface.DB_CCList(BP.Web.WebUser.getNo());
+			dt = BP.WF.Dev2Interface.DB_CCList(WebUser.getNo());
 		}
 		if (sta.equals("0"))
 		{
-			dt = BP.WF.Dev2Interface.DB_CCList_UnRead(BP.Web.WebUser.getNo());
+			dt = BP.WF.Dev2Interface.DB_CCList_UnRead(WebUser.getNo());
 		}
 		if (sta.equals("1"))
 		{
-			dt = BP.WF.Dev2Interface.DB_CCList_Read(BP.Web.WebUser.getNo());
+			dt = BP.WF.Dev2Interface.DB_CCList_Read(WebUser.getNo());
 		}
 		if (sta.equals("2"))
 		{
-			dt = BP.WF.Dev2Interface.DB_CCList_Delete(BP.Web.WebUser.getNo());
+			dt = BP.WF.Dev2Interface.DB_CCList_Delete(WebUser.getNo());
 		}
 
 		int allNum = qo.GetCount();
@@ -511,7 +511,7 @@ public class AppACE extends WebContralBase{
 
 		int idx = 0;
 		//获得关注的数据.
-		DataTable dt = BP.WF.Dev2Interface.DB_Focus(flowNo, BP.Web.WebUser.getNo());
+		DataTable dt = BP.WF.Dev2Interface.DB_Focus(flowNo, WebUser.getNo());
 		SysEnums stas = new SysEnums("WFSta");
 		String[] tempArr;
 		for (DataRow dr : dt.Rows)
@@ -538,7 +538,7 @@ public class AppACE extends WebContralBase{
 			}
 			dr.setValue("ToDoEmps",currEmp);
 			dr.setValue("FlowNote",wfstaT);
-			dr.setValue("AtPara",(wfsta == BP.WF.WFSta.Complete.getValue() ? DotNetToJavaStringHelper.trimEnd(DotNetToJavaStringHelper.trimStart(dr.getValue("Sender").toString(), '('), ')').split("[,]", -1)[1] : ""));
+			dr.setValue("AtPara",(wfsta == WFSta.Complete.getValue() ? DotNetToJavaStringHelper.trimEnd(DotNetToJavaStringHelper.trimStart(dr.getValue("Sender").toString(), '('), ')').split("[,]", -1)[1] : ""));
 		}
 		return BP.Tools.Json.ToJson(dt);
     }
@@ -569,7 +569,7 @@ public class AppACE extends WebContralBase{
 		FlowSorts ens = new FlowSorts();
 		ens.RetrieveAll();
 
-		DataTable dt = BP.WF.Dev2Interface.DB_GenerCanStartFlowsOfDataTable(BP.Web.WebUser.getNo());
+		DataTable dt = BP.WF.Dev2Interface.DB_GenerCanStartFlowsOfDataTable(WebUser.getNo());
 
 		int cols = 3; //定义显示列数 从0开始。
 		int widthCell = 100 / cols;

@@ -164,14 +164,14 @@ public class MapFrmNode extends EntityNoName
 		map.AddTBString(MapDataAttr.FormEventEntity, null, "事件实体", true, true, 0, 100, 20, true);
 
 			//数据源.
-		map.AddDDLEntities(MapFrmNodeAttr.DBSrc, "local", "数据源", new BP.Sys.SFDBSrcs(), true);
+		map.AddDDLEntities(MapFrmNodeAttr.DBSrc, "local", "数据源", new SFDBSrcs(), true);
 
 			//宽度高度.
 		map.AddTBInt(MapFrmNodeAttr.FrmW, 900, "宽度", true, false);
 		map.AddTBInt(MapFrmNodeAttr.FrmH, 1200, "高度", true, false);
 
 			//表单的运行类型.
-		map.AddDDLSysEnum(MapFrmNodeAttr.FrmType, BP.Sys.FrmType.FreeFrm.getValue(), "表单类型", true, false, MapFrmNodeAttr.FrmType);
+		map.AddDDLSysEnum(MapFrmNodeAttr.FrmType, FrmType.FreeFrm.getValue(), "表单类型", true, false, MapFrmNodeAttr.FrmType);
 
 			///#endregion 基本属性.
 
@@ -377,7 +377,7 @@ public class MapFrmNode extends EntityNoName
 	protected boolean beforeUpdate() throws Exception
 	{
 		//注册事件表单实体.
-		BP.Sys.FormEventBase feb = BP.Sys.Glo.GetFormEventBaseByEnName(this.getNo());
+		FormEventBase feb = BP.Sys.Glo.GetFormEventBaseByEnName(this.getNo());
 		if (feb == null)
 		{
 			this.setFromEventEntity("");
@@ -392,7 +392,7 @@ public class MapFrmNode extends EntityNoName
 	}
 	public final String DoTabIdx()
 	{
-		return BP.WF.Glo.getCCFlowAppPath() +"WF/Admin/FoolFormDesigner/TabIdx.htm?FK_MapData=" + this.getNo();
+		return Glo.getCCFlowAppPath() +"WF/Admin/FoolFormDesigner/TabIdx.htm?FK_MapData=" + this.getNo();
 	}
 
 	/** 
@@ -403,7 +403,7 @@ public class MapFrmNode extends EntityNoName
 	*/
 	public final String DoCopyFrm(String frmID, String frmName, String fk_frmTree) throws Exception
 	{
-		return BP.Sys.CCFormAPI.CopyFrm(this.getNo(), frmID, frmName, fk_frmTree);
+		return CCFormAPI.CopyFrm(this.getNo(), frmID, frmName, fk_frmTree);
 	}
 
 	/** 
@@ -506,7 +506,7 @@ public class MapFrmNode extends EntityNoName
 		sqls += "UPDATE Sys_MapFrame SET FK_MapData='" + frmID1 + "' WHERE FK_MapData='" + frmIDOld + "'";
 		sqls += "UPDATE Sys_FrmEle SET FK_MapData='" + frmID1 + "' WHERE FK_MapData='" + frmIDOld + "'";
 		sqls += "UPDATE Sys_FrmEvent SET FK_MapData='" + frmID1 + "' WHERE FK_MapData='" + frmIDOld + "'";
-		BP.DA.DBAccess.RunSQLs(sqls);
+		DBAccess.RunSQLs(sqls);
 
 		return "重命名成功，你需要关闭窗口重新刷新。";
 	}
@@ -617,7 +617,7 @@ public class MapFrmNode extends EntityNoName
 	*/
 	public final String DoDFrom() throws Exception
 	{
-		String url = "../../Admin/FoolFormDesigner/CCForm/Frm.htm?FK_MapData=" + this.getNo() + "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType=" + BP.DA.DBAccess.getAppCenterDBType() + "&CustomerNo=" + BP.Sys.SystemConfig.getCustomerNo();
+		String url = "../../Admin/FoolFormDesigner/CCForm/Frm.htm?FK_MapData=" + this.getNo() + "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType=" + DBAccess.getAppCenterDBType() + "&CustomerNo=" + SystemConfig.getCustomerNo();
 		try {
 			PubClass.WinOpen(ContextHolderUtils.getResponse(),url, 800, 650);
 		} catch (IOException e) {
@@ -633,7 +633,7 @@ public class MapFrmNode extends EntityNoName
 	*/
 	public final String DoDFromCol4() throws Exception
 	{
-		String url = "../../Admin/FoolFormDesigner/Designer.htm?FK_MapData=" + this.getNo() + "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType=" + BP.DA.DBAccess.getAppCenterDBType() + "&IsFirst=1&CustomerNo=" + BP.Sys.SystemConfig.getCustomerNo();
+		String url = "../../Admin/FoolFormDesigner/Designer.htm?FK_MapData=" + this.getNo() + "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType=" + DBAccess.getAppCenterDBType() + "&IsFirst=1&CustomerNo=" + SystemConfig.getCustomerNo();
 		try {
 			PubClass.WinOpen(ContextHolderUtils.getResponse(),url, 800, 650);
 		} catch (IOException e) {

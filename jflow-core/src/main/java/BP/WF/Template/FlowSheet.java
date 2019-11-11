@@ -221,7 +221,7 @@ public class FlowSheet extends EntityNoName
 	public UAC getHisUAC() throws Exception
 	{
 		UAC uac = new UAC();
-		if (BP.Web.WebUser.getNo().equals("admin") || this.getDesignerNo().equals(WebUser.getNo()))
+		if (WebUser.getNo().equals("admin") || this.getDesignerNo().equals(WebUser.getNo()))
 		{
 			uac.IsUpdate = true;
 		}
@@ -410,7 +410,7 @@ public class FlowSheet extends EntityNoName
 		map.AddDDLSysEnum(FlowAttr.DTSWay, FlowDTSWay.None.getValue(), "同步方式", true, true, FlowAttr.DTSWay, "@0=不同步@1=同步");
 		map.SetHelperUrl(FlowAttr.DTSWay, "http://ccbpm.mydoc.io/?v=5404&t=17893");
 
-		map.AddDDLEntities(FlowAttr.DTSDBSrc, "", "数据库", new BP.Sys.SFDBSrcs(), true);
+		map.AddDDLEntities(FlowAttr.DTSDBSrc, "", "数据库", new SFDBSrcs(), true);
 
 		map.AddTBString(FlowAttr.DTSBTable, null, "业务表名", true, false, 0, 50, 50, false);
 
@@ -474,34 +474,34 @@ public class FlowSheet extends EntityNoName
 		rm = new RefMethod();
 		rm.Title = "调试运行"; // "设计检查报告";
 			//rm.ToolTip = "检查流程设计的问题。";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/EntityFunc/Flow/Run.png";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/EntityFunc/Flow/Run.png";
 		rm.ClassMethodName = this.toString() + ".DoRunIt";
 		rm.refMethodType = RefMethodType.LinkeWinOpen;
 		map.AddRefMethod(rm);
 
 		rm = new RefMethod();
 		rm.Title = "检查报告"; // "设计检查报告";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/EntityFunc/Flow/CheckRpt.png";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/EntityFunc/Flow/CheckRpt.png";
 		rm.ClassMethodName = this.toString() + ".DoCheck";
 		   // rm.RefMethodType = RefMethodType.RightFrameOpen;
 		map.AddRefMethod(rm);
 
 		rm = new RefMethod();
 		rm.Title = "设计报表"; // "报表运行";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/Rpt.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/Rpt.gif";
 		rm.ClassMethodName = this.toString() + ".DoOpenRpt()";
 		rm.refMethodType = RefMethodType.LinkeWinOpen;
 		map.AddRefMethod(rm);
 
 		rm = new RefMethod();
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/Delete.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/Delete.gif";
 		rm.Title = "删除全部流程数据"; // this.ToE("DelFlowData", "删除数据"); // "删除数据";
 		rm.Warning = "您确定要执行删除流程数据吗? \t\n该流程的数据删除后，就不能恢复，请注意删除的内容。"; // "您确定要执行删除流程数据吗？";
 		rm.ClassMethodName = this.toString() + ".DoDelData";
 		map.AddRefMethod(rm);
 
 		rm = new RefMethod();
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/Delete.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/Delete.gif";
 		rm.Title = "按照工作ID删除单个流程"; // this.ToE("DelFlowData", "删除数据"); // "删除数据";
 		rm.ClassMethodName = this.toString() + ".DoDelDataOne";
 		rm.getHisAttrs().AddTBInt("WorkID", 0, "输入工作ID", true, false);
@@ -509,7 +509,7 @@ public class FlowSheet extends EntityNoName
 		map.AddRefMethod(rm);
 
 		rm = new RefMethod();
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 		rm.Title = "重新生成报表数据"; // "删除数据";
 		rm.Warning = "您确定要执行吗? 注意:此方法耗费资源。"; // "您确定要执行删除流程数据吗？";
 		rm.ClassMethodName = this.toString() + ".DoReloadRptData";
@@ -518,7 +518,7 @@ public class FlowSheet extends EntityNoName
 
 		rm = new RefMethod();
 		rm.Title = "设置自动发起数据源";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/EntityFunc/Flow/Run.png";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/EntityFunc/Flow/Run.png";
 		rm.ClassMethodName = this.toString() + ".DoSetStartFlowDataSources()";
 			//设置相关字段.
 			// rm.RefAttrKey = FlowAttr.RunObj;
@@ -528,7 +528,7 @@ public class FlowSheet extends EntityNoName
 
 		rm = new RefMethod();
 		rm.Title = "手工启动定时任务";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 		rm.Warning = "您确定要执行吗? 注意:对于数据量交大的数据因为web上执行时间的限时问题，会造成执行失败。"; // "您确定要执行删除流程数据吗？";
 		rm.ClassMethodName = this.toString() + ".DoAutoStartIt()";
 			//设置相关字段.
@@ -539,20 +539,20 @@ public class FlowSheet extends EntityNoName
 
 		rm = new RefMethod();
 		rm.Title = "流程监控";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 		rm.ClassMethodName = this.toString() + ".DoDataManger()";
 		map.AddRefMethod(rm);
 
 		rm = new RefMethod();
 		rm.Title = "批量修改节点属性";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 		rm.ClassMethodName = this.toString() + ".DoFeatureSetUI()";
 		rm.refMethodType = RefMethodType.RightFrameOpen;
 		map.AddRefMethod(rm);
 
 		rm = new RefMethod();
 		rm.Title = "重新生成FlowEmps字段";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 		rm.ClassMethodName = this.toString() + ".DoGenerFlowEmps()";
 		rm.RefAttrLinkLabel = "补充修复emps字段，包括wf_generworkflow,NDxxxRpt字段.";
 		rm.refMethodType = RefMethodType.Func;
@@ -563,7 +563,7 @@ public class FlowSheet extends EntityNoName
 
 		rm = new RefMethod();
 		rm.Title = "重新生成流程标题";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 		rm.ClassMethodName = this.toString() + ".DoGenerTitle()";
 			//设置相关字段.
 			//rm.RefAttrKey = FlowAttr.TitleRole;
@@ -576,7 +576,7 @@ public class FlowSheet extends EntityNoName
 
 		rm = new RefMethod();
 		rm.Title = "回滚流程";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/Back.png";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/Back.png";
 		rm.ClassMethodName = this.toString() + ".DoRebackFlowData()";
 			// rm.Warning = "您确定要回滚它吗？";
 		rm.getHisAttrs().AddTBInt("workid", 0, "请输入要会滚WorkID", true, false);
@@ -588,7 +588,7 @@ public class FlowSheet extends EntityNoName
 		rm = new RefMethod();
 		rm.Title = "流程事件&消息"; // "调用事件接口";
 		rm.ClassMethodName = this.toString() + ".DoAction";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Event.png";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Event.png";
 		rm.refMethodType = RefMethodType.RightFrameOpen;
 		map.AddRefMethod(rm);
 
@@ -601,14 +601,14 @@ public class FlowSheet extends EntityNoName
 
 		rm = new RefMethod();
 		rm.Title = "批量发起规则";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 		rm.ClassMethodName = this.toString() + ".DoBatchStartFields()";
 		map.AddRefMethod(rm);
 
 
 		rm = new RefMethod();
 		rm.Title = "流程轨迹表单";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 		rm.ClassMethodName = this.toString() + ".DoBindFlowSheet()";
 		map.AddRefMethod(rm);
 
@@ -616,7 +616,7 @@ public class FlowSheet extends EntityNoName
 		rm = new RefMethod();
 		rm.Title = "数据源管理(如果新增数据源后需要关闭重新打开)"; // "抄送规则";
 		rm.ClassMethodName = this.toString() + ".DoDBSrc";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 			//设置相关字段.
 		rm.RefAttrKey = FlowAttr.DTSDBSrc;
 		rm.RefAttrLinkLabel = "数据源管理";
@@ -627,7 +627,7 @@ public class FlowSheet extends EntityNoName
 		rm = new RefMethod();
 		rm.Title = "业务表字段同步配置"; // "抄送规则";
 		rm.ClassMethodName = this.toString() + ".DoBTable";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 			//设置相关字段.
 		rm.RefAttrKey = FlowAttr.DTSField;
 		rm.RefAttrLinkLabel = "业务表字段同步配置";
@@ -640,7 +640,7 @@ public class FlowSheet extends EntityNoName
 		rm = new RefMethod();
 		rm.Title = "执行流程数据表与业务表数据手工同步"; // "抄送规则";
 		rm.ClassMethodName = this.toString() + ".DoBTableDTS";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 		rm.Warning = "您确定要执行吗？如果执行了可能会对业务表数据造成错误。";
 			//设置相关字段.
 		rm.RefAttrKey = FlowAttr.DTSSpecNodes;
@@ -772,7 +772,7 @@ public class FlowSheet extends EntityNoName
 	*/
 	public final String DoOpenRpt()
 	{
-		return BP.WF.Glo.getCCFlowAppPath() + "WF/Rpt/OneFlow.jsp?FK_Flow=" + this.getNo() + "&DoType=Edit&FK_MapData=ND" + Integer.parseInt(this.getNo()) + "Rpt";
+		return Glo.getCCFlowAppPath() + "WF/Rpt/OneFlow.jsp?FK_Flow=" + this.getNo() + "&DoType=Edit&FK_MapData=ND" + Integer.parseInt(this.getNo()) + "Rpt";
 	}
 	/** 
 	 更新之后的事情，也要更新缓存。
@@ -786,7 +786,7 @@ public class FlowSheet extends EntityNoName
 		// fl.RetrieveFromDBSources();
 		//fl.Update();
 
-		if (BP.WF.Glo.getOSModel() == OSModel.OneMore)
+		if (Glo.getOSModel() == OSModel.OneMore)
 		{
 		   // DBAccess.RunSQL("UPDATE  GPM_Menu SET Name='" + this.Name + "' WHERE Flag='Flow" + this.getNo() + "' AND FK_App='" + SystemConfig.getSysNo() + "'");
 		}
@@ -798,7 +798,7 @@ public class FlowSheet extends EntityNoName
 		Flow.UpdateVer(this.getNo());
 
 		//同步事件实体.
-		this.setFlowEventEntity(BP.WF.Glo.GetFlowEventEntityStringByFlowMark(this.getFlowMark(), this.getNo()));
+		this.setFlowEventEntity(Glo.GetFlowEventEntityStringByFlowMark(this.getFlowMark(), this.getNo()));
 
 
 			///#region 检查数据完整性 - 同步业务表数据。
@@ -851,7 +851,7 @@ public class FlowSheet extends EntityNoName
 						continue;
 					}
 
-					if (BP.DA.DataType.IsNumStr(str) == false)
+					if (DataType.IsNumStr(str) == false)
 					{
 						throw new RuntimeException("@业务数据同步数据配置错误，您设置了按照指定的节点配置，但是节点格式错误[" + nodes + "]。正确的格式如下：101,102,103");
 					}
@@ -899,7 +899,7 @@ public class FlowSheet extends EntityNoName
 		Flow fl = new Flow(this.getNo());
 		if (!fl.getPTable().equals("ND" + Integer.parseInt(this.getNo()) + "Rpt"))
 		{
-			BP.Sys.MapData md = new MapData(ndxxRpt);
+			MapData md = new MapData(ndxxRpt);
 			if (!fl.getPTable().equals(md.getPTable()))
 			{
 				md.Update();

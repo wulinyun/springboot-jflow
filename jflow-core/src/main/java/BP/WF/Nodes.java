@@ -102,12 +102,12 @@ public class Nodes extends EntitiesOID
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<BP.WF.Node> Tolist()
+	public final java.util.ArrayList<Node> Tolist()
 	{
-		java.util.ArrayList<BP.WF.Node> list = new java.util.ArrayList<BP.WF.Node>();
+		java.util.ArrayList<Node> list = new java.util.ArrayList<Node>();
 		for (int i = 0; i < this.size(); i++)
 		{
-			list.add((BP.WF.Node)this.get(i));
+			list.add((Node)this.get(i));
 		}
 		return list;
 	}

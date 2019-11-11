@@ -22,8 +22,8 @@ public class FlowSheets extends EntitiesNoName
 	public final int Retrieve(String FlowSort) throws Exception
 	{
 		QueryObject qo = new QueryObject(this);
-		qo.AddWhere(BP.WF.Template.FlowAttr.FK_FlowSort, FlowSort);
-		qo.addOrderBy(BP.WF.Template.FlowAttr.No);
+		qo.AddWhere(FlowAttr.FK_FlowSort, FlowSort);
+		qo.addOrderBy(FlowAttr.No);
 		return qo.DoQuery();
 	}
 
@@ -46,7 +46,7 @@ public class FlowSheets extends EntitiesNoName
 	*/
 	public FlowSheets(String fk_sort) throws Exception
 	{
-		this.Retrieve(BP.WF.Template.FlowAttr.FK_FlowSort, fk_sort);
+		this.Retrieve(FlowAttr.FK_FlowSort, fk_sort);
 	}
 
 		///#endregion

@@ -15,7 +15,7 @@ public abstract class HttpHandlerBase
 	 * 获取 "Handler业务处理类"的Type
 	 * 注意： "Handler业务处理类"必须继承自BP.WF.HttpHandler.WebContralBase</p>
 	*/
-	public abstract java.lang.Class getCtrlType();
+	public abstract Class getCtrlType();
 
 	public final boolean getIsReusable()
 	{
@@ -114,7 +114,7 @@ public abstract class HttpHandlerBase
             } else {
                 return i;
             }
-        } catch (java.lang.Exception e) {
+        } catch (Exception e) {
             return 0;
         }
     }
@@ -252,7 +252,7 @@ public abstract class HttpHandlerBase
         try {
             i = Integer.parseInt(ContextHolderUtils.getRequest().getParameter(
                     "rowCount"));
-        } catch (java.lang.Exception e) {
+        } catch (Exception e) {
             return 0;
         }
         return i;

@@ -522,22 +522,22 @@ public class MapExt extends EntityMyPK
 		}
 
 		String sql = this.getTag();
-		sql = sql.replace("WebUser.No", BP.Web.WebUser.getNo());
-		sql = sql.replace("@WebUser.Name", BP.Web.WebUser.getName());
-		sql = sql.replace("@WebUser.FK_DeptNameOfFull", BP.Web.WebUser.getFK_DeptNameOfFull());
-		sql = sql.replace("@WebUser.FK_DeptName", BP.Web.WebUser.getFK_DeptName());
-		sql = sql.replace("@WebUser.FK_Dept", BP.Web.WebUser.getFK_Dept());
+		sql = sql.replace("WebUser.No", WebUser.getNo());
+		sql = sql.replace("@WebUser.Name", WebUser.getName());
+		sql = sql.replace("@WebUser.FK_DeptNameOfFull", WebUser.getFK_DeptNameOfFull());
+		sql = sql.replace("@WebUser.FK_DeptName", WebUser.getFK_DeptName());
+		sql = sql.replace("@WebUser.FK_Dept", WebUser.getFK_Dept());
 		return sql;
 	}
 
 	public final String getDocOfSQLDeal() throws Exception
 	{
 		String sql = this.getDoc();
-		sql = sql.replace("WebUser.No", BP.Web.WebUser.getNo());
-		sql = sql.replace("@WebUser.Name", BP.Web.WebUser.getName());
-		sql = sql.replace("@WebUser.FK_DeptNameOfFull", BP.Web.WebUser.getFK_DeptNameOfFull());
-		sql = sql.replace("@WebUser.FK_DeptName", BP.Web.WebUser.getFK_DeptName());
-		sql = sql.replace("@WebUser.FK_Dept", BP.Web.WebUser.getFK_Dept());
+		sql = sql.replace("WebUser.No", WebUser.getNo());
+		sql = sql.replace("@WebUser.Name", WebUser.getName());
+		sql = sql.replace("@WebUser.FK_DeptNameOfFull", WebUser.getFK_DeptNameOfFull());
+		sql = sql.replace("@WebUser.FK_DeptName", WebUser.getFK_DeptName());
+		sql = sql.replace("@WebUser.FK_Dept", WebUser.getFK_Dept());
 		return sql;
 	}
 	public final String getTag()

@@ -125,9 +125,9 @@ public class WF extends WebContralBase {
 		try {
 			if ("LoginExit".equals(getDoType())) // 退出安全登录.
 			{
-				BP.WF.Dev2Interface.Port_SigOut();
+				Dev2Interface.Port_SigOut();
 			} else if ("AuthExit".equals(getDoType())) {
-				msg = this.AuthExitAndLogin(this.getNo(), BP.Web.WebUser.getAuth());
+				msg = this.AuthExitAndLogin(this.getNo(), WebUser.getAuth());
 			} else {
 				msg = "err@没有判断的标记:" + this.getDoType();
 			}
@@ -159,20 +159,20 @@ public class WF extends WebContralBase {
             {
 
                 case "Focus": //把任务放入任务池.
-                    BP.WF.Dev2Interface.Flow_Focus(this.getWorkID());
+                    Dev2Interface.Flow_Focus(this.getWorkID());
                     return "info@Close";
                 case "PutOne": //把任务放入任务池.
-                    BP.WF.Dev2Interface.Node_TaskPoolPutOne(this.getWorkID());
+                    Dev2Interface.Node_TaskPoolPutOne(this.getWorkID());
                     return "info@Close";
                 case "DoAppTask": // 申请任务.
-                    BP.WF.Dev2Interface.Node_TaskPoolTakebackOne(this.getWorkID());
+                    Dev2Interface.Node_TaskPoolTakebackOne(this.getWorkID());
                     return "info@Close";
                 case "DoOpenCC":
 
                     String Sta = this.GetRequestVal("Sta");
                     if (Sta == "0")
                     {
-                        BP.WF.Template.CCList cc1 = new BP.WF.Template.CCList();
+                        CCList cc1 = new CCList();
                         cc1.setMyPK(this.getMyPK());
                         cc1.Retrieve();
                         cc1.setHisSta(CCSta.Read);
@@ -189,7 +189,7 @@ public class WF extends WebContralBase {
                 case "DelSubFlow": //删除进程。
                     try
                     {
-                        BP.WF.Dev2Interface.Flow_DeleteSubThread(this.getFK_Flow(), this.getWorkID(), "手工删除");
+                        Dev2Interface.Flow_DeleteSubThread(this.getFK_Flow(), this.getWorkID(), "手工删除");
                         return "info@Close";
                     }
                     catch (Exception ex)
@@ -232,7 +232,7 @@ public class WF extends WebContralBase {
                     }
                     return "info@Close";
                 case "EmpDoUp":
-                    BP.WF.Port.WFEmp ep = new BP.WF.Port.WFEmp(this.GetRequestVal("RefNo"));
+                    WFEmp ep = new WFEmp(this.GetRequestVal("RefNo"));
                     ep.DoUp();
 
                     BP.WF.Port.WFEmps emps111 = new BP.WF.Port.WFEmps();
@@ -240,7 +240,7 @@ public class WF extends WebContralBase {
                     emps111.RetrieveAll();
                     return "info@Close";
                 case "EmpDoDown":
-                    BP.WF.Port.WFEmp ep1 = new BP.WF.Port.WFEmp(this.GetRequestVal("RefNo"));
+                    WFEmp ep1 = new WFEmp(this.GetRequestVal("RefNo"));
                     ep1.DoDown();
 
                     BP.WF.Port.WFEmps emps11441 = new BP.WF.Port.WFEmps();
@@ -260,7 +260,7 @@ public class WF extends WebContralBase {
 
                     String fk_flow = mynd.getFK_Flow();
                     String myurl = "./WorkOpt/OneWork/OneWork.htm?CurrTab=Track&FK_Node=" + mynd.getNodeID() + "&WorkID=" + myWorkID + "&FK_Flow=" + fk_flow;
-                    BP.Web.WebUser.SignInOfGener(new BP.Port.Emp(fk_emp));
+                    WebUser.SignInOfGener(new BP.Port.Emp(fk_emp));
 
                     return "url@" + myurl;
                 case "OF": //通过一个串来打开一个工作.
@@ -277,40 +277,40 @@ public class WF extends WebContralBase {
                     }
 
                     BP.Port.Emp empOF = new BP.Port.Emp(wl.getFK_Emp());
-                    BP.Web.WebUser.SignInOfGener(empOF);
+                    WebUser.SignInOfGener(empOF);
                     String u = "MyFlow.htm?FK_Flow=" + wl.getFK_Flow() + "&WorkID=" + wl.getWorkID() + "&FK_Node=" + wl.getFK_Node() + "&FID=" + wl.getFID();
                     return "url@" + u;
                 case "ExitAuth":
                     BP.Port.Emp emp = new BP.Port.Emp(this.getFK_Emp());
                     //首先退出，再进行登录
-                    BP.Web.WebUser.Exit();
-                    BP.Web.WebUser.SignInOfGener(emp, WebUser.getSysLang());
+                    WebUser.Exit();
+                    WebUser.SignInOfGener(emp, WebUser.getSysLang());
                     return "info@Close";
                 case "LogAs":
-                    BP.WF.Port.WFEmp wfemp = new BP.WF.Port.WFEmp(this.getFK_Emp());
+                    WFEmp wfemp = new WFEmp(this.getFK_Emp());
                     if (wfemp.getAuthorIsOK() == false)
                     {
                         return "err@授权失败";
                     }
                     BP.Port.Emp emp1 = new BP.Port.Emp(this.getFK_Emp());
-                    BP.Web.WebUser.SignInOfGener(emp1, "CH", false, false, wfemp.getAuthor(), WebUser.getName());
+                    WebUser.SignInOfGener(emp1, "CH", false, false, wfemp.getAuthor(), WebUser.getName());
                     return "info@Close";
                 case "TakeBack": // 取消授权。
-                    BP.WF.Port.WFEmp myau = new BP.WF.Port.WFEmp(WebUser.getNo());
-                    BP.DA.Log.DefaultLogWriteLineInfo("取消授权:" + WebUser.getNo() + "取消了对(" + myau.getAuthor() + ")的授权。");
+                    WFEmp myau = new WFEmp(WebUser.getNo());
+                    Log.DefaultLogWriteLineInfo("取消授权:" + WebUser.getNo() + "取消了对(" + myau.getAuthor() + ")的授权。");
                     myau.setAuthor("");
                     myau.setAuthorWay(0);
                     myau.Update();
                     return "info@Close";
                 case "AutoTo": // 执行授权。
-                    BP.WF.Port.WFEmp au = new BP.WF.Port.WFEmp();
+                    WFEmp au = new WFEmp();
                     au.setNo(WebUser.getNo());
                     au.RetrieveFromDBSources();
-                    au.setAuthorDate(BP.DA.DataType.getCurrentDate());
+                    au.setAuthorDate(DataType.getCurrentDate());
                     au.setAuthor(this.getFK_Emp());
                     au.setAuthorWay(1);
                     au.Save();
-                    BP.DA.Log.DefaultLogWriteLineInfo("执行授权:" + WebUser.getNo() + "执行了对(" + au.getAuthor() + ")的授权。");
+                    Log.DefaultLogWriteLineInfo("执行授权:" + WebUser.getNo() + "执行了对(" + au.getAuthor() + ")的授权。");
                     return "info@Close";
                 case "UnSend": //执行撤消发送。
                     String url = "./WorkOpt/UnSend.htm?WorkID=" + this.getWorkID() + "&FK_Flow=" + this.getFK_Flow();
@@ -385,7 +385,7 @@ public class WF extends WebContralBase {
 		/* 如果不是删除流程注册表. */
         Paras ps = new Paras();
         ps.SQL = "SELECT  * FROM WF_GenerWorkFlow  WHERE Emps LIKE '%@" + WebUser.getNo() + "@%' and WFState=" + WFState.Complete.getValue() + " ORDER BY  RDT DESC";
-        DataTable dt= BP.DA.DBAccess.RunSQLReturnTable(ps);
+        DataTable dt= DBAccess.RunSQLReturnTable(ps);
         //添加oracle的处理
         if (SystemConfig.getAppCenterDBType() == DBType.Oracle)
         {
@@ -569,7 +569,7 @@ public class WF extends WebContralBase {
 	 */
 	public String HungUpList_Init() throws Exception {
 		DataTable dt = null;
-		dt = BP.WF.Dev2Interface.DB_GenerHungUpList();
+		dt = Dev2Interface.DB_GenerHungUpList();
 		return BP.Tools.Json.ToJson(dt);
 	}
 
@@ -581,7 +581,7 @@ public class WF extends WebContralBase {
 	 */
 	public String Draft_Init() throws Exception {
 		DataTable dt = null;
-		dt = BP.WF.Dev2Interface.DB_GenerDraftDataTable();
+		dt = Dev2Interface.DB_GenerDraftDataTable();
 
 		// 转化大写.
 		return BP.Tools.Json.DataTableToJson(dt, false);
@@ -666,7 +666,7 @@ public class WF extends WebContralBase {
 	public final String HuiQianList_Init() throws Exception {
 		String sql = "SELECT A.WorkID, A.Title,A.FK_Flow, A.FlowName, A.Starter, A.StarterName, A.Sender, A.Sender,A.FK_Node,A.NodeName,A.SDTOfNode,A.TodoEmps";
 		sql += " FROM WF_GenerWorkFlow A, WF_GenerWorkerlist B WHERE A.WorkID=B.WorkID and a.FK_Node=b.FK_Node AND B.IsPass=90 AND B.FK_Emp='"
-				+ BP.Web.WebUser.getNo() + "'";
+				+ WebUser.getNo() + "'";
 
 		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
@@ -695,7 +695,7 @@ public class WF extends WebContralBase {
 	public String Todolist_Author() {
 		DataTable dt = null;
 		try {
-			dt = BP.WF.Dev2Interface.DB_GenerEmpWorksOfDataTable(this.getNo(), this.getFK_Node());
+			dt = Dev2Interface.DB_GenerEmpWorksOfDataTable(this.getNo(), this.getFK_Node());
 		} catch (Exception e) {
 			Log.DebugWriteError("WF Todolist_Author():" + e.getMessage());
 			e.printStackTrace();
@@ -714,7 +714,7 @@ public class WF extends WebContralBase {
 		DataTable dt = null;
 
 		try {
-			dt = BP.WF.Dev2Interface.DB_GenerEmpWorksOfDataTable(BP.Web.WebUser.getNo(), this.getFK_Node());
+			dt = Dev2Interface.DB_GenerEmpWorksOfDataTable(WebUser.getNo(), this.getFK_Node());
 		} catch (Exception e) {
 			Log.DebugWriteError("WF Todolist_Init():" + e.getMessage());
 			e.printStackTrace();
@@ -732,13 +732,13 @@ public class WF extends WebContralBase {
 	public String LoginInit() throws Exception {
 		Hashtable ht = new Hashtable();
 
-		if (BP.Web.WebUser.getNo() == null)
+		if (WebUser.getNo() == null)
 			ht.put("UserNo", "");
 		else
-			ht.put("UserNo", BP.Web.WebUser.getNo());
+			ht.put("UserNo", WebUser.getNo());
 
-		if (BP.Web.WebUser.getIsAuthorize())
-			ht.put("Auth", BP.Web.WebUser.getAuth());
+		if (WebUser.getIsAuthorize())
+			ht.put("Auth", WebUser.getAuth());
 		else
 			ht.put("Auth", "");
 		return BP.Tools.Json.ToJsonEntityModel(ht);
@@ -761,7 +761,7 @@ public class WF extends WebContralBase {
 			return "err@用户名或密码错误.";
 
 		// 让其登录.
-		String sid = BP.WF.Dev2Interface.Port_Login(emp.getNo());
+		String sid = Dev2Interface.Port_Login(emp.getNo());
 		return sid;
 	}
 
@@ -772,12 +772,12 @@ public class WF extends WebContralBase {
 	 * @throws Exception
 	 */
 	public String LoginAs() throws Exception {
-		BP.WF.Port.WFEmp wfemp = new BP.WF.Port.WFEmp(this.getNo());
+		WFEmp wfemp = new WFEmp(this.getNo());
 		if (wfemp.getAuthorIsOK() == false)
 			return "err@授权登录失败！";
 		BP.Port.Emp emp1 = new BP.Port.Emp(this.getNo());
 		try {
-			BP.Web.WebUser.SignInOfGener(emp1, "CH", false, false, BP.Web.WebUser.getNo(), BP.Web.WebUser.getName());
+			WebUser.SignInOfGener(emp1, "CH", false, false, WebUser.getNo(), WebUser.getName());
 		} catch (UnsupportedEncodingException e) {
 			Log.DebugWriteError("WF LoginAs():" + e.getMessage());
 			e.printStackTrace();
@@ -797,10 +797,10 @@ public class WF extends WebContralBase {
 		try {
 			BP.Port.Emp emp = new BP.Port.Emp(UserNo);
 			// 首先退出
-			BP.Web.WebUser.Exit();
+			WebUser.Exit();
 			// 再进行登录
 			BP.Port.Emp emp1 = new BP.Port.Emp(Author);
-			BP.Web.WebUser.SignInOfGener(emp1, "CH", false, false, null, null);
+			WebUser.SignInOfGener(emp1, "CH", false, false, null, null);
 		} catch (Exception ex) {
 			msg = "err@退出时发生错误。" + ex.getMessage();
 		}
@@ -816,8 +816,8 @@ public class WF extends WebContralBase {
 	public String AuthorList_Init() throws Exception {
 		 Paras ps = new Paras();
          ps.SQL = "SELECT No,Name,AuthorDate FROM WF_Emp WHERE AUTHOR=" + SystemConfig.getAppCenterDBVarStr() + "AUTHOR";
-         ps.Add("AUTHOR", BP.Web.WebUser.getNo());
-         DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
+         ps.Add("AUTHOR", WebUser.getNo());
+         DataTable dt = DBAccess.RunSQLReturnTable(ps);
 
          if (SystemConfig.getAppCenterDBType() == DBType.Oracle || SystemConfig.getAppCenterDBType() == DBType.PostgreSQL)
          {
@@ -837,12 +837,12 @@ public class WF extends WebContralBase {
 	 * @throws Exception
 	 */
 	public String IsHaveAuthor() throws Exception {
-		DataTable dt = BP.DA.DBAccess
-				.RunSQLReturnTable("SELECT * FROM WF_EMP WHERE AUTHOR='" + BP.Web.WebUser.getNo() + "'");
+		DataTable dt = DBAccess
+				.RunSQLReturnTable("SELECT * FROM WF_EMP WHERE AUTHOR='" + WebUser.getNo() + "'");
 		WFEmp em = new WFEmp();
-		em.Retrieve(WFEmpAttr.Author, BP.Web.WebUser.getNo());
+		em.Retrieve(WFEmpAttr.Author, WebUser.getNo());
 
-		if (dt.Rows.size() > 0 && BP.Web.WebUser.getIsAuthorize() == false)
+		if (dt.Rows.size() > 0 && WebUser.getIsAuthorize() == false)
 			return "suess@有授权";
 		else
 			return "err@没有授权";
@@ -856,7 +856,7 @@ public class WF extends WebContralBase {
     public String AuthorList_LoginAs() throws Exception
     {
         BP.Port.Emp emp1 = new BP.Port.Emp(this.getNo());
-        BP.Web.WebUser.SignInOfGener(emp1, "CH", false, false, BP.Web.WebUser.getNo(), BP.Web.WebUser.getName());
+        WebUser.SignInOfGener(emp1, "CH", false, false, WebUser.getNo(), WebUser.getName());
 
         return "授权登录成功！";
     }
@@ -874,11 +874,11 @@ public class WF extends WebContralBase {
 		
 		//定义容器.
         DataSet ds = new DataSet();
-        BP.WF.Port.WFEmp em = new WFEmp();
-        em.setNo(BP.Web.WebUser.getNo());
+        WFEmp em = new WFEmp();
+        em.setNo(WebUser.getNo());
         if (em.RetrieveFromDBSources() == 0)
         {
-            em.setFK_Dept(BP.Web.WebUser.getFK_Dept());
+            em.setFK_Dept(WebUser.getFK_Dept());
             em.setName(WebUser.getName());
             em.Insert();
         }
@@ -938,7 +938,7 @@ public class WF extends WebContralBase {
 		// 获得能否发起的流程.
 		// DataTable dtStart =
 		// Dev2Interface.DB_GenerCanStartFlowsOfDataTable("zhoupeng");
-		DataTable dtStart = Dev2Interface.DB_GenerCanStartFlowsOfDataTable(BP.Web.WebUser.getNo());
+		DataTable dtStart = Dev2Interface.DB_GenerCanStartFlowsOfDataTable(WebUser.getNo());
 		dtStart.TableName = "Start";
 
 		// String str=BP.Tools.Json.ToJson(dtStart);
@@ -958,7 +958,7 @@ public class WF extends WebContralBase {
 	 * @throws Exception
 	 */
 	public final String TaskPoolSharing_Init() throws Exception {
-		DataTable dt = BP.WF.Dev2Interface.DB_TaskPool();
+		DataTable dt = Dev2Interface.DB_TaskPool();
 
 		return BP.Tools.Json.DataTableToJson(dt, false);
 	}
@@ -971,7 +971,7 @@ public class WF extends WebContralBase {
 	public String TaskPoolSharing_Apply() {
 		boolean b = false;
 		try {
-			b = BP.WF.Dev2Interface.Node_TaskPoolTakebackOne(this.getWorkID());
+			b = Dev2Interface.Node_TaskPoolTakebackOne(this.getWorkID());
 		} catch (Exception e) {
 			Log.DebugWriteError(e.getMessage());
 			e.printStackTrace();
@@ -989,7 +989,7 @@ public class WF extends WebContralBase {
 	 * @throws Exception
 	 */
 	public final String TaskPoolApply_Init() throws Exception {
-		DataTable dt = BP.WF.Dev2Interface.DB_TaskPoolOfMyApply();
+		DataTable dt = Dev2Interface.DB_TaskPoolOfMyApply();
 
 		return BP.Tools.Json.DataTableToJson(dt, false);
 	}
@@ -1046,7 +1046,7 @@ public class WF extends WebContralBase {
 		try {
 			 //获取撤销到的节点
             int unSendToNode = this.GetRequestValInt("UnSendToNode");
-			return BP.WF.Dev2Interface.Flow_DoUnSend(this.getFK_Flow(), this.getWorkID(),unSendToNode,this.getFID());
+			return Dev2Interface.Flow_DoUnSend(this.getFK_Flow(), this.getWorkID(),unSendToNode,this.getFID());
 		} catch (RuntimeException ex) {
 			return "err@" + ex.getMessage();
 		}
@@ -1060,7 +1060,7 @@ public class WF extends WebContralBase {
 	 */
 	public final String Runing_Press() throws Exception {
 		try {
-			return BP.WF.Dev2Interface.Flow_DoPress(this.getWorkID(), this.GetRequestVal("Msg"), false);
+			return Dev2Interface.Flow_DoPress(this.getWorkID(), this.GetRequestVal("Msg"), false);
 		} catch (RuntimeException ex) {
 			return "err@" + ex.getMessage();
 		}
@@ -1092,16 +1092,16 @@ public class WF extends WebContralBase {
 
 		DataTable dt = null;
 		if (sta.equals("-1")) {
-			dt = BP.WF.Dev2Interface.DB_CCList(BP.Web.WebUser.getNo());
+			dt = Dev2Interface.DB_CCList(WebUser.getNo());
 		}
 		if (sta.equals("0")) {
-			dt = BP.WF.Dev2Interface.DB_CCList_UnRead(BP.Web.WebUser.getNo());
+			dt = Dev2Interface.DB_CCList_UnRead(WebUser.getNo());
 		}
 		if (sta.equals("1")) {
-			dt = BP.WF.Dev2Interface.DB_CCList_Read(BP.Web.WebUser.getNo());
+			dt = Dev2Interface.DB_CCList_Read(WebUser.getNo());
 		}
 		if (sta.equals("2")) {
-			dt = BP.WF.Dev2Interface.DB_CCList_Delete(BP.Web.WebUser.getNo());
+			dt = Dev2Interface.DB_CCList_Delete(WebUser.getNo());
 		}
 
 		// int allNum = qo.GetCount();
@@ -1117,7 +1117,7 @@ public class WF extends WebContralBase {
 	 * @throws Exception
 	 */
 	public final String Draft_Delete() throws Exception {
-		return BP.WF.Dev2Interface.Flow_DoDeleteDraft(this.getFK_Flow(), this.getWorkID(), false);
+		return Dev2Interface.Flow_DoDeleteDraft(this.getFK_Flow(), this.getWorkID(), false);
 	}
 
 	/**
@@ -1131,7 +1131,7 @@ public class WF extends WebContralBase {
 
 		int idx = 0;
 		// 获得关注的数据.
-		DataTable dt = BP.WF.Dev2Interface.DB_Focus(flowNo, BP.Web.WebUser.getNo());
+		DataTable dt = Dev2Interface.DB_Focus(flowNo, WebUser.getNo());
 		SysEnums stas = new SysEnums("WFSta");
 		String[] tempArr;
 		for (DataRow dr : dt.Rows) {
@@ -1157,7 +1157,7 @@ public class WF extends WebContralBase {
 			dr.setValue("ToDoEmps", currEmp);
 			dr.setValue("FlowNote", wfstaT);
 			dr.setValue("AtPara",
-					(wfsta == BP.WF.WFSta.Complete.getValue() ? DotNetToJavaStringHelper
+					(wfsta == WFSta.Complete.getValue() ? DotNetToJavaStringHelper
 							.trimEnd(DotNetToJavaStringHelper.trimStart(dr.getValue("Sender").toString(), '('), ')')
 							.split("[,]", -1)[1] : ""));
 		}
@@ -1170,7 +1170,7 @@ public class WF extends WebContralBase {
 	/// </summary>
 	/// <returns></returns>
 	public final String Focus_Delete() throws Exception {
-		BP.WF.Dev2Interface.Flow_Focus(this.getWorkID());
+		Dev2Interface.Flow_Focus(this.getWorkID());
 		return "执行成功";
 	}
 
@@ -1195,7 +1195,7 @@ public class WF extends WebContralBase {
 
 		///把主从表数据放入里面.
 		// .工作数据放里面去, 放进去前执行一次装载前填充事件.
-		BP.WF.Work wk = nd.getHisWork();
+		Work wk = nd.getHisWork();
 		wk.setOID(this.getWorkID());
 		wk.RetrieveFromDBSources();
 
@@ -1211,12 +1211,12 @@ public class WF extends WebContralBase {
 		myds.Tables.add(WF_Node);
 
 		//加入组件的状态信息, 在解析表单的时候使用.
-		BP.WF.Template.FrmNodeComponent fnc = new FrmNodeComponent(nd.getNodeID());
+		FrmNodeComponent fnc = new FrmNodeComponent(nd.getNodeID());
 		if (!nd.getNodeFrmID().equals("ND" + nd.getNodeID())) {
 			// 说明这是引用到了其他节点的表单，就需要把一些位置元素修改掉.
 			int refNodeID = Integer.parseInt(nd.getNodeFrmID().replace("ND", ""));
 
-			BP.WF.Template.FrmNodeComponent refFnc = new FrmNodeComponent(refNodeID);
+			FrmNodeComponent refFnc = new FrmNodeComponent(refNodeID);
 
 			fnc.SetValByKey(FrmWorkCheckAttr.FWC_H, refFnc.GetValFloatByKey(FrmWorkCheckAttr.FWC_H));
 			fnc.SetValByKey(FrmWorkCheckAttr.FWC_W, refFnc.GetValFloatByKey(FrmWorkCheckAttr.FWC_W));
@@ -1248,7 +1248,7 @@ public class WF extends WebContralBase {
 		//加入组件的状态信息, 在解析表单的时候使用.
 
 		//增加附件信息.
-		BP.Sys.FrmAttachments athDescs = new FrmAttachments();
+		FrmAttachments athDescs = new FrmAttachments();
 		athDescs.Retrieve(FrmAttachmentAttr.FK_MapData, nd.getNodeFrmID());
 		if (athDescs.size() != 0) {
 			FrmAttachment athDesc = (FrmAttachment) ((athDescs.get(0) instanceof FrmAttachment) ? athDescs.get(0)
@@ -1265,7 +1265,7 @@ public class WF extends WebContralBase {
 
 				if (athDesc.getAthUploadWay() == AthUploadWay.Inherit) {
 					// 继承模式
-					BP.En.QueryObject qo = new BP.En.QueryObject(dbs);
+					QueryObject qo = new QueryObject(dbs);
 					qo.AddWhere(FrmAttachmentDBAttr.RefPKVal, pWorkID);
 					qo.addOr();
 					qo.AddWhere(FrmAttachmentDBAttr.RefPKVal, this.getWorkID());
@@ -1279,7 +1279,7 @@ public class WF extends WebContralBase {
 				}
 			} else if (athDesc.getHisCtrlWay() == AthCtrlWay.WorkID) {
 				// 继承模式
-				BP.En.QueryObject qo = new BP.En.QueryObject(dbs);
+				QueryObject qo = new QueryObject(dbs);
 				qo.AddWhere(FrmAttachmentDBAttr.NoOfObj, athDesc.getNoOfObj());
 				qo.addAnd();
 				qo.AddWhere(FrmAttachmentDBAttr.RefPKVal, this.getWorkID());
@@ -1422,7 +1422,7 @@ public class WF extends WebContralBase {
 
 		
 		//登录校验.
-		if (BP.Web.WebUser.getNo().equals(this.getUserNo()) == false) {
+		if (WebUser.getNo().equals(this.getUserNo()) == false) {
 
 			//if (this.getUserNo() == null || this.getSID() == null || this.getDoWhat() == null) {
 				if (this.getUserNo() == null  || this.getDoWhat() == null) {
@@ -1430,14 +1430,14 @@ public class WF extends WebContralBase {
 				return "err@必要的参数没有传入，请参考接口规则。";
 			}
 
-			if (BP.WF.Dev2Interface.Port_CheckUserLogin(this.getUserNo(), this.getSID()) == false) {
+			if (Dev2Interface.Port_CheckUserLogin(this.getUserNo(), this.getSID()) == false) {
 				return "err@非法的访问，请与管理员联系。SID=" + this.getSID();
 			}
 
-			if (BP.Web.WebUser.getNo().equals(this.getUserNo()) == false) {
-				BP.WF.Dev2Interface.Port_SigOut();
+			if (WebUser.getNo().equals(this.getUserNo()) == false) {
+				Dev2Interface.Port_SigOut();
 				try {
-					BP.WF.Dev2Interface.Port_Login(this.getUserNo(), this.getSID());
+					Dev2Interface.Port_Login(this.getUserNo(), this.getSID());
 				} catch (RuntimeException ex) {
 					return "err@安全校验出现错误:" + ex.getMessage();
 				}
@@ -1545,19 +1545,19 @@ public class WF extends WebContralBase {
 		// 打开消息.
 		if (this.getDoWhat().equals(DoWhatList.DealMsg) == true) {
 			String guid = this.GetRequestVal("GUID");
-			BP.WF.SMS sms = new SMS();
+			SMS sms = new SMS();
 			sms.setMyPK(guid);
 			sms.Retrieve();
 
 			// 判断当前的登录人员.
-			if (BP.Web.WebUser.getNo() != sms.getSendToEmpNo()) {
-				BP.WF.Dev2Interface.Port_Login(sms.getSendToEmpNo());
+			if (WebUser.getNo() != sms.getSendToEmpNo()) {
+				Dev2Interface.Port_Login(sms.getSendToEmpNo());
 			}
 
-			BP.DA.AtPara ap = new AtPara(sms.getAtPara());
+			AtPara ap = new AtPara(sms.getAtPara());
 			if (sms.getMsgType() == SMSMsgType.SendSuccess) { // 发送成功的提示.
 
-				if (BP.WF.Dev2Interface.Flow_IsCanDoCurrentWork( ap.GetValInt64ByKey("WorkID"), BP.Web.WebUser.getNo()) == true) {
+				if (Dev2Interface.Flow_IsCanDoCurrentWork( ap.GetValInt64ByKey("WorkID"), WebUser.getNo()) == true) {
 					return "url@MyFlow.htm?FK_Flow=" + ap.GetValStrByKey("FK_Flow") + "&WorkID="
 							+ ap.GetValStrByKey("WorkID") + "&o2=1" + paras;
 				} else {
@@ -1601,7 +1601,7 @@ public class WF extends WebContralBase {
         String FK_Node = GetRequestVal("FK_Node");
 
         //获取节点信息
-        BP.WF.Node nd = new BP.WF.Node(this.getFK_Node());
+        Node nd = new Node(this.getFK_Node());
         Flow fl = nd.getHisFlow();
         ds.Tables.add(nd.ToDataTableField("WF_Node"));
         
@@ -1621,7 +1621,7 @@ public class WF extends WebContralBase {
         }
 
         //获取待审批的流程信息集合
-        DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+        DataTable dt = DBAccess.RunSQLReturnTable(sql);
         dt.TableName = "Batch_List";
         ds.Tables.add(dt);
 
@@ -1674,7 +1674,7 @@ public class WF extends WebContralBase {
    
     public String Batch_Send() throws Exception
     {
-        BP.WF.Node nd = new BP.WF.Node(this.getFK_Node());
+        Node nd = new Node(this.getFK_Node());
         String[] strs = nd.getBatchParas().split(",");
 
         MapAttrs attrs = new MapAttrs("ND"+this.getFK_Node());
@@ -1682,7 +1682,7 @@ public class WF extends WebContralBase {
         //获取数据
         String sql = "SELECT Title,RDT,ADT,SDT,FID,WorkID,Starter FROM WF_EmpWorks WHERE FK_Emp='"+WebUser.getNo()+"' and FK_Node='"+this.getFK_Node()+"'";
 
-        DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+        DataTable dt = DBAccess.RunSQLReturnTable(sql);
         int idx = -1;
         String msg = "";
         for(DataRow dr : dt.Rows)
@@ -1747,10 +1747,10 @@ public class WF extends WebContralBase {
             //获取审核意见的值
             String checkNote = this.GetValFromFrmByKey("TB_" + workid + "_WorkCheck_Doc", null);
             if (DataType.IsNullOrEmpty(checkNote) == false)
-                BP.WF.Dev2Interface.WriteTrackWorkCheck(nd.getFK_Flow(), nd.getNodeID(), workid, Long.parseLong(dr.getValue("FID").toString()), checkNote,null);
+                Dev2Interface.WriteTrackWorkCheck(nd.getFK_Flow(), nd.getNodeID(), workid, Long.parseLong(dr.getValue("FID").toString()), checkNote,null);
             
             msg += "@对工作(" + dr.getValue("Title") + ")处理情况如下";
-            BP.WF.SendReturnObjs objs = BP.WF.Dev2Interface.Node_SendWork(nd.getFK_Flow(), workid, ht);
+            BP.WF.SendReturnObjs objs = Dev2Interface.Node_SendWork(nd.getFK_Flow(), workid, ht);
             msg += objs.ToMsgOfHtml();
             msg += "<br/>";
         }
@@ -1766,11 +1766,11 @@ public class WF extends WebContralBase {
     /// <returns></returns>
     public String Batch_Return() throws Exception
     {
-        BP.WF.Node nd = new BP.WF.Node(this.getFK_Node());
+        Node nd = new Node(this.getFK_Node());
         //获取数据
         String sql = "SELECT Title,RDT,ADT,SDT,FID,WorkID,Starter FROM WF_EmpWorks WHERE FK_Emp='"+WebUser.getNo()+"' and FK_Node='"+this.getFK_Node()+"'";
 
-        DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+        DataTable dt = DBAccess.RunSQLReturnTable(sql);
         int idx = -1;
         String msg = "";
         for (DataRow dr : dt.Rows)
@@ -1803,12 +1803,12 @@ public class WF extends WebContralBase {
     /// <returns></returns>
     public String Batch_Delete() throws Exception
     {
-    	BP.WF.Node nd = new BP.WF.Node(this.getFK_Node());
+    	Node nd = new Node(this.getFK_Node());
 
         //获取数据
         String sql = "SELECT Title,RDT,ADT,SDT,FID,WorkID,Starter FROM WF_EmpWorks WHERE FK_Emp='"+WebUser.getNo()+"' and FK_Node='"+this.getFK_Node()+"'";
 
-        DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+        DataTable dt = DBAccess.RunSQLReturnTable(sql);
         int idx = -1;
         String msg = "";
         for (DataRow dr : dt.Rows)
@@ -1825,7 +1825,7 @@ public class WF extends WebContralBase {
                 continue;
 
             msg += "@对工作(" + dr.getValue("Title")+ ")处理情况如下。<br>";
-            String mes = BP.WF.Dev2Interface.Flow_DoDeleteFlowByFlag(nd.getFK_Flow(), workid, "批量退回", true);
+            String mes = Dev2Interface.Flow_DoDeleteFlowByFlag(nd.getFK_Flow(), workid, "批量退回", true);
             msg += mes;
             msg += "<hr>";
 

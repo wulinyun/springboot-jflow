@@ -101,7 +101,7 @@ public class WorkCheck
 		if (_HisWorkChecks == null)
 		{
 			_HisWorkChecks = new Tracks();
-			BP.En.QueryObject qo = new QueryObject(_HisWorkChecks);
+			QueryObject qo = new QueryObject(_HisWorkChecks);
 			
 			if (this.FID != 0)
 			{

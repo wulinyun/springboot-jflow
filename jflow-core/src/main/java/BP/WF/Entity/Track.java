@@ -596,7 +596,7 @@ public class Track extends BP.En.Entity
 			}
 		}
 		
-		this.setRDT(BP.DA.DataType.getCurrentDataTimess());
+		this.setRDT(DataType.getCurrentDataTimess());
 		
 		this.DoInsert(0);
 		return false;

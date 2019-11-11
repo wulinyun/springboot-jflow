@@ -385,7 +385,7 @@ public class MyJoinFlow extends Entity
 	}
 	public final String getWFStateText()
 	{
-		BP.WF.WFState ws = (WFState)this.getWFState();
+		WFState ws = (WFState)this.getWFState();
 		switch(ws)
 		{
 			case Complete:
@@ -563,7 +563,7 @@ public class MyJoinFlow extends Entity
 			return Glo.getCCFlowAppPath() + "/WF/WFRpt.htm?CurrTab=Frm&WorkID=" + this.getWorkID() + "&FK_Flow=" + this.getFK_Flow() + "&FK_Node=" + this.getFK_Node() + "&DoType=View&MyPK=" + myPk + "&PWorkID=" + this.getPWorkID();
 		}
 
-		BP.WF.Node nd = new Node(this.getFK_Node());
+		Node nd = new Node(this.getFK_Node());
 		nd.WorkID = this.getWorkID(); //为求当前表单ID获得参数，而赋值.
 
 		return Glo.getCCFlowAppPath() + "/WF/CCForm/FrmGener.htm?WorkID=" + this.getWorkID() + "&FK_Flow=" + this.getFK_Flow() + "&FK_MapData=" + nd.getNodeFrmID() + "&ReadOnly=1&IsEdit=0";

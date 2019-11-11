@@ -162,7 +162,7 @@ public abstract class FormEventBase
 	 @param key 字段
 	 @return 如果为Null,或者不存在就抛出异常
 	*/
-	public final java.math.BigDecimal GetValDecimal(String key)
+	public final BigDecimal GetValDecimal(String key)
 	{
 		return new BigDecimal(this.GetValStr(key));
 	}
@@ -293,7 +293,7 @@ public abstract class FormEventBase
 			//系统参数.
 			r.put("FK_MapData", en.getClassID());
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			r.put("FK_MapData",en.getClassID());
 		}
@@ -307,7 +307,7 @@ public abstract class FormEventBase
 				{
 					r.put(s, ap.GetValStrByKey(s));
 				}
-				catch (java.lang.Exception e2)
+				catch (Exception e2)
 				{
 					r.put(s, ap.GetValStrByKey(s));
 				}
@@ -317,14 +317,14 @@ public abstract class FormEventBase
 		if (SystemConfig.getIsBSsystem() == true)
 		{
 			//如果是bs系统, 就加入外部url的变量.
-			for (String key : BP.Sys.Glo.getQueryStringKeys())
+			for (String key : Glo.getQueryStringKeys())
 			{
-				Object val = BP.Sys.Glo.getRequest().getAttribute(key);
+				Object val = Glo.getRequest().getAttribute(key);
 				try
 				{
 					r.put(key, val);
 				}
-				catch (java.lang.Exception e3)
+				catch (Exception e3)
 				{
 					r.put(key, val);
 				}

@@ -117,7 +117,7 @@ public class SFDBSrc extends EntityNoName
 	*/
 	public final int RunSQL(String sql)
 	{
-		return BP.DA.DBAccess.RunSQL(sql);
+		return DBAccess.RunSQL(sql);
 		/*int i = 0;
 		switch (this.getDBSrcType())
 		{
@@ -787,7 +787,7 @@ public class SFDBSrc extends EntityNoName
 		switch (this.getDBSrcType())
 		{
 			case Localhost:
-				return BP.Sys.SystemConfig.getAppCenterDSN();
+				return SystemConfig.getAppCenterDSN();
 			case SQLServer:
 				return "password=" + this.getPassword() + ";persist security info=true;user id=" + this.getUserID() + ";initial catalog=" + this.getDBName() + ";data source=" + this.getIP() + ";timeout=999;multipleactiveresultsets=true";
 			case Oracle:
@@ -812,14 +812,14 @@ public class SFDBSrc extends EntityNoName
 			return "本地连接不需要测试是否连接成功.";
 		}
 
-		if (this.getDBSrcType() == BP.Sys.DBSrcType.Localhost)
+		if (this.getDBSrcType() == DBSrcType.Localhost)
 			//throw new Exception("@在该系统中只能有一个本地连接.");
 		{
 			return "@在该系统中只能有一个本地连接.";
 		}
 
 		String dsn = "";
-		if (this.getDBSrcType() == BP.Sys.DBSrcType.SQLServer)
+		if (this.getDBSrcType() == DBSrcType.SQLServer)
 		{
 			try
 			{
@@ -831,22 +831,22 @@ public class SFDBSrc extends EntityNoName
 				//删除应用.
 				try
 				{
-					BP.DA.DBAccess.RunSQL("Exec sp_droplinkedsrvlogin " + this.getNo() + ",Null ");
-					BP.DA.DBAccess.RunSQL("Exec sp_dropserver " + this.getNo());
+					DBAccess.RunSQL("Exec sp_droplinkedsrvlogin " + this.getNo() + ",Null ");
+					DBAccess.RunSQL("Exec sp_dropserver " + this.getNo());
 				}
-				catch (java.lang.Exception e)
+				catch (Exception e)
 				{
 				}
 
 				//创建应用.
 				String sql = "";
 				sql += "sp_addlinkedserver @server='" + this.getNo() + "', @srvproduct='', @provider='SQLOLEDB', @datasrc='" + this.getIP() + "'";
-				BP.DA.DBAccess.RunSQL(sql);
+				DBAccess.RunSQL(sql);
 
 				//执行登录.
 				sql = "";
 				sql += " EXEC sp_addlinkedsrvlogin '" + this.getNo() + "','false', NULL, '" + this.getUserID() + "', '" + this.getPassword() + "'";
-				BP.DA.DBAccess.RunSQL(sql);
+				DBAccess.RunSQL(sql);
 
 				return "恭喜您，该(" + this.getName() + ")连接配置成功。";
 			}
@@ -856,7 +856,7 @@ public class SFDBSrc extends EntityNoName
 			}
 		}
 
-		if (this.getDBSrcType() == BP.Sys.DBSrcType.Oracle)
+		if (this.getDBSrcType() == DBSrcType.Oracle)
 		{
 			try
 			{
@@ -875,7 +875,7 @@ public class SFDBSrc extends EntityNoName
 			}
 		}
 
-		if (this.getDBSrcType() == BP.Sys.DBSrcType.MySQL)
+		if (this.getDBSrcType() == DBSrcType.MySQL)
 		{
 			try
 			{
@@ -911,7 +911,7 @@ public class SFDBSrc extends EntityNoName
 			}
 		}*/
 
-		if (this.getDBSrcType() == BP.Sys.DBSrcType.WebServices)
+		if (this.getDBSrcType() == DBSrcType.WebServices)
 		{
 			String url = this.getIP() + (this.getIP().endsWith(".asmx") ? "?wsdl" :this.getIP().endsWith(".svc") ? "?singleWsdl" : "");
 
@@ -1551,7 +1551,7 @@ public class SFDBSrc extends EntityNoName
 		StringBuilder sql = new StringBuilder();
 
 		DBSrcType dbType = this.getDBSrcType();
-		if (dbType == BP.Sys.DBSrcType.Localhost)
+		if (dbType == DBSrcType.Localhost)
 		{
 			switch (SystemConfig.getAppCenterDBType())
 			{
@@ -1703,7 +1703,7 @@ public class SFDBSrc extends EntityNoName
 	@Override
 	protected boolean beforeUpdateInsertAction() throws Exception
 	{
-		if (!this.getNo().equals("local") && this.getDBSrcType() == BP.Sys.DBSrcType.Localhost)
+		if (!this.getNo().equals("local") && this.getDBSrcType() == DBSrcType.Localhost)
 		{
 			throw new RuntimeException("@在该系统中只能有一个本地连接，请选择其他数据源类型。");
 		}

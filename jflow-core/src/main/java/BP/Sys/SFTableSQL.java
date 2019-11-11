@@ -57,7 +57,7 @@ public class SFTableSQL extends EntityNoName
 
 
 			//数据源.
-		map.AddDDLEntities(SFTableAttr.FK_SFDBSrc, "local", "数据源", new BP.Sys.SFDBSrcs(), true);
+		map.AddDDLEntities(SFTableAttr.FK_SFDBSrc, "local", "数据源", new SFDBSrcs(), true);
 
 		map.AddTBString(SFTableAttr.ColumnValue, null, "显示的值(编号列)", true, false, 0, 200, 20);
 		map.AddTBString(SFTableAttr.ColumnText, null, "显示的文字(名称列)", true, false, 0, 200, 20);

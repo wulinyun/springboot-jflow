@@ -90,7 +90,7 @@ public class Frm extends EntityNoName
 		 //   map.AddDDLSysEnum(FrmAttr.FrmType, 0, "独立表单属性:运行类型", true, false, FrmAttr.FrmType);
 
 			//表单的运行类型.
-		map.AddDDLSysEnum(FrmAttr.FrmType, BP.Sys.FrmType.FreeFrm.getValue(), "表单类型",true, false, FrmAttr.FrmType);
+		map.AddDDLSysEnum(FrmAttr.FrmType, FrmType.FreeFrm.getValue(), "表单类型",true, false, FrmAttr.FrmType);
 
 		map.AddTBString(FrmAttr.PTable, null, "物理表", true, false, 0, 50, 10);
 		map.AddTBInt(FrmAttr.DBURL, 0, "DBURL", true, false);
@@ -101,8 +101,8 @@ public class Frm extends EntityNoName
 			//表单类别.
 		map.AddTBString(MapDataAttr.FK_FrmSort, "01", "表单类别", true, false, 0, 500, 20);
 
-		map.AddTBInt(BP.Sys.MapDataAttr.FrmW, 900, "表单宽度", true, false);
-		map.AddTBInt(BP.Sys.MapDataAttr.FrmH, 1200, "表单高度", true, false);
+		map.AddTBInt(MapDataAttr.FrmW, 900, "表单宽度", true, false);
+		map.AddTBInt(MapDataAttr.FrmH, 1200, "表单高度", true, false);
 
 		this.set_enMap(map);
 		return this.get_enMap();
@@ -113,7 +113,7 @@ public class Frm extends EntityNoName
 	}
 	public final int getFrmH()
 	{
-		return this.GetValIntByKey(BP.Sys.MapDataAttr.FrmH);
+		return this.GetValIntByKey(MapDataAttr.FrmH);
 	}
 
 

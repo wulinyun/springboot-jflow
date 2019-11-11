@@ -127,7 +127,7 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 	/// #region 发起限制.
 	public final String Limit_Init() throws Exception {
 		
-		BP.WF.Flow fl = new BP.WF.Flow();
+		Flow fl = new Flow();
 		fl.setNo(this.getFK_Flow());
 		fl.RetrieveFromDBSources();
 		return fl.ToJson();
@@ -135,7 +135,7 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 	}
 
 	public final String Limit_Save() throws Exception {
-		BP.WF.Flow fl = new BP.WF.Flow(this.getFK_Flow());
+		Flow fl = new Flow(this.getFK_Flow());
 		fl.SetValByKey("StartLimitRole", this.GetRequestValInt("StartLimitRole"));
 		fl.setStartLimitPara(this.GetRequestVal("StartLimitPara"));
 		fl.setStartLimitAlert(this.GetRequestVal("StartLimitAlert"));
@@ -151,7 +151,7 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 	 * @throws Exception 
 	 */
 	public String CheckFlow_Init() throws Exception {
-		BP.WF.Flow fl = new BP.WF.Flow(this.getFK_Flow());
+		Flow fl = new Flow(this.getFK_Flow());
 		String str = fl.DoCheck();
 		 str = str.replace("@", "<BR>@");
          str = str.replace("@警告:", "<label style='color:yellow ;'>@警告:</label>");
@@ -167,7 +167,7 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 	 * @throws NumberFormatException 
 	 */
 	public String FlowFields_Init() throws NumberFormatException, Exception {
-		BP.Sys.MapAttrs attrs = new BP.Sys.MapAttrs("ND" + Integer.parseInt(this.getFK_Flow()) + "Rpt");
+		MapAttrs attrs = new MapAttrs("ND" + Integer.parseInt(this.getFK_Flow()) + "Rpt");
 		return attrs.ToJson();
 	}
 
@@ -178,7 +178,7 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 	 * @throws Exception 
 	 */
 	public String AutoStart_Init() throws Exception {
-		BP.WF.Flow en = new BP.WF.Flow();
+		Flow en = new Flow();
 		en.setNo(this.getFK_Flow());
 		en.RetrieveFromDBSources();
 		return en.ToJson();
@@ -192,7 +192,7 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 	 */
 	public String AutoStart_Save() throws Exception {
 		// 执行保存.
-		BP.WF.Flow en = new BP.WF.Flow(this.getFK_Flow());
+		Flow en = new Flow(this.getFK_Flow());
 
 		en.SetValByKey(BP.WF.Template.FlowAttr.FlowRunWay, this.GetRequestValInt("RB_FlowRunWay"));
 
@@ -299,18 +299,18 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 		DataSet ds = new DataSet();
 
 		// 获得数据源的表.
-		BP.Sys.SFDBSrc src = new SFDBSrc("local");
+		SFDBSrc src = new SFDBSrc("local");
 		DataTable dt = src.GetTables();
 		dt.TableName = "Tables";
 		ds.Tables.add(dt);
 
 		// 把节点信息放入.
-		BP.WF.Nodes nds = new Nodes(this.getFK_Flow());
+		Nodes nds = new Nodes(this.getFK_Flow());
 		DataTable dtNode = nds.ToDataTableField("Nodes");
 		ds.Tables.add(dtNode);
 
 		// 把流程信息放入.
-		BP.WF.Flow fl = new BP.WF.Flow(this.getFK_Flow());
+		Flow fl = new Flow(this.getFK_Flow());
 		DataTable dtFlow = fl.ToDataTableField("Flow");
 		ds.Tables.add(dtFlow);
 
@@ -324,7 +324,7 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 	public String DTSBTable_Save() throws Exception {
 		Flow flow = new Flow(this.getFK_Flow());
 
-		BP.WF.Template.FlowDTSWay dtsWay = (FlowDTSWay.forValue(this.GetRequestValInt("RB_DTSWay")));
+		FlowDTSWay dtsWay = (FlowDTSWay.forValue(this.GetRequestValInt("RB_DTSWay")));
 
 		flow.setDTSWay(dtsWay);
 		if (flow.getDTSWay() == FlowDTSWay.None) {
@@ -499,7 +499,7 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 	 * @throws Exception 
 	 */
 	public String StartGuide_Init() throws Exception {
-		BP.WF.Flow en = new BP.WF.Flow();
+		Flow en = new Flow();
 		en.setNo(this.getFK_Flow());
 		en.RetrieveFromDBSources();
 
@@ -533,39 +533,39 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 			en.SetValByKey(BP.WF.Template.FlowAttr.StartGuideWay, val);
 
 			if (en.getStartGuideWay() == StartGuideWay.None) {
-				en.setStartGuideWay(BP.WF.Template.StartGuideWay.None);
+				en.setStartGuideWay(StartGuideWay.None);
 			}
 
 			if (en.getStartGuideWay() == StartGuideWay.ByHistoryUrl) {
 				en.setStartGuidePara1(this.GetRequestVal("TB_ByHistoryUrl"));
 				en.setStartGuidePara2("");
-				en.setStartGuideWay(BP.WF.Template.StartGuideWay.ByHistoryUrl);
+				en.setStartGuideWay(StartGuideWay.ByHistoryUrl);
 			}
 
 			if (en.getStartGuideWay() == StartGuideWay.BySelfUrl) {
 				en.setStartGuidePara1(this.GetRequestVal("TB_SelfURL"));
 				en.setStartGuidePara2("");
-				en.setStartGuideWay(BP.WF.Template.StartGuideWay.BySelfUrl);
+				en.setStartGuideWay(StartGuideWay.BySelfUrl);
 			}
 
 			// 单条模式.
 			if (en.getStartGuideWay() == StartGuideWay.BySQLOne) {
 				en.setStartGuidePara1(this.GetRequestVal("TB_BySQLOne1")); // 查询语句.
 				en.setStartGuidePara2(this.GetRequestVal("TB_BySQLOne2")); // 列表语句.
-				en.setStartGuideWay(BP.WF.Template.StartGuideWay.BySQLOne);
+				en.setStartGuideWay(StartGuideWay.BySQLOne);
 			}
 
 			// 多条-子父流程-合卷审批.
 			if (en.getStartGuideWay() == StartGuideWay.SubFlowGuide) {
 				en.setStartGuidePara1(this.GetRequestVal("TB_SubFlow1")); // 查询语句.
 				en.setStartGuidePara2(this.GetRequestVal("TB_SubFlow2")); // 列表语句.
-				en.setStartGuideWay(BP.WF.Template.StartGuideWay.SubFlowGuide);
+				en.setStartGuideWay(StartGuideWay.SubFlowGuide);
 			}
 
 			BP.WF.Template.FrmNodes fns = new BP.WF.Template.FrmNodes(Integer.parseInt(this.getFK_Flow() + "01"));
 			if (fns.size() >= 2) {
 				if (en.getStartGuideWay() == (StartGuideWay.ByFrms))
-					en.setStartGuideWay(BP.WF.Template.StartGuideWay.ByFrms);
+					en.setStartGuideWay(StartGuideWay.ByFrms);
 			}
 
 			// 右侧的超链接.
@@ -590,7 +590,7 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 			Log.DebugWriteError("流程编号为空");
 			return "err@流程编号为空";
 		} else {
-			BP.WF.Template.TruckViewPower en = new BP.WF.Template.TruckViewPower(getFK_Flow());
+			TruckViewPower en = new TruckViewPower(getFK_Flow());
 			en.Retrieve();
 			return en.ToJson();
 		}
@@ -603,7 +603,7 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 	 */
 	public String TruckViewPower_Save() {
 		try {
-			BP.WF.Template.TruckViewPower en = new BP.WF.Template.TruckViewPower(getFK_Flow());
+			TruckViewPower en = new TruckViewPower(getFK_Flow());
 			en.Retrieve();
 
 			en = (TruckViewPower) BP.Sys.PubClass.CopyFromRequestByPost(en, getRequest());
@@ -718,9 +718,9 @@ public class WF_Admin_AttrFlow extends WebContralBase {
 			flowNo = this.GetRequestVal("SpecFlowNo");
 
 		// 执行导入
-		BP.WF.Flow flow;
+		Flow flow;
 		try {
-			flow = BP.WF.Flow.DoLoadFlowTemplate(FK_FlowSort, xmlFile.getAbsolutePath(), model, flowNo);
+			flow = Flow.DoLoadFlowTemplate(FK_FlowSort, xmlFile.getAbsolutePath(), model, flowNo);
 			Hashtable<String, String> ht = new Hashtable<String, String>();
 			ht.put("FK_Flow", flow.getNo());
 			ht.put("FlowName", flow.getName());

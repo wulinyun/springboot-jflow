@@ -30,7 +30,7 @@ public class ClassFactory {
 	 *            类名称
 	 * @return BP.Sys.EventBase
 	 */
-	public static BP.Sys.EventBase GetEventBase(String className) {
+	public static EventBase GetEventBase(String className) {
 		if (Htable_Evbase == null || Htable_Evbase.isEmpty()) {
 			Htable_Evbase = new Hashtable();
 			String cl = "BP.Sys.EventBase";
@@ -39,11 +39,11 @@ public class ClassFactory {
 			for (Object en : al) {
 				try {
 					Htable_Evbase.put(((EventBase) en).getClass().getName(), en);
-				} catch (java.lang.Exception e) {
+				} catch (Exception e) {
 				}
 			}
 		}
-		BP.Sys.EventBase ens = (EventBase) ((Htable_Evbase.get(className) instanceof EventBase)
+		EventBase ens = (EventBase) ((Htable_Evbase.get(className) instanceof EventBase)
 				? Htable_Evbase.get(className) : null);
 		return ens;
 	}
@@ -169,7 +169,7 @@ public class ClassFactory {
 			}
 		}
 		Object tmp = Htable_Method.get(className);
-		return ((BP.En.Method) ((tmp instanceof BP.En.Method) ? tmp : null));
+		return ((Method) ((tmp instanceof Method) ? tmp : null));
 	}
 
 	// 获取 ens
@@ -191,7 +191,7 @@ public class ClassFactory {
 		for (Object en : al) {
 			try {
 				Htable_Ens.put(en.getClass().getName(), en);
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 			}
 		}
 		// }
@@ -236,7 +236,7 @@ public class ClassFactory {
 		for (Object en : al) {
 			try {
 				Htable_Ens.put(en.getClass().getName(), en);
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 			}
 		}
 		// }

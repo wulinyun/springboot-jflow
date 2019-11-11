@@ -80,7 +80,7 @@ public class CCFlowPage
 	
 	public final String getCurrPage()
 	{
-		String url = BP.Sys.Glo.getRequest().getRequestURL().toString();
+		String url = Glo.getRequest().getRequestURL().toString();
 		int i = url.lastIndexOf("/") + 1;
 		int i2 = url.indexOf(".jsp") - 6;
 		try

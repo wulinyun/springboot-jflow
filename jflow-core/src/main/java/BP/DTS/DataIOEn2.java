@@ -129,10 +129,10 @@ public abstract class DataIOEn2
 	
 	public final void Directly(String fromSQL, String toPTable)
 	{
-		BP.DA.DataTable dt = this.FromDBUrlRunSQLReturnTable(fromSQL);
+		DataTable dt = this.FromDBUrlRunSQLReturnTable(fromSQL);
 		String sql = null;
 		sql = "INSERT INTO " + toPTable + "(";
-		for (BP.DA.DataColumn dc : dt.Columns)
+		for (DataColumn dc : dt.Columns)
 		{
 			sql += dc.ColumnName + ",";
 		}
@@ -141,7 +141,7 @@ public abstract class DataIOEn2
 		try
 		{
 			this.ToDBUrlRunSQL(" drop table " + toPTable);
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 		}
 		

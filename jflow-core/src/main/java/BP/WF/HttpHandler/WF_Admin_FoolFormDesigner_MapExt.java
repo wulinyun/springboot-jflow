@@ -90,7 +90,7 @@ public class WF_Admin_FoolFormDesigner_MapExt extends WebContralBase {
 		// 加载外键字段.
 		String sql = "SELECT KeyOfEn AS No, Name FROM Sys_MapAttr WHERE UIContralType=1 AND FK_MapData='"
 				+ this.getFK_MapData() + "' AND KeyOfEn!='" + this.getKeyOfEn() + "'";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Sys_MapAttr";
 		ds.Tables.add(dt);
 
@@ -589,7 +589,7 @@ public class WF_Admin_FoolFormDesigner_MapExt extends WebContralBase {
 		DataSet ds = new DataSet();
 		String sql = "SELECT * FROM Sys_MapExt WHERE AttrOfOper='" + this.getKeyOfEn() + "' AND FK_MapData='"
 				+ this.getFK_MapData() + "'";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Sys_MapExt";
 		ds.Tables.add(dt);
 
@@ -612,7 +612,7 @@ public class WF_Admin_FoolFormDesigner_MapExt extends WebContralBase {
 		DataSet ds = new DataSet();
 		String sql = "SELECT * FROM Sys_MapExt WHERE AttrOfOper='" + this.getKeyOfEn() + "' AND FK_MapData='"
 				+ this.getFK_MapData() + "'";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Sys_MapExt";
 		ds.Tables.add(dt);
 

@@ -180,7 +180,7 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
     public String DownFormTemplete() throws Exception
     {
         DataSet ds = BP.Sys.CCFormAPI.GenerHisDataSet_AllEleInfo(this.getFK_MapData());
-        String file = BP.Sys.SystemConfig.getPathOfTemp() + this.getFK_MapData() + ".xml";
+        String file = SystemConfig.getPathOfTemp() + this.getFK_MapData() + ".xml";
         //表单导出方式修改
         ds.WriteXml(file,null,ds);
         String docs = DataType.ReadTextFile(file);
@@ -295,7 +295,7 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 
 		if ( !"admin".equals(WebUser.getNo()))
 		{
-			BP.WF.Port.AdminEmp aemp = new AdminEmp();
+			AdminEmp aemp = new AdminEmp();
 			aemp.setNo(WebUser.getNo());
 
 			if (aemp.RetrieveFromDBSources() != 0 && aemp.getUserType() == 1 && !StringHelper.isNullOrEmpty(aemp.getRootOfDept()))
@@ -457,11 +457,11 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 	public final String Default_Init() throws Exception
 	{
 		if(!"BP".equals(SystemConfig.getRunOnPlant())) {
-			BP.Web.WebUser.getNo(); //启动设计器，先SSO登录，防止初次访问报错
+			WebUser.getNo(); //启动设计器，先SSO登录，防止初次访问报错
 		}
 		
 		//让admin登录
-		if (DataType.IsNullOrEmpty(BP.Web.WebUser.getNoOfRel())==true)
+		if (DataType.IsNullOrEmpty(WebUser.getNoOfRel())==true)
 		{
 			 
 			 String userNo = this.GetRequestVal("UserNo");            
@@ -472,7 +472,7 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 		   return "url@Login.htm?DoType=Logout";
 		}
 
-		if (BP.Web.WebUser.getIsAdmin() == false)
+		if (WebUser.getIsAdmin() == false)
 		{
 			return "url@Login.htm?DoType=Logout";
 		}
@@ -480,12 +480,12 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 
 		//如果没有流程表，就执行安装.
 			 
-		if (BP.DA.DBAccess.IsExitsObject("WF_Flow") == false)
+		if (DBAccess.IsExitsObject("WF_Flow") == false)
 		{
 			return "url@../DBInstall.htm";
 		}
 
-		java.util.Hashtable ht = new java.util.Hashtable();
+		Hashtable ht = new Hashtable();
 	 
 			ht.put("OSModel", "1");
 	 
@@ -590,7 +590,7 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
          
          
          //判断集成的平台.
-         String plant=BP.Sys.SystemConfig.getRunOnPlant();
+         String plant=SystemConfig.getRunOnPlant();
          
          if (plant.equals("jeesite")==true)
          {
@@ -636,7 +636,7 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 		String direction = GetValFromFrmByKey("direction");
 
 		//直接保存流程图信息
-		BP.WF.Flow fl = new BP.WF.Flow(flowNo);
+		Flow fl = new Flow(flowNo);
 		//修改版本
 		fl.setDType(fl.getDType() == BP.WF.CCBPM_DType.BPMN.getValue() ? BP.WF.CCBPM_DType.BPMN.getValue() : BP.WF.CCBPM_DType.CCBPM.getValue());
 	 
@@ -726,7 +726,7 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 	*/
 	public final String Flow_AllElements_ResponseJson() throws Exception
 	{
-		BP.WF.Flow flow = new BP.WF.Flow();
+		Flow flow = new Flow();
 		flow.setNo(this.getFK_Flow());
 		flow.RetrieveFromDBSources();
 
@@ -772,7 +772,7 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 			node.setHisRunModel(Node_GetRunModelByFigureName(figureName));
 			node.Update();
 
-			java.util.Hashtable ht = new java.util.Hashtable();
+			Hashtable ht = new Hashtable();
 			ht.put("NodeID", node.getNodeID());
 			ht.put("Name", node.getName());
 
@@ -916,7 +916,7 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 			return "err@当前用户没有登录，请登录后再试。";
 		}
 
-		java.util.Hashtable ht = new java.util.Hashtable();
+		Hashtable ht = new Hashtable();
 
 		BP.Port.Emp emp = new BP.Port.Emp(WebUser.getNo());
 
@@ -935,7 +935,7 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 		}
 		else
 		{
-			BP.WF.Port.AdminEmp aemp = new AdminEmp();
+			AdminEmp aemp = new AdminEmp();
 			aemp.setNo(WebUser.getNo());
 
 			if (aemp.RetrieveFromDBSources() == 0)
@@ -1022,11 +1022,11 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 	{
 		String sql = "SELECT * FROM (SELECT 'F'+No NO,'F'+ParentNo PARENTNO, NAME, IDX, 1 ISPARENT,'FLOWTYPE' TTYPE,-1 DTYPE FROM WF_FlowSort" + "\r\n" + "                           union " + "\r\n" + "                           SELECT NO, 'F'+FK_FlowSort as PARENTNO,(NO + '.' + NAME) NAME,IDX,0 ISPARENT,'FLOW' TTYPE,DTYPE FROM WF_Flow) A  ORDER BY DTYPE, IDX";
 
-		if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.Oracle)
+		if (SystemConfig.getAppCenterDBType() == DBType.Oracle)
 		{
 			sql = "SELECT * FROM (SELECT 'F'||No NO,'F'||ParentNo PARENTNO,NAME, IDX, 1 ISPARENT,'FLOWTYPE' TTYPE,-1 DTYPE FROM WF_FlowSort" + "\r\n" + "                        union " + "\r\n" + "                        SELECT NO, 'F'||FK_FlowSort as PARENTNO,NO||'.'||NAME NAME,IDX,0 ISPARENT,'FLOW' TTYPE,0 as DTYPE FROM WF_Flow) A  ORDER BY DTYPE, IDX";
 		}
-		else if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.MySQL)
+		else if (SystemConfig.getAppCenterDBType() == DBType.MySQL)
 		{
 			sql = "SELECT * FROM (SELECT CONCAT('F', No) NO, CONCAT('F', ParentNo) PARENTNO, NAME, IDX, 1 ISPARENT,'FLOWTYPE' TTYPE,-1 DTYPE FROM WF_FlowSort" + "\r\n" + "                           union " + "\r\n" + "                           SELECT NO, CONCAT('F', FK_FlowSort) PARENTNO, CONCAT(NO, '.', NAME) NAME,IDX,0 ISPARENT,'FLOW' TTYPE,DTYPE FROM WF_Flow) A  ORDER BY DTYPE, IDX";
 		}
@@ -1055,7 +1055,7 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 
 		if ( ! "admin".equals(WebUser.getNo()))
 		{
-			BP.WF.Port.AdminEmp aemp = new AdminEmp();
+			AdminEmp aemp = new AdminEmp();
 			aemp.setNo(WebUser.getNo());
 			
 			if (aemp.RetrieveFromDBSources() == 0)
@@ -1552,7 +1552,7 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 		FlowSorts flowSorts = new FlowSorts();
 		flowSorts.RetrieveAll(FlowSortAttr.Idx);
 
-		BP.WF.Port.AdminEmp emp = new AdminEmp(BP.Web.WebUser.getNo());
+		AdminEmp emp = new AdminEmp(WebUser.getNo());
 
 		return BP.Tools.Entitis2Json.ConvertEntitis2GenerTree(flowSorts, emp.getRootOfFlow());
 	}
@@ -1666,7 +1666,7 @@ public class WF_Admin_CCBPMDesigner extends WebContralBase
 	 */
 	public final String FlowCheck_Init() throws Exception
 	{
-		BP.WF.Flow fl = new BP.WF.Flow(this.getFK_Flow());
+		Flow fl = new Flow(this.getFK_Flow());
 		String info = fl.DoCheck().replace("@", "<BR>@");
 		info = info.replace("@错误", "<font color=red><b>@错误</b></font>");
 		info = info.replace("@警告", "<font color=yellow><b>@警告</b></font>");

@@ -44,7 +44,7 @@ public class CCFlowPage extends BP.Web.PageBase
 		{
 			if (this._HisEns == null)
 			{
-				_HisEns = BP.En.ClassFactory.GetEns(this.getEnsName());
+				_HisEns = ClassFactory.GetEns(this.getEnsName());
 			}
 		}
 		return _HisEns;

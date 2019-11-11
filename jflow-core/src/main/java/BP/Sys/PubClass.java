@@ -76,7 +76,7 @@ public class PubClass {
 				return colorName;
 			}
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			return "black";
 		}
@@ -84,24 +84,24 @@ public class PubClass {
 
 	public static void InitFrm(String fk_mapdata) throws Exception {
 		// 删除数据.
-		BP.Sys.FrmLabs labs = new BP.Sys.FrmLabs();
+		FrmLabs labs = new FrmLabs();
 		try {
-			labs.Delete(BP.Sys.FrmLabAttr.FK_MapData, fk_mapdata);
+			labs.Delete(FrmLabAttr.FK_MapData, fk_mapdata);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		BP.Sys.FrmLines lines = new BP.Sys.FrmLines();
+		FrmLines lines = new FrmLines();
 		try {
-			lines.Delete(BP.Sys.FrmLabAttr.FK_MapData, fk_mapdata);
+			lines.Delete(FrmLabAttr.FK_MapData, fk_mapdata);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		BP.Sys.MapData md = new BP.Sys.MapData();
+		MapData md = new MapData();
 		md.setNo(fk_mapdata);
 		if (md.RetrieveFromDBSources() == 0) {
-			BP.Sys.MapDtl mdtl = new BP.Sys.MapDtl();
+			MapDtl mdtl = new MapDtl();
 			mdtl.setNo(fk_mapdata);
 			if (mdtl.RetrieveFromDBSources() == 0) {
 				throw new RuntimeException("@对:" + fk_mapdata + "的映射信息不存在.");
@@ -110,8 +110,8 @@ public class PubClass {
 			}
 		}
 
-		BP.Sys.MapAttrs mattrs = new BP.Sys.MapAttrs(fk_mapdata);
-		BP.Sys.GroupFields gfs = new BP.Sys.GroupFields(fk_mapdata);
+		MapAttrs mattrs = new MapAttrs(fk_mapdata);
+		GroupFields gfs = new GroupFields(fk_mapdata);
 
 		int tableW = 700;
 		int padingLeft = 3;
@@ -123,7 +123,7 @@ public class PubClass {
 		// table 标题。
 		int currX = 0;
 		int currY = 0;
-		BP.Sys.FrmLab lab = new BP.Sys.FrmLab();
+		FrmLab lab = new FrmLab();
 		lab.setText(md.getName());
 		lab.setFontSize(20);
 		lab.setX(200);
@@ -136,7 +136,7 @@ public class PubClass {
 
 		// 表格头部的横线.
 		currY += 20;
-		BP.Sys.FrmLine lin = new BP.Sys.FrmLine();
+		FrmLine lin = new FrmLine();
 		lin.setX1(0);
 		lin.setX2(tableW);
 		lin.setY1(currY);
@@ -151,7 +151,7 @@ public class PubClass {
 		int i = 2;
 		for (Object gf : gfs) {
 			i++;
-			lab = new BP.Sys.FrmLab();
+			lab = new FrmLab();
 			lab.setX(0);
 			lab.setY(currY);
 			lab.setText(((GroupField) gf).getLab());
@@ -161,7 +161,7 @@ public class PubClass {
 			lab.Insert();
 
 			currY += 15;
-			lin = new BP.Sys.FrmLine();
+			lin = new FrmLine();
 			lin.setX1(padingLeft);
 			lin.setX2(tableW);
 			lin.setY1(currY);
@@ -180,7 +180,7 @@ public class PubClass {
 
 				idx++;
 				if (isLeft) {
-					lin = new BP.Sys.FrmLine();
+					lin = new FrmLine();
 					lin.setX1(0);
 					lin.setX2(tableW);
 					lin.setY1(currY);
@@ -190,7 +190,7 @@ public class PubClass {
 					lin.Insert();
 					currY += 14; // 画一横线.
 
-					lab = new BP.Sys.FrmLab();
+					lab = new FrmLab();
 					lab.setX(lin.getX1() + padingLeft);
 					lab.setY(currY);
 					lab.setText(((MapAttr) attr).getName());
@@ -198,7 +198,7 @@ public class PubClass {
 					lab.setMyPK("Lab" + keyID + (new Integer(i)).toString() + idx);
 					lab.Insert();
 
-					lin = new BP.Sys.FrmLine();
+					lin = new FrmLine();
 					lin.setX1(leftCtrlX);
 					lin.setY1(currY - 14);
 
@@ -215,7 +215,7 @@ public class PubClass {
 					currY += 14;
 				} else {
 					currY = currY - 14;
-					lab = new BP.Sys.FrmLab();
+					lab = new FrmLab();
 					lab.setX(tableW / 2 + padingLeft);
 					lab.setY(currY);
 					lab.setText(((MapAttr) attr).getName());
@@ -223,7 +223,7 @@ public class PubClass {
 					lab.setMyPK("Lab" + keyID + (new Integer(i)).toString() + idx);
 					lab.Insert();
 
-					lin = new BP.Sys.FrmLine();
+					lin = new FrmLine();
 					lin.setX1(tableW / 2);
 					lin.setY1(currY - 14);
 
@@ -233,7 +233,7 @@ public class PubClass {
 					lin.setMyPK("Lin" + keyID + (new Integer(i)).toString() + idx);
 					lin.Insert(); // 画一 竖线
 
-					lin = new BP.Sys.FrmLine();
+					lin = new FrmLine();
 					lin.setX1(rightCtrlX);
 					lin.setY1(currY - 14);
 					lin.setX2(rightCtrlX);
@@ -252,7 +252,7 @@ public class PubClass {
 			}
 		}
 		// table bottom line.
-		lin = new BP.Sys.FrmLine();
+		lin = new FrmLine();
 		lin.setX1(0);
 		lin.setY1(currY);
 
@@ -265,7 +265,7 @@ public class PubClass {
 
 		currY = currY - 28 - 18;
 		// 处理结尾. table left line
-		lin = new BP.Sys.FrmLine();
+		lin = new FrmLine();
 		lin.setX1(0);
 		lin.setY1(50);
 		lin.setX2(0);
@@ -276,7 +276,7 @@ public class PubClass {
 		lin.Insert();
 
 		// table right line.
-		lin = new BP.Sys.FrmLine();
+		lin = new FrmLine();
 		lin.setX1(tableW);
 		lin.setY1(50);
 		lin.setX2(tableW);
@@ -316,7 +316,7 @@ public class PubClass {
 		try {
 			int a = Integer.parseInt(s);
 			fd = "F" + fd;
-		} catch (java.lang.Exception e) {}
+		} catch (Exception e) {}
 		return fd;
 	}
 
@@ -324,7 +324,7 @@ public class PubClass {
 
 	public static String getKeyFields() {
 		if (_KeyFields == null) {
-			_KeyFields = BP.DA.DataType.ReadTextFile(SystemConfig.getPathOfData() + "/Sys/FieldKeys.txt");
+			_KeyFields = DataType.ReadTextFile(SystemConfig.getPathOfData() + "/Sys/FieldKeys.txt");
 		}
 		return _KeyFields;
 	}
@@ -425,7 +425,7 @@ public class PubClass {
 	 
 
 	public static String GenerLabelStr(String title) {
-		String path = BP.Sys.Glo.getRequest().getRemoteHost();
+		String path = Glo.getRequest().getRemoteHost();
 		if (path.equals("") || path.equals("/")) {
 			path = "..";
 		}
@@ -511,7 +511,7 @@ public class PubClass {
 	 * 重新建立索引
 	 */
 	public static void ReCreateIndex() {
-		java.util.ArrayList als = ClassFactory.GetObjects("BP.En.Entity");
+		ArrayList als = ClassFactory.GetObjects("BP.En.Entity");
 		String sql = "";
 		for (Object obj : als) {
 			Entity en = (Entity) obj;
@@ -527,7 +527,7 @@ public class PubClass {
 	}
 
 	public static void DBIOToAccess() {
-		java.util.ArrayList al = BP.En.ClassFactory.GetObjects("BP.En.Entities");
+		ArrayList al = ClassFactory.GetObjects("BP.En.Entities");
 		PubClass.DBIO(DBType.Access, al, false);
 	}
 
@@ -535,7 +535,7 @@ public class PubClass {
 	 * 检查所有的物理表
 	 */
 	public static void CheckAllPTable(String nameS) {
-		java.util.ArrayList al = BP.En.ClassFactory.GetObjects("BP.En.Entities");
+		ArrayList al = ClassFactory.GetObjects("BP.En.Entities");
 		for (Object ens : al) {
 			if (!ens.toString().contains(nameS)) {
 				continue;
@@ -544,7 +544,7 @@ public class PubClass {
 			try {
 				Entity en = ((Entities) ens).getGetNewEntity();
 				en.CheckPhysicsTable();
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 				
 			}
 
@@ -559,7 +559,7 @@ public class PubClass {
 	 *            对象
 	 * @return
 	 */
-	public static void DBIO(BP.DA.DBType dbtype, java.util.ArrayList als, boolean creatTableOnly) {
+	public static void DBIO(DBType dbtype, ArrayList als, boolean creatTableOnly) {
 		for (Object ens : als) {
 			Entity myen = ((Entities) ens).getGetNewEntity();
 			if (myen.getEnMap().getEnType() == EnType.View) {
@@ -574,10 +574,10 @@ public class PubClass {
 
 					// DBAccessOfOracle.RunSQL("drop table " +
 					// myen.getEnMap().getPhysicsTable());
-				} catch (java.lang.Exception e) {}
+				} catch (Exception e) {}
 				try {
 					// DBAccessOfOracle.RunSQL(SqlBuilder.GenerCreateTableSQLOfOra_OK(myen));
-				} catch (java.lang.Exception e2) {
+				} catch (Exception e2) {
 
 				}
 				break;
@@ -595,7 +595,7 @@ public class PubClass {
 					//
 					// DBAccessOfMSMSSQL.RunSQL("drop table " +
 					// myen.getEnMap().getPhysicsTable());
-				} catch (java.lang.Exception e3) {}
+				} catch (Exception e3) {}
 				// DBAccessOfMSMSSQL.RunSQL(SqlBuilder.GenerCreateTableSQLOfMS(myen));
 				break;
 			case Informix:
@@ -612,14 +612,14 @@ public class PubClass {
 					//
 					// DBAccessOfMSMSSQL.RunSQL("drop table " +
 					// myen.getEnMap().getPhysicsTable());
-				} catch (java.lang.Exception e4) {}
+				} catch (Exception e4) {}
 				// DBAccessOfMSMSSQL.RunSQL(SqlBuilder.GenerCreateTableSQLOfInfoMix(myen));
 				break;
 			case Access:
 				try {
 					// DBAccessOfOLE.RunSQL("drop table " +
 					// myen.getEnMap().getPhysicsTable());
-				} catch (java.lang.Exception e5) {}
+				} catch (Exception e5) {}
 				// DBAccessOfOLE.RunSQL(SqlBuilder.GenerCreateTableSQLOf_OLE(myen));
 				break;
 			default:
@@ -635,7 +635,7 @@ public class PubClass {
 				QueryObject qo = new QueryObject(((Entities) ens));
 				qo.DoQuery();
 				// ens.RetrieveAll(1000);
-			} catch (java.lang.Exception e6) {
+			} catch (Exception e6) {
 				continue;
 			}
 
@@ -675,12 +675,12 @@ public class PubClass {
 		  DataTable dt = new DataTable();
           if (uiBindKey.contains("."))
           {
-              Entities ens = BP.En.ClassFactory.GetEns(uiBindKey);
+              Entities ens = ClassFactory.GetEns(uiBindKey);
               if (ens == null)
-                  ens = BP.En.ClassFactory.GetEns(uiBindKey);
+                  ens = ClassFactory.GetEns(uiBindKey);
 
               if (ens == null)
-                  ens = BP.En.ClassFactory.GetEns(uiBindKey);
+                  ens = ClassFactory.GetEns(uiBindKey);
               if (ens == null)
                   throw new Exception("类名错误:" + uiBindKey + ",不能转化成ens.");
 
@@ -735,24 +735,24 @@ public class PubClass {
 
 		DataTable dt = new DataTable();
 		if (uiBindKey.contains(".")) {
-			Entities ens = BP.En.ClassFactory.GetEns(uiBindKey);
+			Entities ens = ClassFactory.GetEns(uiBindKey);
 			if (ens == null) {
-				ens = BP.En.ClassFactory.GetEns(uiBindKey);
+				ens = ClassFactory.GetEns(uiBindKey);
 			}
 
 			if (ens == null) {
-				ens = BP.En.ClassFactory.GetEns(uiBindKey);
+				ens = ClassFactory.GetEns(uiBindKey);
 			}
 			if (ens == null) {
 				throw new RuntimeException("类名错误:" + uiBindKey + ",不能转化成ens.");
 			}
 
-			BP.En.QueryObject qo = new QueryObject(ens);
+			QueryObject qo = new QueryObject(ens);
 			return qo.DoQueryToTable(topNum);
 		} else {
 			String sql = "";
 
-			switch (BP.Sys.SystemConfig.getAppCenterDBType()) {
+			switch (SystemConfig.getAppCenterDBType()) {
 			case Oracle:
 				sql = "SELECT No,Name FROM " + uiBindKey + " where rowNum <= " + topNum;
 				break;
@@ -763,7 +763,7 @@ public class PubClass {
 				sql = "SELECT  No,Name FROM " + uiBindKey;
 				break;
 			}
-			dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			dt = DBAccess.RunSQLReturnTable(sql);
 			dt.TableName = uiBindKey;
 			return dt;
 		}
@@ -771,7 +771,7 @@ public class PubClass {
 
 	// 系统调度
 	public static String GenerDBOfOreacle() {
-		java.util.ArrayList als = ClassFactory.GetObjects("BP.En.Entity");
+		ArrayList als = ClassFactory.GetObjects("BP.En.Entity");
 		String sql = "";
 		for (Object obj : als) {
 			Entity en = (Entity) obj;
@@ -786,7 +786,7 @@ public class PubClass {
 
 	public static String DBRpt(DBCheckLevel level) throws Exception {
 		// 取出全部的实体
-		java.util.ArrayList als = ClassFactory.GetObjects("BP.En.Entities");
+		ArrayList als = ClassFactory.GetObjects("BP.En.Entities");
 		String msg = "";
 		for (Object obj : als) {
 			Entities ens = (Entities) obj;
@@ -843,7 +843,7 @@ public class PubClass {
 					sqls += "@INSERT INTO Pub_Day(No,Name)VALUES('" + d.toString() + "','" + d.toString() + "')";
 				}
 			}
-		} catch (java.lang.Exception e) {}
+		} catch (Exception e) {}
 
 		sql = "SELECT count(*) Num FROM Pub_YF";
 		try {
@@ -857,7 +857,7 @@ public class PubClass {
 					sqls += "@INSERT INTO Pub_YF(No,Name)VALUES('" + d1.toString() + "','" + d1.toString() + "')";
 				}
 			}
-		} catch (java.lang.Exception e2) {}
+		} catch (Exception e2) {}
 
 		sql = "SELECT count(*) Num FROM Pub_ND";
 		try {
@@ -867,7 +867,7 @@ public class PubClass {
 					sqls += "@INSERT INTO Pub_ND(No,Name)VALUES('" + d.toString() + "','" + d.toString() + "')";
 				}
 			}
-		} catch (java.lang.Exception e3) {
+		} catch (Exception e3) {
 
 		}
 		sql = "SELECT count(*) Num FROM Pub_NY";
@@ -886,7 +886,7 @@ public class PubClass {
 					}
 				}
 			}
-		} catch (java.lang.Exception e4) {}
+		} catch (Exception e4) {}
 
 		try {
 			DBAccess.RunSQLs(sqls);
@@ -934,7 +934,7 @@ public class PubClass {
 	 */
 	public static String AddComment() throws Exception {
 		// 取出全部的实体
-		java.util.ArrayList als = ClassFactory.GetObjects("BP.En.Entities");
+		ArrayList als = ClassFactory.GetObjects("BP.En.Entities");
 		String msg = "";
 		Entity en = null;
 		Entities ens = null;
@@ -952,7 +952,7 @@ public class PubClass {
 				if (en.getEnMap().getEnType() == EnType.View || en.getEnMap().getEnType() == EnType.ThirdPartApp) {
 					continue;
 				}
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 				continue;
 			}
 			//sunxd 
@@ -1048,7 +1048,7 @@ public class PubClass {
 	{
 		 
 		//MySql.Data.MySqlClient.MySqlConnection conn = new MySql.Data.MySqlClient.MySqlConnection(BP.Sys.SystemConfig.AppCenterDSN);
-		String database = BP.Sys.SystemConfig.getAppCenterDBDatabase();
+		String database = SystemConfig.getAppCenterDBDatabase();
 		en.RunSQL("alter table " + database + "." + en.getEnMap().getPhysicsTable() + " comment = '" + en.getEnDesc() + "'");
 		//获取当前实体对应表的所有字段结构信息
 		DataTable cols = DBAccess.RunSQLReturnTable("select column_name,column_default,is_nullable,character_set_name,column_type from information_schema.columns where table_schema = '" + database + "' and table_name='" + en.getEnMap().getPhysicsTable() + "'");
@@ -1308,7 +1308,7 @@ public class PubClass {
 					break;
 				}
 
-				num = BP.DA.DBAccess.RunSQLReturnValInt(sql, 0);
+				num = DBAccess.RunSQLReturnValInt(sql, 0);
 				if (num == 0) {} else {
 					enMsg += "<br>@检查实体：" + en.getEnDesc() + ",物理表:" + en.getEnMap().getPhysicsTable() + "出现" + attr.getKey() + "," + attr.getDesc()
 							+ "不正确,共有[" + num + "]行记录没有数据。" + sql;
@@ -1317,7 +1317,7 @@ public class PubClass {
 				// 是否能够对应到外键。
 				sql = "SELECT COUNT(*) FROM " + en.getEnMap().getPhysicsTable() + " WHERE " + attr.getField() + " NOT IN ( SELECT "
 						+ refEn.getEnMap().GetAttrByKey(attr.getUIRefKeyValue()).getField() + " FROM " + reftable + "	 ) ";
-				num = BP.DA.DBAccess.RunSQLReturnValInt(sql, 0);
+				num = DBAccess.RunSQLReturnValInt(sql, 0);
 				if (num == 0) {} else {
 					// 如果是高中级别.
 					String delsql = "DELETE FROM " + en.getEnMap().getPhysicsTable() + " WHERE " + attr.getField() + " NOT IN ( SELECT "
@@ -1667,7 +1667,7 @@ public class PubClass {
 	 * @param reqest
 	 * @return
 	 */
-	public static BP.En.Entity copyFromRequest(BP.En.Entity en, HttpServletRequest reqest) {
+	public static Entity copyFromRequest(Entity en, HttpServletRequest reqest) {
 		ArrayList<String> requestKeys = new ArrayList<String>();
 		Enumeration enu = reqest.getParameterNames();
 		while (enu.hasMoreElements()) {
@@ -1761,13 +1761,13 @@ public class PubClass {
 	// System.Web.HttpContext.Current.Response.Write("<script language='JavaScript'>window.parent.main.document.location.reload(); </script> ");
 	// }
 	public static void WinOpen(HttpServletResponse response, String url) throws IOException {
-		java.text.DateFormat df = new java.text.SimpleDateFormat("MMddHHmmss");
-		PubClass.WinOpen(response, url, "", "msg" + df.format(new java.util.Date()), 300, 300);
+		java.text.DateFormat df = new SimpleDateFormat("MMddHHmmss");
+		PubClass.WinOpen(response, url, "", "msg" + df.format(new Date()), 300, 300);
 	}
 
 	public static void WinOpen(HttpServletResponse response, String url, int w, int h) throws IOException {
-		java.text.DateFormat df = new java.text.SimpleDateFormat("MMddHHmmss");
-		PubClass.WinOpen(response, url, "", "msg" + df.format(new java.util.Date()), w, h);
+		java.text.DateFormat df = new SimpleDateFormat("MMddHHmmss");
+		PubClass.WinOpen(response, url, "", "msg" + df.format(new Date()), w, h);
 	}
 
 	public static void WinOpen(HttpServletResponse response, String url, String title, String winName, int width, int height) throws IOException {
@@ -1891,7 +1891,7 @@ public class PubClass {
 	 * @param mess
 	 */
 	public static void ToErrorPage(String mess, HttpServletResponse response) {
-		BP.Sys.Glo.getRequest().getSession().setAttribute("info", mess);
+		Glo.getRequest().getSession().setAttribute("info", mess);
 		try {
 			response.sendRedirect(BP.WF.Glo.getCCFlowAppPath() + "WF/Comm/Port/ToErrorPage.jsp?d=" + new Date());
 		} catch (IOException e) {
@@ -1906,7 +1906,7 @@ public class PubClass {
 	 */
 	public static void ToMsgPage(String mess, HttpServletResponse response) {
 		mess = mess.replace("@", "<BR>@");
-		BP.Sys.Glo.getRequest().getSession().setAttribute("info", mess);
+		Glo.getRequest().getSession().setAttribute("info", mess);
 		try {
 			response.sendRedirect(BP.WF.Glo.getCCFlowAppPath() + "WF/Comm/Port/InfoPage.jsp?d=" + new Date());
 		} catch (IOException e) {
@@ -2032,10 +2032,10 @@ public class PubClass {
 		return en;
 	}
 	
-	public static BP.En.Entity CopyFromRequest(BP.En.Entity en) {
+	public static Entity CopyFromRequest(Entity en) {
 		return CopyFromRequest(en, Glo.getRequest());
 	}
-	public static BP.En.Entity CopyFromRequest(BP.En.Entity en, HttpServletRequest reqest) {
+	public static Entity CopyFromRequest(Entity en, HttpServletRequest reqest) {
 		String allKeys = ";";
 		
 		 //获取传递来的所有的checkbox ids 用于设置该属性为falsse.
@@ -2078,7 +2078,7 @@ public class PubClass {
 		return en;
 	}
 
-	public static BP.En.Entity CopyFromRequestByPost(BP.En.Entity en, HttpServletRequest reqest) {		
+	public static Entity CopyFromRequestByPost(Entity en, HttpServletRequest reqest) {
 	
 		String allKeys = ";";
 		//获取传递来的所有的checkbox ids 用于设置该属性为false.

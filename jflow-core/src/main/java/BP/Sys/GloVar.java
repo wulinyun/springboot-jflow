@@ -134,7 +134,7 @@ public class GloVar extends EntityNoName
 		{
 			this.setNo(key);
 			this.Retrieve();
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			if (this.RetrieveFromDBSources() == 0)
 			{

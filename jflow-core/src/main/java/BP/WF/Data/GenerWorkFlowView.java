@@ -375,7 +375,7 @@ public class GenerWorkFlowView extends Entity {
 	}
 
 	public final String getWFStateText() {
-		BP.WF.WFState ws = (WFState) this.getWFState();
+		WFState ws = (WFState) this.getWFState();
 		switch (ws) {
 		case Complete:
 			return "已完成";

@@ -180,7 +180,7 @@ public abstract class Entity implements Serializable {
                  case ForEmp:  // 按人员来控制.
                      qo.AddWhere(GEDtlAttr.RefPK, pkval);
                      qo.addAnd();
-                     qo.AddWhere(GEDtlAttr.Rec, BP.Web.WebUser.getNo());
+                     qo.AddWhere(GEDtlAttr.Rec, WebUser.getNo());
                      break;
                  case ForWorkID: // 按工作ID来控制
                      qo.AddWhere(GEDtlAttr.RefPK, pkval);
@@ -567,7 +567,7 @@ public abstract class Entity implements Serializable {
 
 		String sql = "SELECT " + pk + "," + idxAttr + " FROM " + table + " WHERE " + groupKeyAttr + "='" + groupKeyVal
 				+ "' ORDER BY " + idxAttr;
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		int idx = 0;
 		String beforeNo = "";
 		String myNo = "";
@@ -605,7 +605,7 @@ public abstract class Entity implements Serializable {
 
 		String sql = "SELECT " + pk + "," + idxAttr + " FROM " + table + " WHERE (" + groupKeyAttr + "='" + groupKeyVal
 				+ "' AND " + gKey2 + "='" + gVal2 + "') ORDER BY " + idxAttr;
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		int idx = 0;
 		String beforeNo = "";
 		String myNo = "";
@@ -837,7 +837,7 @@ public abstract class Entity implements Serializable {
 			return DBAccess.RunSQLReturnResultSet(this.getSQLCash().getSelect(), SqlBuilder.GenerParasPK(this), this,
 					this.getEnMap().getAttrs());
 
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			try {
 				this.CheckPhysicsTable();
 			} catch (Exception e1) {
@@ -901,7 +901,7 @@ public abstract class Entity implements Serializable {
         /*如果是没有放入缓存的实体. @wangyanyan */
         if (this.getEnMap().getDepositaryOfEntity() == Depositary.Application)
         {
-        	Row row = BP.DA.Cash2019.GetRow(this.toString(), this.getPKVal().toString());
+        	Row row = Cash2019.GetRow(this.toString(), this.getPKVal().toString());
             if (row != null)
             {
                 this.setRow(row);
@@ -918,7 +918,7 @@ public abstract class Entity implements Serializable {
                 //@wangyanyan 放入缓存.
                 if (this.getEnMap().getDepositaryOfEntity() == Depositary.Application)
                 {
-                    BP.DA.Cash2019.PutRow(this.toString(), this.getPKVal().toString(), this.getRow());
+                    Cash2019.PutRow(this.toString(), this.getPKVal().toString(), this.getRow());
                 }
 				return i;
 			}
@@ -930,7 +930,7 @@ public abstract class Entity implements Serializable {
 				try {
 
 					this.CheckPhysicsTable();
-					if (BP.DA.DBAccess.IsExits(this.getEnMap().getPhysicsTable()) == true)
+					if (DBAccess.IsExits(this.getEnMap().getPhysicsTable()) == true)
 						return this.RetrieveFromDBSources();
 
 				} catch (Exception e) {
@@ -1015,7 +1015,7 @@ public abstract class Entity implements Serializable {
 
 					this.CheckPhysicsTable();
 
-					if (BP.DA.DBAccess.IsExits(this.getEnMap().getPhysicsTable()) == false)
+					if (DBAccess.IsExits(this.getEnMap().getPhysicsTable()) == false)
 						return this.Retrieve();
 
 				} catch (Exception e) {
@@ -1533,7 +1533,7 @@ public abstract class Entity implements Serializable {
 
 		// 增加版本为1的版本历史记录
 		String enName = this.toString();
-		String rdt = BP.DA.DataType.getCurrentDataTime();
+		String rdt = DataType.getCurrentDataTime();
 
 		// edited by
 		// liuxc,2017-03-24,增加判断，如果相同主键的数据曾被删除掉，再次被增加时，会延续被删除时的版本，原有逻辑报错
@@ -1549,7 +1549,7 @@ public abstract class Entity implements Serializable {
 		}
 
 		ver.setRDT(rdt);
-		ver.setRec(BP.Web.WebUser.getName());
+		ver.setRec(WebUser.getName());
 		ver.Save();
 
 		// 保存字段数据.
@@ -1567,7 +1567,7 @@ public abstract class Entity implements Serializable {
 			dtl.setAttrName(attr.getDesc());
 			// dtl.OldVal = this.GetValStrByKey(attr.Key); //第一个版本时，旧值没有
 			dtl.setRDT(rdt);
-			dtl.setRec(BP.Web.WebUser.getName());
+			dtl.setRec(WebUser.getName());
 			dtl.setNewVal(this.GetValStrByKey(attr.getKey()));
 			dtl.setMyPK(ver.getMyPK() + "_" + attr.getKey() + "_" + dtl.getEnVer());
 			dtl.Insert();
@@ -1613,7 +1613,7 @@ public abstract class Entity implements Serializable {
 		for (Attr attr : attrs) {
 			try {
 				this.SetValByKey(attr.getKey(), fromRow.GetValByKey(attr.getKey()));
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 			}
 		}
 	}
@@ -1624,7 +1624,7 @@ public abstract class Entity implements Serializable {
 			Object obj = null;
 			try {
 				obj = xmlen.GetValByKey(attr.getKey());
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 				continue;
 			}
 
@@ -1650,7 +1650,7 @@ public abstract class Entity implements Serializable {
 			Object obj = null;
 			try {
 				obj = ht.get(k);
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 				continue;
 			}
 
@@ -1668,7 +1668,7 @@ public abstract class Entity implements Serializable {
 				/*
 				 * warning this.SetValByKey(attr.getKey(), dr[attr.getKey()]);
 				 */
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 			}
 		}
 	}
@@ -1695,7 +1695,7 @@ public abstract class Entity implements Serializable {
 
 		try {
 			this.SetValByKey("No", "");
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 		}
 	}
 
@@ -1864,7 +1864,7 @@ public abstract class Entity implements Serializable {
 				// 比较参数那个字段长度有问题
 				String errs = "";
 				for (Attr attr : this.getEnMap().getAttrs()) {
-					if (attr.getMyDataType() != BP.DA.DataType.AppString) {
+					if (attr.getMyDataType() != DataType.AppString) {
 						continue;
 					}
 
@@ -1897,7 +1897,7 @@ public abstract class Entity implements Serializable {
 
 	// 对文件的处理. add by qin 15/10/31
 	public final void SaveBigTxtToDB(String saveToField, String bigTxt) throws Exception {
-		String temp = BP.Sys.SystemConfig.getPathOfTemp() + "/" + this.getEnMap().getPhysicsTable() + this.getPKVal()
+		String temp = SystemConfig.getPathOfTemp() + "/" + this.getEnMap().getPhysicsTable() + this.getPKVal()
 				+ ".tmp";
 		DataType.WriteFile(temp, bigTxt);
 
@@ -1916,24 +1916,24 @@ public abstract class Entity implements Serializable {
 	 */
 	public final void SaveFileToDB(String saveToField, String filefullName) throws Exception {
 		try {
-			BP.DA.DBAccess.SaveFileToDB(filefullName, this.getEnMap().getPhysicsTable(), this.getPK(),
+			DBAccess.SaveFileToDB(filefullName, this.getEnMap().getPhysicsTable(), this.getPK(),
 					this.getPKVal().toString(), saveToField);
 		} catch (RuntimeException ex) {
 			// 为了防止任何可能出现的数据丢失问题，您应该先仔细检查此脚本，然后再在数据库设计器的上下文之外运行此脚本。
 			String sql = "";
-			if (BP.DA.DBAccess.getAppCenterDBType().equals(DBType.MSSQL)) {
+			if (DBAccess.getAppCenterDBType().equals(DBType.MSSQL)) {
 				sql = "ALTER TABLE " + this.getEnMap().getPhysicsTable() + " ADD " + saveToField + " Image NULL ";
 			}
 
-			if (BP.DA.DBAccess.getAppCenterDBType().equals(DBType.Oracle)) {
+			if (DBAccess.getAppCenterDBType().equals(DBType.Oracle)) {
 				sql = "ALTER TABLE " + this.getEnMap().getPhysicsTable() + " ADD " + saveToField + " Blob NULL ";
 			}
 
-			if (BP.DA.DBAccess.getAppCenterDBType().equals(DBType.MySQL)) {
+			if (DBAccess.getAppCenterDBType().equals(DBType.MySQL)) {
 				sql = "ALTER TABLE " + this.getEnMap().getPhysicsTable() + " ADD " + saveToField + " MediumBlob NULL ";
 			}
 
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 
 			throw new RuntimeException("@保存文件期间出现错误，有可能该字段没有被自动创建，现在已经执行创建修复数据表，请重新执行一次." + ex.getMessage());
 		}
@@ -1950,7 +1950,7 @@ public abstract class Entity implements Serializable {
 	 * @throws IOException
 	 */
 	public final byte[] GetFileFromDB(String saveToField, String filefullName) throws IOException {
-		BP.DA.DBAccess.GetFileFromDB(filefullName, this.getEnMap().getPhysicsTable(), this.getPK(),
+		DBAccess.GetFileFromDB(filefullName, this.getEnMap().getPhysicsTable(), this.getPK(),
 				this.getPKVal().toString(), saveToField);
 		return null;
 	}
@@ -1964,7 +1964,7 @@ public abstract class Entity implements Serializable {
 	 * @throws IOException
 	 */
 	public final String GetBigTextFromDB(String imgFieldName) throws IOException {
-		String tempFile = BP.Sys.SystemConfig.getPathOfTemp() + "/" + this.getEnMap().getPhysicsTable()
+		String tempFile = SystemConfig.getPathOfTemp() + "/" + this.getEnMap().getPhysicsTable()
 				+ this.getPKVals() + ".tmp";
 
 		File file = new File(tempFile);
@@ -1983,7 +1983,7 @@ public abstract class Entity implements Serializable {
 			}
 		}
 
-		return BP.DA.DBAccess.GetTextFileFromDB(tempFile, this.getEnMap().getPhysicsTable(), this.getPK(),
+		return DBAccess.GetTextFileFromDB(tempFile, this.getEnMap().getPhysicsTable(), this.getPK(),
 				this.getPKVal().toString(), imgFieldName);
 	}
 
@@ -1996,7 +1996,7 @@ public abstract class Entity implements Serializable {
 	 * @throws IOException
 	 */
 	public final String GetBigTextFromDB(String imgFieldName, String codeType) throws IOException {
-		String tempFile = BP.Sys.SystemConfig.getPathOfTemp() + "/" + this.getEnMap().getPhysicsTable()
+		String tempFile = SystemConfig.getPathOfTemp() + "/" + this.getEnMap().getPhysicsTable()
 				+ this.getPKVals() + ".tmp";
 
 		File file = new File(tempFile);
@@ -2015,7 +2015,7 @@ public abstract class Entity implements Serializable {
 			}
 		}
 
-		return BP.DA.DBAccess.GetTextFileFromDB(tempFile, this.getEnMap().getPhysicsTable(), this.getPK(),
+		return DBAccess.GetTextFileFromDB(tempFile, this.getEnMap().getPhysicsTable(), this.getPK(),
 				this.getPKVal().toString(), imgFieldName, codeType);
 	}
 
@@ -2225,7 +2225,7 @@ public abstract class Entity implements Serializable {
 								DBAccess.RunSQL("alter table " + this.getEnMap().getPhysicsTable() + " ALTER column  "
 										+ attr.getKey() + " NVARCHAR(" + attr.getMaxLength() + ")");
 							}
-						} catch (java.lang.Exception e) {
+						} catch (Exception e) {
 
 							// 如果类型不匹配，就删除它在重新建, 先删除约束，在删除列，在重建。
 							for (DataRow dr : dtYueShu.Rows) {
@@ -2357,7 +2357,7 @@ public abstract class Entity implements Serializable {
 	private void CheckPhysicsTable_Informix() throws Exception {
 		// 检查字段是否存在
 		String sql = "SELECT *  FROM " + this.getEnMap().getPhysicsTable() + " WHERE 1=2";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 
 		// 如果不存在.
 		for (Attr attr : this.getEnMap().getAttrs()) {
@@ -2456,7 +2456,7 @@ public abstract class Entity implements Serializable {
 						 */
 					}
 				} catch (RuntimeException ex) {
-					BP.DA.Log.DebugWriteWarning(ex.getMessage());
+					Log.DebugWriteWarning(ex.getMessage());
 				}
 			}
 		}
@@ -2534,11 +2534,11 @@ public abstract class Entity implements Serializable {
 
 		// 检查字段是否存在
 		String sql = "SELECT *  FROM " + this.get_enMap().getPhysicsTable() + " WHERE 1=2";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 
 		Map map = this.get_enMap();
 		sql = "SELECT character_maximum_length as Len, table_schema as OWNER, column_Name FROM information_schema.columns WHERE TABLE_SCHEMA='"
-				+ BP.Sys.SystemConfig.getAppCenterDBDatabase() + "' AND table_name ='" + map.getPhysicsTable() + "'";
+				+ SystemConfig.getAppCenterDBDatabase() + "' AND table_name ='" + map.getPhysicsTable() + "'";
 
 		DataTable dtScheam = this.RunSQLReturnTable(sql);
 
@@ -2645,7 +2645,7 @@ public abstract class Entity implements Serializable {
 	private void CheckPhysicsTable_Ora() throws Exception {
 		// 检查字段是否存在
 		String sql = "SELECT *  FROM " + this.getEnMap().getPhysicsTable() + " WHERE 1=2";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 
 		// 如果不存在.
 		for (Attr attr : this.getEnMap().getAttrs()) {
@@ -2732,7 +2732,7 @@ public abstract class Entity implements Serializable {
 					 * ")");
 					 */
 				} catch (RuntimeException ex) {
-					BP.DA.Log.DebugWriteWarning(ex.getMessage());
+					Log.DebugWriteWarning(ex.getMessage());
 				}
 			}
 		}
@@ -2869,12 +2869,12 @@ public abstract class Entity implements Serializable {
 				if (attr.getIsNum()) {
 					// 如果是数值类型的就尝试着转换数值，转换不了就跑出异常信息。
 					try {
-						java.math.BigDecimal d = new java.math.BigDecimal(val);
+						BigDecimal d = new BigDecimal(val);
 						/*
 						 * warning java.math.BigDecimal d =
 						 * java.math.BigDecimal.Parse(val);
 						 */
-					} catch (java.lang.Exception e) {
+					} catch (Exception e) {
 						throw new RuntimeException(val);
 					}
 				}
@@ -2938,7 +2938,7 @@ public abstract class Entity implements Serializable {
 				if (v == null) {
 					v = "0";
 				}
-				this.SetValByKey(attr.getKey(), new java.math.BigDecimal(v));
+				this.SetValByKey(attr.getKey(), new BigDecimal(v));
 				/*
 				 * warning this.SetValByKey(attr.getKey(),
 				 * java.math.BigDecimal.Parse(v));
@@ -2966,7 +2966,7 @@ public abstract class Entity implements Serializable {
 			}
 
 			try {
-				java.math.BigDecimal d = DataType.ParseExpToDecimal(doc);
+				BigDecimal d = DataType.ParseExpToDecimal(doc);
 				this.SetValByKey(attr.getKey(), d);
 			} catch (RuntimeException ex) {
 				Log.DefaultLogWriteLineError("@(" + this.toString() + ")在处理自动计算{" + this.getEnDesc() + "}："
@@ -3205,7 +3205,7 @@ public abstract class Entity implements Serializable {
 
 			_HisUAC = new UAC();
 
-			if (BP.Web.WebUser.getNo().equals("admin")) {
+			if (WebUser.getNo().equals("admin")) {
 				_HisUAC.IsAdjunct = false;
 				_HisUAC.IsDelete = true;
 				_HisUAC.IsInsert = true;
@@ -3306,7 +3306,7 @@ public abstract class Entity implements Serializable {
 	
 	public final void ResetDefaultVal(String fk_mapdata,String fk_flow,int fk_node,MapAttrs attrs) throws Exception{
 		for (MapAttr attr : attrs.ToJavaList()) {
-			if(attr.getLGType()== BP.En.FieldTypeS.FK) 
+			if(attr.getLGType()== FieldTypeS.FK)
 				this.SetValRefTextByKey(attr.getKeyOfEn(), "");
 
 			String v = attr.getDefValReal();
@@ -3757,10 +3757,10 @@ public abstract class Entity implements Serializable {
 
 	public SQLCash getSQLCash() throws Exception {
 		if (_SQLCash == null) {
-			_SQLCash = BP.DA.Cash.GetSQL(this.toString());
+			_SQLCash = Cash.GetSQL(this.toString());
 			if (_SQLCash == null) {
 				_SQLCash = new SQLCash(this);
-				BP.DA.Cash.SetSQL(this.toString(), _SQLCash);
+				Cash.SetSQL(this.toString(), _SQLCash);
 			}
 		}
 		return _SQLCash;
@@ -3772,7 +3772,7 @@ public abstract class Entity implements Serializable {
 
 	// 清除缓存SQLCase.
 	public void clearSQLCash() {
-		BP.DA.Cash.getSQL_Cash().remove(this.toString());
+		Cash.getSQL_Cash().remove(this.toString());
 		_SQLCash = null;
 	}
 
@@ -3805,7 +3805,7 @@ public abstract class Entity implements Serializable {
 		this.getRow().SetValByKey(attrKey, val);
 	}
 
-	public final void SetValByKey(String attrKey, java.math.BigDecimal val) {
+	public final void SetValByKey(String attrKey, BigDecimal val) {
 		this.getRow().SetValByKey(attrKey, val);
 	}
 
@@ -4323,8 +4323,8 @@ public abstract class Entity implements Serializable {
 	/**
 	 * 取到主健值。
 	 */
-	public final java.util.Hashtable getPKVals() {
-		java.util.Hashtable ht = new java.util.Hashtable();
+	public final Hashtable getPKVals() {
+		Hashtable ht = new Hashtable();
 		String[] strs = this.getPKs();
 		for (String str : strs) {
 			ht.put(str, this.GetValStringByKey(str));

@@ -77,7 +77,7 @@ public class AtPara
 		try
 		{
 			this.getHisHT().put(key, val);
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			this.getHisHT().put(key, "");
 		}
@@ -88,7 +88,7 @@ public class AtPara
 		try
 		{
 			return this.getHisHT().get(key).toString();
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			return "";
 		}
@@ -113,7 +113,7 @@ public class AtPara
 				return false;
 			}
 			return true;
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			return isNullAsVal;
 		}
@@ -124,7 +124,7 @@ public class AtPara
 		try
 		{
 			return Float.parseFloat(this.GetValStrByKey(key));
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			return 0;
 		}
@@ -135,7 +135,7 @@ public class AtPara
 		try
 		{
 			return Integer.parseInt(this.GetValStrByKey(key));
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			return 0;
 		}
@@ -148,7 +148,7 @@ public class AtPara
 			  {
 				  return Integer.parseInt(this.GetValStrByKey(key));
 			  }
-			  catch (java.lang.Exception e)
+			  catch (Exception e)
 			  {
 				  return isNullAsVal;
 			  }
@@ -158,7 +158,7 @@ public class AtPara
 		try
 		{
 			return Long.parseLong(this.GetValStrByKey(key));
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			return 0;
 		}

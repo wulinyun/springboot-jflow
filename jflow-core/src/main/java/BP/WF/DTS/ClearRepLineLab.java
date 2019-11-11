@@ -64,7 +64,7 @@ public class ClearRepLineLab extends Method
 		{
 			sql = "DELETE FROM " + item.getEnMap().getPhysicsTable() + " WHERE FK_MapData='" + item.getFK_MapData() + "' and x=" + item.getX() + " and y=" + item.getY() + " and Text='" + item.getText() + "'";
 			DBAccess.RunSQL(sql);
-			item.setMyPK(BP.DA.DBAccess.GenerOIDByGUID()+"");
+			item.setMyPK(DBAccess.GenerOIDByGUID()+"");
 			item.Insert();
 		}
 		return "删除成功";

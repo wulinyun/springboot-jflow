@@ -38,7 +38,7 @@ public class CCFormAPI
 	*/
 	public static String GetAthInfos(String fk_mapdata, String pk)
 	{
-		int num = BP.DA.DBAccess.RunSQL("SELECT COUNT(MYPK) FROM Sys_FrmAttachmentDB WHERE FK_MapData='" + fk_mapdata + "' AND RefPKVal=" + pk);
+		int num = DBAccess.RunSQL("SELECT COUNT(MYPK) FROM Sys_FrmAttachmentDB WHERE FK_MapData='" + fk_mapdata + "' AND RefPKVal=" + pk);
 		return "附件(" + num + ")";
 	}
 
@@ -287,8 +287,8 @@ public class CCFormAPI
         attr.setFK_MapData( fk_mapdata);
         attr.setKeyOfEn(  fieldName);
         attr.setName( fieldDesc);
-        attr.setMyDataType(  BP.DA.DataType.AppString);
-        attr.setUIContralType(BP.En.UIContralType.DDL);
+        attr.setMyDataType(  DataType.AppString);
+        attr.setUIContralType(UIContralType.DDL);
         attr.setUIBindKey( fk_SFTable); //绑定信息.
         attr.setX( x);
         attr.setY( y);
@@ -320,10 +320,10 @@ public class CCFormAPI
             attrH.Copy(attr);
             attrH.setKeyOfEn( attr.getKeyOfEn() + "T");
             attrH.setName(attr.getName());
-            attrH.setUIContralType( BP.En.UIContralType.TB);
+            attrH.setUIContralType( UIContralType.TB);
             attrH.setMinLen( 0);
             attrH.setMaxLen( 60);
-            attrH.setMyDataType(BP.DA.DataType.AppString);
+            attrH.setMyDataType(DataType.AppString);
             attrH.setUIVisible( false);
             attrH.setUIIsEnable( false);
             attrH.setMyPK(attrH.getFK_MapData() + "_" + attrH.getKeyOfEn());
@@ -483,7 +483,7 @@ public class CCFormAPI
 		}
 
 		//删除可能存在的数据.
-		BP.DA.DBAccess.RunSQL("DELETE FROM Sys_FrmRB WHERE KeyOfEn='" + ma.getKeyOfEn() + "' AND FK_MapData='" + ma.getFK_MapData() + "'");
+		DBAccess.RunSQL("DELETE FROM Sys_FrmRB WHERE KeyOfEn='" + ma.getKeyOfEn() + "' AND FK_MapData='" + ma.getFK_MapData() + "'");
 
 		SysEnums ses = new SysEnums(ma.getUIBindKey());
 		int idx = 0;
@@ -585,7 +585,7 @@ public class CCFormAPI
 		{
 			nodeid = Integer.parseInt(frmID);
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			//转化不成功就是不是节点表单字段.
 			return "error:只能节点表单才可以使用审核分组组件。";
@@ -834,7 +834,7 @@ public class CCFormAPI
 
 		// 保存线.
 		JSONArray form_Lines = formData.getJSONObject("m").getJSONArray("connectors");
-		BP.Sys.CCFormParse.SaveLine(fk_mapdata, form_Lines);
+		CCFormParse.SaveLine(fk_mapdata, form_Lines);
 
 		//其他控件，Label,Img,TextBox
 		JSONObject s = formData.getJSONObject("s");
@@ -859,7 +859,7 @@ public class CCFormAPI
 			delSqls += "@DELETE FROM Sys_FrmImgAth WHERE FK_MapData='" + fk_mapdata + "'";
 			delSqls += "@DELETE FROM Sys_MapFrame WHERE FK_MapData='" + fk_mapdata + "'";
 			
-			BP.DA.DBAccess.RunSQLs(delSqls);
+			DBAccess.RunSQLs(delSqls);
 			return;
 		}
 
@@ -868,7 +868,7 @@ public class CCFormAPI
 
 	    String nodeIDStr = fk_mapdata.replace("ND", "");
 	    int nodeID = 0;
-	    if (BP.DA.DataType.IsNumStr(nodeIDStr) == true)
+	    if (DataType.IsNumStr(nodeIDStr) == true)
 	    {
 		    nodeID = Integer.parseInt(nodeIDStr);
 	    }
@@ -904,26 +904,26 @@ public class CCFormAPI
 					}
 					else
 					{
-						BP.Sys.CCFormParse.SaveLabel(fk_mapdata, control, properties, labelPKs, ctrlID);
+						CCFormParse.SaveLabel(fk_mapdata, control, properties, labelPKs, ctrlID);
 						labelPKs = labelPKs.replace(ctrlID + "@", "@");
 					}
 					continue;
 			}
 			else if (shape.equals("Button")) //保存Button.
 			{
-					BP.Sys.CCFormParse.SaveButton(fk_mapdata, control, properties, btnsPKs, ctrlID);
+					CCFormParse.SaveButton(fk_mapdata, control, properties, btnsPKs, ctrlID);
 					btnsPKs = btnsPKs.replace(ctrlID + "@", "@");
 					continue;
 			}
 			else if (shape.equals("HyperLink")) //保存link.
 			{
-					BP.Sys.CCFormParse.SaveHyperLink(fk_mapdata, control, properties, linkPKs, ctrlID);
+					CCFormParse.SaveHyperLink(fk_mapdata, control, properties, linkPKs, ctrlID);
 					linkPKs = linkPKs.replace(ctrlID + "@", "@");
 					continue;
 			}
 			else if (shape.equals("Image")) //保存Img.
 			{
-					BP.Sys.CCFormParse.SaveImage(fk_mapdata, control, properties, imgPKs, ctrlID);
+					CCFormParse.SaveImage(fk_mapdata, control, properties, imgPKs, ctrlID);
 					imgPKs = imgPKs.replace(ctrlID + "@", "@");
 					continue;
 			}
@@ -935,7 +935,7 @@ public class CCFormAPI
 			//#region 数据类控件.
 			if (shape.contains("TextBox") == true || shape.contains("DropDownList") == true)
 			{
-				BP.Sys.CCFormParse.SaveMapAttr(fk_mapdata, ctrlID, shape, control, properties, attrPKs);
+				CCFormParse.SaveMapAttr(fk_mapdata, ctrlID, shape, control, properties, attrPKs);
 				attrPKs = attrPKs.replace("@"+ctrlID + "@", "@");
 				continue;
 			}
@@ -953,7 +953,7 @@ public class CCFormAPI
 			if (shape.equals("Dtl"))
 			{
 				//记录已经存在的ID， 需要当时保存.
-				BP.Sys.CCFormParse.SaveDtl(fk_mapdata, ctrlID, x, y, height, width);
+				CCFormParse.SaveDtl(fk_mapdata, ctrlID, x, y, height, width);
 				dtlPKs = dtlPKs.replace("@"+ctrlID + "@", "@");
 				continue;
 			}
@@ -965,14 +965,14 @@ public class CCFormAPI
 			if (shape.equals("AthMulti") || shape.equals("AthSingle"))
 			{
 				//记录已经存在的ID， 需要当时保存.
-				BP.Sys.CCFormParse.SaveAthMulti(fk_mapdata, ctrlID, x, y, height, width);
+				CCFormParse.SaveAthMulti(fk_mapdata, ctrlID, x, y, height, width);
 				athMultis = athMultis.replace("@"+ctrlID + "@", "@");
 				continue;
 			}
 			if (shape.equals("AthImg"))
 			{
 				//记录已经存在的ID， 需要当时保存.
-				BP.Sys.CCFormParse.SaveAthImg(fk_mapdata, ctrlID, x, y, height, width);
+				CCFormParse.SaveAthImg(fk_mapdata, ctrlID, x, y, height, width);
 				athImgs = athImgs.replace("@"+ctrlID + "@", "@");
 				continue;
 			}
@@ -980,7 +980,7 @@ public class CCFormAPI
 			if (shape.equals("Fieldset"))
 			{
 				//记录已经存在的ID， 需要当时保存.
-				BP.Sys.CCFormParse.SaveFrmEle(fk_mapdata, shape, ctrlID, x, y, height, width);
+				CCFormParse.SaveFrmEle(fk_mapdata, shape, ctrlID, x, y, height, width);
 				eleIDs = eleIDs.replace("@"+ctrlID + "@", "@");
 				continue;
 			}
@@ -996,7 +996,7 @@ public class CCFormAPI
 			if (shape.equals("iFrame"))
 			{
 				//记录已经存在的ID， 需要当时保存.
-				BP.Sys.CCFormParse.SaveMapFrame(fk_mapdata, shape, ctrlID, x, y, height, width);
+				CCFormParse.SaveMapFrame(fk_mapdata, shape, ctrlID, x, y, height, width);
 				frameIDs = frameIDs.replace("@"+ctrlID + "@", "@");
 				continue;
 			}
@@ -1014,7 +1014,7 @@ public class CCFormAPI
 					ctrlID = ctrlID.substring(3);
 				}
 
-				String str = BP.Sys.CCFormParse.SaveFrmRadioButton(fk_mapdata, ctrlID, x, y);
+				String str = CCFormParse.SaveFrmRadioButton(fk_mapdata, ctrlID, x, y);
 				if (str == null)
 				{
 					continue;
@@ -1173,7 +1173,7 @@ public class CCFormAPI
 		//执行要更新的sql.
 		if ( ! sqls.equals(""))
 		{
-			BP.DA.DBAccess.RunSQLs(sqls);
+			DBAccess.RunSQLs(sqls);
 			sqls = "";
 		}
 		///#endregion 处理节点表单。
@@ -1281,7 +1281,7 @@ public class CCFormAPI
 
 
 		//删除这些，没有替换下来的数据.
-		BP.DA.DBAccess.RunSQLs(sqls);
+		DBAccess.RunSQLs(sqls);
 		
 		//更新组件 
         DBAccess.RunSQL("UPDATE Sys_MapData SET FlowCtrls='"+flowCtrls+"' WHERE No='"+fk_mapdata+"'");
@@ -1500,7 +1500,7 @@ public class CCFormAPI
 	*/
 	public static String ParseStringToPinyinField(String name, boolean isQuanPin)
 	{
-		 if (BP.DA.DataType.IsNullOrEmpty(name) == true)
+		 if (DataType.IsNullOrEmpty(name) == true)
              return "";
 		
 		String s = "";
@@ -1509,15 +1509,15 @@ public class CCFormAPI
 		{
 			if (isQuanPin == true)
 			{
-				s = BP.DA.DataType.ParseStringToPinyin(name);
+				s = DataType.ParseStringToPinyin(name);
 				if (s.length() > 15)
 				{
-					s = BP.DA.DataType.ParseStringToPinyinWordFirst(name);
+					s = DataType.ParseStringToPinyinWordFirst(name);
 				}
 			}
 			else
 			{
-				s = BP.DA.DataType.ParseStringToPinyinJianXie(name);
+				s = DataType.ParseStringToPinyinJianXie(name);
 			}
 
 			s = s.trim().replace(" ", "");
@@ -1572,7 +1572,7 @@ public class CCFormAPI
     /// <returns>转化后的拼音，不成功则抛出异常.</returns>
     public static String ParseStringToPinyinField(String name, Boolean isQuanPin, Boolean removeSpecialSymbols, int maxLen)
     {
-    	 if (BP.DA.DataType.IsNullOrEmpty(name) == true)
+    	 if (DataType.IsNullOrEmpty(name) == true)
              return "";
     	 
         String s = "";
@@ -1584,11 +1584,11 @@ public class CCFormAPI
         {
             if (isQuanPin == true)
             {
-                s = BP.DA.DataType.ParseStringToPinyin(name);
+                s = DataType.ParseStringToPinyin(name);
             }
             else
             {
-                s = BP.DA.DataType.ParseStringToPinyinJianXie(name);
+                s = DataType.ParseStringToPinyinJianXie(name);
             }
             //如果全拼长度超过maxLen，则取前maxLen长度的字符
             if (maxLen > 0 && s.length() > maxLen)
@@ -1891,7 +1891,7 @@ public class CCFormAPI
 			attr.setFK_MapData(frmID);
 			attr.setKeyOfEn("OID");
 			attr.setName("主键");
-			attr.setMyDataType(BP.DA.DataType.AppInt);
+			attr.setMyDataType(DataType.AppInt);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);

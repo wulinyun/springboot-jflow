@@ -70,7 +70,7 @@ public class GenerDBTemplete extends Method
 			{
 				nodeID = Integer.parseInt(temp);
 			}
-			catch (java.lang.Exception e)
+			catch (Exception e)
 			{
 				continue;
 			}

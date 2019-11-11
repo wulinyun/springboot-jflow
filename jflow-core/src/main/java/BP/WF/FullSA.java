@@ -80,8 +80,8 @@ public class FullSA
 			//如果按照岗位计算（默认的第一个规则.）
 			if (item.getHisDeliveryWay() == DeliveryWay.ByStation)
 			{
-				String sql = "SELECT No, Name FROM Port_Emp WHERE No IN (SELECT A.FK_Emp FROM " + BP.WF.Glo.getEmpStation() + " A, WF_NodeStation B WHERE A.FK_Station=B.FK_Station AND B.FK_Node=" + item.getNodeID() + ")";
-				dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				String sql = "SELECT No, Name FROM Port_Emp WHERE No IN (SELECT A.FK_Emp FROM " + Glo.getEmpStation() + " A, WF_NodeStation B WHERE A.FK_Station=B.FK_Station AND B.FK_Node=" + item.getNodeID() + ")";
+				dt = DBAccess.RunSQLReturnTable(sql);
 				if (dt.Rows.size() ==0)
 					continue;
 				for(DataRow dr : dt.Rows)
@@ -122,11 +122,11 @@ public class FullSA
                     if (item.getHisFlow().getHisFlowAppType() == FlowAppType.Normal)
                     {
                         ps = new Paras();
-                        if (BP.WF.Glo.getOSModel() == OSModel.OneOne)
+                        if (Glo.getOSModel() == OSModel.OneOne)
                         {
                             ps.SQL = "SELECT  A.No, A.Name  FROM Port_Emp A, WF_NodeDept B WHERE A.FK_Dept=B.FK_Dept AND B.FK_Node=" + dbStr + "FK_Node";
                         }
-                        else if (BP.WF.Glo.getOSModel() == OSModel.OneMore)
+                        else if (Glo.getOSModel() == OSModel.OneMore)
                         {
                             ps.SQL = "SELECT  A.No, A.Name  FROM Port_Emp A, WF_NodeDept B, Port_DeptEmp C  WHERE  A.No = C.FK_Emp AND C.FK_Dept=B.FK_Dept AND B.FK_Node=" + dbStr + "FK_Node";
                         }
@@ -223,7 +223,7 @@ public class FullSA
 				String dbStr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
 				String sql = "";
 				//区别集成与BPM模式
-				if (BP.WF.Glo.getOSModel() == BP.Sys.OSModel.OneOne)
+				if (Glo.getOSModel() == OSModel.OneOne)
 				{
 					sql = "SELECT No FROM Port_Emp WHERE No IN ";
 					sql += "(SELECT No as FK_Emp FROM Port_Emp WHERE FK_Dept IN ";
@@ -231,7 +231,7 @@ public class FullSA
 					sql += ")";
 					sql += "AND No IN ";
 					sql += "(";
-					sql += "SELECT FK_Emp FROM " + BP.WF.Glo.getEmpStation() + " WHERE FK_Station IN ";
+					sql += "SELECT FK_Emp FROM " + Glo.getEmpStation() + " WHERE FK_Station IN ";
 					sql += "( SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + dbStr + "FK_Node1 )";
 					sql += ") ORDER BY No ";
 
@@ -292,12 +292,12 @@ public class FullSA
 					{
 						case MySQL:
 						case MSSQL:
-							sql = "select X.No from Port_Emp x inner join (select FK_Emp from " + BP.WF.Glo.getEmpStation() + " a inner join WF_NodeStation b ";
+							sql = "select X.No from Port_Emp x inner join (select FK_Emp from " + Glo.getEmpStation() + " a inner join WF_NodeStation b ";
 							sql += " on a.FK_Station=b.FK_Station where FK_Node=" + dbStr + "FK_Node) as y on x.No=y.FK_Emp inner join Port_Emp z on";
 							sql += " x.No=z.No where z.FK_Dept =" + dbStr + "FK_Dept order by x.No";
 							break;
 						default:
-							sql = "SELECT No FROM Port_Emp WHERE NO IN " + "(SELECT  FK_Emp  FROM " + BP.WF.Glo.getEmpStation() + " WHERE FK_Station IN (SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + dbStr + "FK_Node) )" + " AND  NO IN " + "(SELECT No FROM Port_Emp WHERE FK_Dept =" + dbStr + "FK_Dept)";
+							sql = "SELECT No FROM Port_Emp WHERE NO IN " + "(SELECT  FK_Emp  FROM " + Glo.getEmpStation() + " WHERE FK_Station IN (SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + dbStr + "FK_Node) )" + " AND  NO IN " + "(SELECT No FROM Port_Emp WHERE FK_Dept =" + dbStr + "FK_Dept)";
 							sql += " ORDER BY No ";
 							break;
 					}

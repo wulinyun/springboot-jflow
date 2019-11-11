@@ -1081,7 +1081,7 @@ public class SqlBuilder {
 								"@" + en.toString() + " key=" + attr.getKey() + " UITag=" + attr.UITag);
 					}
 
-					SysEnums ses = new BP.Sys.SysEnums(attr.getUIBindKey(), attr.UITag);
+					SysEnums ses = new SysEnums(attr.getUIBindKey(), attr.UITag);
 					val = val + "," + ses.GenerCaseWhenForOracle(en.toString(), mainTable, attr.getKey(),
 							attr.getField(), attr.getUIBindKey(), Integer.parseInt(attr.getDefaultVal().toString()));
 				}
@@ -1926,7 +1926,7 @@ public class SqlBuilder {
 				if (StringHelper.isNullOrEmpty(str)) {
 					ps.Add(attr.getKey(), 0);
 				} else {
-					ps.Add(attr.getKey(), new java.math.BigDecimal(str));
+					ps.Add(attr.getKey(), new BigDecimal(str));
 				}
 				break;
 			case DataType.AppDate: // 如果是日期类型。
@@ -1991,7 +1991,7 @@ public class SqlBuilder {
 				if (StringHelper.isNullOrEmpty(str)) {
 					ps.Add(attr.getKey(), 0);
 				} else {
-					ps.Add(attr.getKey(), new java.math.BigDecimal(str));
+					ps.Add(attr.getKey(), new BigDecimal(str));
 				}
 				break;
 			case DataType.AppDate: // 如果是日期类型。
@@ -2031,7 +2031,7 @@ public class SqlBuilder {
 	}
 
 	public static Paras GenerParas(Entity en, String[] keys) {
-		boolean IsEnableNull = BP.Sys.SystemConfig.getIsEnableNull();
+		boolean IsEnableNull = SystemConfig.getIsEnableNull();
 		String mykeys = "@";
 		if (keys != null) {
 			for (String key : keys) {

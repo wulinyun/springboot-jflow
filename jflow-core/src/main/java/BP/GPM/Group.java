@@ -61,11 +61,11 @@ public class Group extends EntityNoName
 		map.getAttrsOfOneVSM().Add(new GroupStations(), new Stations(), GroupEmpAttr.FK_Group, GroupStationAttr.FK_Station, EmpAttr.Name, EmpAttr.No, "岗位(简单)");
 
 
-		map.getAttrsOfOneVSM().AddGroupListModel(new GroupStations(), new BP.GPM.Stations(), GroupStationAttr.FK_Group, GroupStationAttr.FK_Station, "岗位(平铺)", StationAttr.FK_StationType,StationAttr.Name,StationAttr.No);
+		map.getAttrsOfOneVSM().AddGroupListModel(new GroupStations(), new Stations(), GroupStationAttr.FK_Group, GroupStationAttr.FK_Station, "岗位(平铺)", StationAttr.FK_StationType,StationAttr.Name,StationAttr.No);
 
 
 			//节点绑定部门. 节点绑定部门.
-		map.getAttrsOfOneVSM().AddBranches(new GroupMenus(), new BP.GPM.Menus(), BP.GPM.GroupMenuAttr.FK_Group, BP.GPM.GroupMenuAttr.FK_Menu, "绑定菜单", EmpAttr.Name, EmpAttr.No, "0");
+		map.getAttrsOfOneVSM().AddBranches(new GroupMenus(), new Menus(), GroupMenuAttr.FK_Group, GroupMenuAttr.FK_Menu, "绑定菜单", EmpAttr.Name, EmpAttr.No, "0");
 
 
 		this.set_enMap(map);

@@ -90,7 +90,7 @@ public class FrmEvents extends EntitiesOID
 		if (nev.getHisDoType() == EventDoType.BuessUnit) {
 			/* 获得业务单元，开始执行他 */
 			try {
-				BuessUnitBase enBuesss = BP.Sys.Glo.GetBuessUnitEntityByEnName(nev.getDoDoc());
+				BuessUnitBase enBuesss = Glo.GetBuessUnitEntityByEnName(nev.getDoDoc());
 				enBuesss.setWorkID(Integer.parseInt(en.getPKVal().toString()));
 				return enBuesss.DoIt();
 			} catch (Exception e) {
@@ -120,9 +120,9 @@ public class FrmEvents extends EntitiesOID
 		}
 
 		doc = doc.replaceAll("~", "'");
-		doc = doc.replaceAll("@WebUser.No", BP.Web.WebUser.getNo());
-		doc = doc.replaceAll("@WebUser.Name", BP.Web.WebUser.getName());
-		doc = doc.replaceAll("@WebUser.FK_Dept", BP.Web.WebUser.getFK_Dept());
+		doc = doc.replaceAll("@WebUser.No", WebUser.getNo());
+		doc = doc.replaceAll("@WebUser.Name", WebUser.getName());
+		doc = doc.replaceAll("@WebUser.FK_Dept", WebUser.getFK_Dept());
 		doc = doc.replaceAll("@FK_Node", nev.getFK_MapData().replace("ND", ""));
 		doc = doc.replaceAll("@FK_MapData", nev.getFK_MapData());
 		doc = doc.replaceAll("@WorkID", en.GetValStrByKey("OID", "@WorkID"));
@@ -163,9 +163,9 @@ public class FrmEvents extends EntitiesOID
 			doc += "&FK_Dept=" + WebUser.getFK_Dept();
 			doc += "&OID=" + en.getPKVal();
 
-			if (SystemConfig.getIsBSsystem()&&BP.Sys.Glo.getRequest()!=null) {
+			if (SystemConfig.getIsBSsystem()&&Glo.getRequest()!=null) {
 				//是bs系统，并且是url参数执行类型.
-				String url = BP.Sys.Glo.getRequest().getRemoteAddr();
+				String url = Glo.getRequest().getRemoteAddr();
 
 				if (url.indexOf('?') != -1) {
 					url = url.substring(url.indexOf('?'));//.TrimStart('?');
@@ -290,7 +290,7 @@ public class FrmEvents extends EntitiesOID
 				// 获取事件类.
 				Object tempVar3 = new String(doc);// doc.clone();
 				String evName = (String)((tempVar3 instanceof String) ? tempVar3 : null);
-				BP.Sys.EventBase ev = null;
+				EventBase ev = null;
 				try
 				{
 					ev = BP.En.ClassFactory.GetEventBase(evName);
@@ -310,7 +310,7 @@ public class FrmEvents extends EntitiesOID
 						//系统参数.
 						r.put("FK_MapData", en.getClassID());
 					}
-					catch (java.lang.Exception e)
+					catch (Exception e)
 					{
 						r.put("FK_MapData", en.getClassID());
 					}
@@ -319,7 +319,7 @@ public class FrmEvents extends EntitiesOID
 					{
 						r.put("EventType", nev.getFK_Event());
 					}
-					catch (java.lang.Exception e2)
+					catch (Exception e2)
 					{
 						r.put("EventType", nev.getFK_Event());
 					}
@@ -333,27 +333,27 @@ public class FrmEvents extends EntitiesOID
 							{
 								r.put(s, ap.GetValStrByKey(s));
 							}
-							catch (java.lang.Exception e3)
+							catch (Exception e3)
 							{
 								r.put(s, ap.GetValStrByKey(s));
 							}
 						}
 					}
 
-					if (SystemConfig.getIsBSsystem()&&BP.Sys.Glo.getRequest()!=null)
+					if (SystemConfig.getIsBSsystem()&&Glo.getRequest()!=null)
 					{
-						java.util.Enumeration params=BP.Sys.Glo.getRequest().getParameterNames();
+						java.util.Enumeration params=Glo.getRequest().getParameterNames();
 						//如果是bs系统, 就加入外部url的变量.
 						while (params.hasMoreElements())
 						{
 							String key = (String) params.nextElement();
-							String val = BP.Sys.Glo.getRequest().getParameter(
+							String val = Glo.getRequest().getParameter(
 									key);
 
 							try
 							{
 								r.put(key, val);
-							} catch (java.lang.Exception e4)
+							} catch (Exception e4)
 							{
 								r.put(key, val);
 							}
@@ -375,7 +375,7 @@ public class FrmEvents extends EntitiesOID
 				String[] strs = doc.split("[@]", -1);
 
 				String method = "";
-				Hashtable paras1 = new java.util.Hashtable();
+				Hashtable paras1 = new Hashtable();
 				for (String str : strs)
 				{
 					if (str.contains("=") && str.contains("Url"))

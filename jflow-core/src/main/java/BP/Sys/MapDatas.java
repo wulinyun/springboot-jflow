@@ -47,9 +47,9 @@ public class MapDatas extends EntitiesNoName
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<MapData> Tolist()
+	public final ArrayList<MapData> Tolist()
 	{
-		java.util.ArrayList<MapData> list = new java.util.ArrayList<MapData>();
+		ArrayList<MapData> list = new ArrayList<MapData>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((MapData)this.get(i));

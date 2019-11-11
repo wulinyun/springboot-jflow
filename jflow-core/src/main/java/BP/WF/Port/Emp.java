@@ -190,14 +190,14 @@ public class Emp extends EntityNoName
 		int i = 0;
 		//更新待办.
 		String sql = "update wf_generworkerlist set fk_emp='"+userNo+"' where fk_emp='"+this.getNo()+"'";
-		i= BP.DA.DBAccess.RunSQL(sql);
+		i= DBAccess.RunSQL(sql);
 		if (i != 0)
 		{
 			msg += "@待办更新[" + i + "]个。";
 		}
 
 		sql = "UPDATE WF_GENERWORKFLOW  SET STARTER='"+userNo+"'  WHERE STARTER='"+this.getNo()+"'";
-		i = BP.DA.DBAccess.RunSQL(sql);
+		i = DBAccess.RunSQL(sql);
 		if (i != 0)
 		{
 			msg += "@流程注册更新[" + i + "]个。";
@@ -205,7 +205,7 @@ public class Emp extends EntityNoName
 
 
 		//更换流程信息的数据表
-		BP.WF.Flows fls = new Flows();
+		Flows fls = new Flows();
 		fls.RetrieveAll();
 		for (Flow fl : fls.ToJavaList())
 		{
@@ -259,7 +259,7 @@ public class Emp extends EntityNoName
 
 
 		//更新其他字段.
-		BP.Sys.MapAttrs attrs = new MapAttrs();
+		MapAttrs attrs = new MapAttrs();
 		attrs.RetrieveAll();
 		for (BP.Sys.MapAttr attr : attrs.ToJavaList())
 		{
@@ -267,7 +267,7 @@ public class Emp extends EntityNoName
 			{
 				try
 				{
-					BP.Sys.MapData md = new MapData(attr.getFK_MapData());
+					MapData md = new MapData(attr.getFK_MapData());
 					sql = "UPDATE " + md.getPTable() + " SET " + attr.getKeyOfEn() + "='" + userNo + "' WHERE " + attr.getKeyOfEn() + "='" + this.getNo() + "'";
 					i = DBAccess.RunSQL(sql);
 					if (i != 0)
@@ -275,7 +275,7 @@ public class Emp extends EntityNoName
 						msg += "@表[" + md.getName() + "],[" + md.getPTable() + "] [" + attr.getKeyOfEn() + "]，更新了[" + i + "]个。";
 					}
 				}
-				catch (java.lang.Exception e)
+				catch (Exception e)
 				{
 
 				}

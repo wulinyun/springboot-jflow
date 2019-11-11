@@ -134,7 +134,7 @@ public class WF_Comm_Sys extends WebContralBase
 	{
 		try
 		{
-			BP.En.Entity en = BP.En.ClassFactory.GetEn(this.getEnName());
+			Entity en = ClassFactory.GetEn(this.getEnName());
 			BP.En.Map map = en.getEnMap();
 			en.CheckPhysicsTable();
 			String msg = "";
@@ -289,7 +289,7 @@ public class WF_Comm_Sys extends WebContralBase
 						}
 						html += "<td>" + str + "</td>";
 					}
-					catch (java.lang.Exception e)
+					catch (Exception e)
 					{
 						html += "<td>未使用</td>";
 
@@ -321,7 +321,7 @@ public class WF_Comm_Sys extends WebContralBase
 		dt.Columns.Add("PTable",String.class);
 
 		java.util.ArrayList al = null;
-		al = BP.En.ClassFactory.GetObjects("BP.En.Entity");
+		al = ClassFactory.GetObjects("BP.En.Entity");
 		for (Object obj : al)
 		{
 			Entity en = null;
@@ -334,7 +334,7 @@ public class WF_Comm_Sys extends WebContralBase
 					continue;
 				}
 			}
-			catch (java.lang.Exception e)
+			catch (Exception e)
 			{
 				continue;
 			}
@@ -352,7 +352,7 @@ public class WF_Comm_Sys extends WebContralBase
 			{
 				dr.setValue("EnsName", en.getGetNewEntities().toString() + "");
 			}
-			catch (java.lang.Exception e2)
+			catch (Exception e2)
 			{
 				dr.setValue("EnsName", en.toString()+"s");
 			}

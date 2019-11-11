@@ -93,11 +93,11 @@ public class App extends WebContralBase{
     public String Home_Init() throws Exception
     {
     	java.util.Hashtable ht = new java.util.Hashtable();
-		ht.put("UserNo", BP.Web.WebUser.getNo());
-		ht.put("UserName", BP.Web.WebUser.getName());
+		ht.put("UserNo", WebUser.getNo());
+		ht.put("UserName", WebUser.getName());
 
 		//系统名称.
-		ht.put("SysName", BP.Sys.SystemConfig.getSysName());
+		ht.put("SysName", SystemConfig.getSysName());
 
 
 		ht.put("Todolist_EmpWorks", BP.WF.Dev2Interface.getTodolist_EmpWorks());
@@ -196,7 +196,7 @@ public class App extends WebContralBase{
     	String userNo = this.GetRequestVal("TB_UserNo");
 		String pass = this.GetRequestVal("TB_Pass");
 
-		BP.Port.Emp emp = new Emp();
+		Emp emp = new Emp();
 		emp.setNo(userNo);
 		if (emp.RetrieveFromDBSources() ==0)
 		{
@@ -257,9 +257,9 @@ public class App extends WebContralBase{
 		{
 			return "err@授权登录失败！";
 		}
-		BP.Port.Emp emp1 = new BP.Port.Emp(this.getNo());
+		Emp emp1 = new Emp(this.getNo());
 		try {
-			BP.Web.WebUser.SignInOfGener(emp1, "CH", false, false, BP.Web.WebUser.getNo(), BP.Web.WebUser.getName());
+			WebUser.SignInOfGener(emp1, "CH", false, false, WebUser.getNo(), WebUser.getName());
 		} catch (UnsupportedEncodingException e) {
 			Log.DebugWriteError("AppACEHandler LoginAs():"+e.getMessage());
 			e.printStackTrace();
@@ -292,7 +292,7 @@ public class App extends WebContralBase{
      */
     public String Load_Author() throws Exception
     {
-    	DataTable dt = BP.DA.DBAccess.RunSQLReturnTable("SELECT * FROM WF_EMP WHERE AUTHOR='" + BP.Web.WebUser.getNo() + "'");
+    	DataTable dt = BP.DA.DBAccess.RunSQLReturnTable("SELECT * FROM WF_EMP WHERE AUTHOR='" + WebUser.getNo() + "'");
 		return BP.Tools.Json.ToJson(dt);
     }
     
@@ -320,24 +320,24 @@ public class App extends WebContralBase{
 
 		//实体查询.
 		BP.WF.SMSs ss = new BP.WF.SMSs();
-		BP.En.QueryObject qo = new BP.En.QueryObject(ss);
+		QueryObject qo = new QueryObject(ss);
 
 		DataTable dt = null;
 		if (sta.equals("-1"))
 		{
-			dt = BP.WF.Dev2Interface.DB_CCList(BP.Web.WebUser.getNo());
+			dt = BP.WF.Dev2Interface.DB_CCList(WebUser.getNo());
 		}
 		if (sta.equals("0"))
 		{
-			dt = BP.WF.Dev2Interface.DB_CCList_UnRead(BP.Web.WebUser.getNo());
+			dt = BP.WF.Dev2Interface.DB_CCList_UnRead(WebUser.getNo());
 		}
 		if (sta.equals("1"))
 		{
-			dt = BP.WF.Dev2Interface.DB_CCList_Read(BP.Web.WebUser.getNo());
+			dt = BP.WF.Dev2Interface.DB_CCList_Read(WebUser.getNo());
 		}
 		if (sta.equals("2"))
 		{
-			dt = BP.WF.Dev2Interface.DB_CCList_Delete(BP.Web.WebUser.getNo());
+			dt = BP.WF.Dev2Interface.DB_CCList_Delete(WebUser.getNo());
 		}
 
 		int allNum = qo.GetCount();
@@ -357,7 +357,7 @@ public class App extends WebContralBase{
 
 		int idx = 0;
 		//获得关注的数据.
-		DataTable dt = BP.WF.Dev2Interface.DB_Focus(flowNo, BP.Web.WebUser.getNo());
+		DataTable dt = BP.WF.Dev2Interface.DB_Focus(flowNo, WebUser.getNo());
 		SysEnums stas = new SysEnums("WFSta");
 		String[] tempArr;
 		for (DataRow dr : dt.Rows)
@@ -384,7 +384,7 @@ public class App extends WebContralBase{
 			}
 			dr.setValue("ToDoEmps",currEmp);
 			dr.setValue("FlowNote",wfstaT);
-			dr.setValue("AtPara",(wfsta == BP.WF.WFSta.Complete.getValue() ? DotNetToJavaStringHelper.trimEnd(DotNetToJavaStringHelper.trimStart(dr.getValue("Sender").toString(), '('), ')').split("[,]", -1)[1] : ""));
+			dr.setValue("AtPara",(wfsta == WFSta.Complete.getValue() ? DotNetToJavaStringHelper.trimEnd(DotNetToJavaStringHelper.trimStart(dr.getValue("Sender").toString(), '('), ')').split("[,]", -1)[1] : ""));
 		}
 		return BP.Tools.Json.DataTableToJson(dt,false,false,true);
     }
@@ -415,7 +415,7 @@ public class App extends WebContralBase{
 		FlowSorts ens = new FlowSorts();
 		ens.RetrieveAll();
 
-		DataTable dt = BP.WF.Dev2Interface.DB_GenerCanStartFlowsOfDataTable(BP.Web.WebUser.getNo());
+		DataTable dt = BP.WF.Dev2Interface.DB_GenerCanStartFlowsOfDataTable(WebUser.getNo());
 
 		int cols = 3; //定义显示列数 从0开始。
 		int widthCell = 100 / cols;

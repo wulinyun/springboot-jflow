@@ -79,14 +79,14 @@ public class AutoRunOverTimeFlow extends Method{
                 if (item.getIsEnable() == false)
                     continue;
 
-                BP.Port.Emp emp = new Emp(item.getFK_Emp());
+                Emp emp = new Emp(item.getFK_Emp());
                 BP.Web.WebUser.SignInOfGener(emp);
                 isLogin = true;
             }
 
             if (isLogin == false)
             {
-                BP.Port.Emp emp = new Emp("admin");
+                Emp emp = new Emp("admin");
                 BP.Web.WebUser.SignInOfGener(emp);
             }
 

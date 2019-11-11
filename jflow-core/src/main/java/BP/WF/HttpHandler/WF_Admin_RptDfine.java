@@ -129,7 +129,7 @@ public class WF_Admin_RptDfine extends WebContralBase
 
 		//系统字段.
 		MapAttrs mattrsOfSystem = new MapAttrs();
-		ArrayList<String> sysFields = BP.WF.Glo.getFlowFields();
+		ArrayList<String> sysFields = Glo.getFlowFields();
 		for (MapAttr item : mattrs.ToJavaList())
 		{
 			if (sysFields.contains(item.getKeyOfEn()))
@@ -170,14 +170,14 @@ public class WF_Admin_RptDfine extends WebContralBase
 				///#region 处理特殊字段.
 			if (attr.getKeyOfEn().equals("FK_NY"))
 			{
-				attr.setLGType(BP.En.FieldTypeS.FK);
+				attr.setLGType(FieldTypeS.FK);
 				attr.setUIBindKey("BP.Pub.NYs");
 				attr.setUIContralType(BP.En.UIContralType.DDL);
 			}
 
 			if (attr.getKeyOfEn().equals("FK_Dept"))
 			{
-				attr.setLGType(BP.En.FieldTypeS.FK);
+				attr.setLGType(FieldTypeS.FK);
 				attr.setUIBindKey("BP.Port.Depts");
 				attr.setUIContralType(BP.En.UIContralType.DDL);
 			}

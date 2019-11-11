@@ -63,9 +63,9 @@ public class FrmEles extends EntitiesMyPK
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<FrmEle> Tolist()
+	public final ArrayList<FrmEle> Tolist()
 	{
-		java.util.ArrayList<FrmEle> list = new java.util.ArrayList<FrmEle>();
+		ArrayList<FrmEle> list = new ArrayList<FrmEle>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((FrmEle)this.get(i));

@@ -126,7 +126,7 @@ public class GenerWorkerLists extends Entities
 			{
 				mywl.Insert();
 			}
-			catch (java.lang.Exception e)
+			catch (Exception e)
 			{
 				mywl.Update();
 				continue;
@@ -169,12 +169,12 @@ public class GenerWorkerLists extends Entities
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<BP.WF.GenerWorkerList> Tolist()
+	public final java.util.ArrayList<GenerWorkerList> Tolist()
 	{
-		java.util.ArrayList<BP.WF.GenerWorkerList> list = new java.util.ArrayList<BP.WF.GenerWorkerList>();
+		java.util.ArrayList<GenerWorkerList> list = new java.util.ArrayList<GenerWorkerList>();
 		for (int i = 0; i < this.size(); i++)
 		{
-			list.add((BP.WF.GenerWorkerList)this.get(i));
+			list.add((GenerWorkerList)this.get(i));
 		}
 		return list;
 	}

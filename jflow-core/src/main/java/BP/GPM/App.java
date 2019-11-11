@@ -65,7 +65,7 @@ public class App extends EntityNoName
 
 		if (this.getSSOType().equals("0")) //SID验证
 		{
-			String SID = DBAccess.RunSQLReturnStringIsNull("SELECT SID FROM Port_Emp WHERE No='" + BP.Web.WebUser.getNo() + "'", null);
+			String SID = DBAccess.RunSQLReturnStringIsNull("SELECT SID FROM Port_Emp WHERE No='" + WebUser.getNo() + "'", null);
 			if (url.contains("?")){
 				url += "&UserNo=" + WebUser.getNo() + "&SID=" + SID;
 			}else{

@@ -130,7 +130,7 @@ public class Selector extends Entity
 		UAC uac = new UAC();
 		uac.IsDelete = false;
 		uac.IsInsert = false;
-		if (BP.Web.WebUser.getNo().equals("admin"))
+		if (WebUser.getNo().equals("admin"))
 		{
 			uac.IsUpdate = true;
 			uac.IsView = true;
@@ -219,24 +219,24 @@ public class Selector extends Entity
  
        // #region 对应关系
         //平铺模式.
-        map.getAttrsOfOneVSM().AddGroupPanelModel(new BP.WF.Template.NodeStations(), new BP.WF.Port.Stations(),
-            BP.WF.Template.NodeStationAttr.FK_Node,
-            BP.WF.Template.NodeStationAttr.FK_Station, "绑定岗位(平铺)", StationAttr.FK_StationType,"Name","No");
+        map.getAttrsOfOneVSM().AddGroupPanelModel(new NodeStations(), new BP.WF.Port.Stations(),
+            NodeStationAttr.FK_Node,
+            NodeStationAttr.FK_Station, "绑定岗位(平铺)", StationAttr.FK_StationType,"Name","No");
 
-        map.getAttrsOfOneVSM().AddGroupListModel(new BP.WF.Template.NodeStations(), new BP.WF.Port.Stations(),
-          BP.WF.Template.NodeStationAttr.FK_Node,
-          BP.WF.Template.NodeStationAttr.FK_Station, "绑定岗位(树)", StationAttr.FK_StationType,"Name","No");
+        map.getAttrsOfOneVSM().AddGroupListModel(new NodeStations(), new BP.WF.Port.Stations(),
+          NodeStationAttr.FK_Node,
+          NodeStationAttr.FK_Station, "绑定岗位(树)", StationAttr.FK_StationType,"Name","No");
 
 
         //节点绑定部门. 节点绑定部门.
-        map.getAttrsOfOneVSM().AddBranches(new BP.WF.Template.NodeDepts(), new BP.Port.Depts(),
-           BP.WF.Template.NodeDeptAttr.FK_Node,
-           BP.WF.Template.NodeDeptAttr.FK_Dept, "绑定部门", EmpAttr.Name, EmpAttr.No, "@WebUser.FK_Dept");
+        map.getAttrsOfOneVSM().AddBranches(new NodeDepts(), new BP.Port.Depts(),
+           NodeDeptAttr.FK_Node,
+           NodeDeptAttr.FK_Dept, "绑定部门", EmpAttr.Name, EmpAttr.No, "@WebUser.FK_Dept");
 
         //节点绑定人员. 使用树杆与叶子的模式绑定.
-        map.getAttrsOfOneVSM().AddBranchesAndLeaf(new BP.WF.Template.NodeEmps(), new BP.Port.Emps(),
-           BP.WF.Template.NodeEmpAttr.FK_Node,
-           BP.WF.Template.NodeEmpAttr.FK_Emp, "绑定接受人", EmpAttr.FK_Dept, EmpAttr.Name, EmpAttr.No, "@WebUser.FK_Dept");
+        map.getAttrsOfOneVSM().AddBranchesAndLeaf(new NodeEmps(), new BP.Port.Emps(),
+           NodeEmpAttr.FK_Node,
+           NodeEmpAttr.FK_Emp, "绑定接受人", EmpAttr.FK_Dept, EmpAttr.Name, EmpAttr.No, "@WebUser.FK_Dept");
         //#endregion
         
 
@@ -332,7 +332,7 @@ public class Selector extends Entity
 		if (DotNetToJavaStringHelper.isNullOrEmpty(sqlGroup) == false)
 		{
 			 sqlGroup = BP.WF.Glo.DealExp(sqlGroup, en, null);  //@祝梦娟	
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sqlGroup);
+			DataTable dt = DBAccess.RunSQLReturnTable(sqlGroup);
 			dt.TableName = "Depts";
 			ds.Tables.add(dt);
 		}
@@ -341,7 +341,7 @@ public class Selector extends Entity
 		//求人员范围.
 		String sqlDB = this.getSelectorP2();
 		 sqlDB = BP.WF.Glo.DealExp(sqlDB, en, null);
-		DataTable dtEmp = BP.DA.DBAccess.RunSQLReturnTable(sqlDB);
+		DataTable dtEmp = DBAccess.RunSQLReturnTable(sqlDB);
 		dtEmp.TableName = "Emps";
 		ds.Tables.add(dtEmp);
 
@@ -350,7 +350,7 @@ public class Selector extends Entity
 		{
 			sqlDB = this.getSelectorP3();
 			sqlDB = BP.WF.Glo.DealExp(sqlDB, en, null); 
-			DataTable dtDef = BP.DA.DBAccess.RunSQLReturnTable(sqlDB);
+			DataTable dtDef = DBAccess.RunSQLReturnTable(sqlDB);
 			dtDef.TableName = "DefaultSelected";
 
 			ds.Tables.add(dtDef);
@@ -374,7 +374,7 @@ public class Selector extends Entity
 				sqlDB = BP.WF.Glo.DealExp(sqlDB, en, null);
 			}
 
-			DataTable dtForce = BP.DA.DBAccess.RunSQLReturnTable(sqlDB);
+			DataTable dtForce = DBAccess.RunSQLReturnTable(sqlDB);
 			dtForce.TableName = "ForceSelected";
 			ds.Tables.add(dtForce);
 		}
@@ -395,13 +395,13 @@ public class Selector extends Entity
 
 		//部门.
 		String sql = "SELECT distinct a.No,a.Name, a.ParentNo FROM Port_Dept a,  WF_NodeDept b WHERE a.No=b.FK_Dept AND B.FK_Node=" + nodeID;
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Depts";
 		ds.Tables.add(dt);
 
 		//人员.
 		sql = "SELECT distinct a.No, a.Name, a.FK_Dept FROM Port_Emp a, WF_NodeDept b WHERE a.FK_Dept=b.FK_Dept AND B.FK_Node=" + nodeID;
-		DataTable dtEmp = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dtEmp = DBAccess.RunSQLReturnTable(sql);
 		ds.Tables.add(dtEmp);
 		dtEmp.TableName = "Emps";
 		return ds;
@@ -419,13 +419,13 @@ public class Selector extends Entity
 
 		//部门.
 		String sql = "SELECT distinct a.No,a.Name, a.ParentNo FROM Port_Dept a, WF_NodeEmp b, Port_Emp c WHERE b.FK_Emp=c.No AND a.No=c.FK_Dept AND B.FK_Node=" + nodeID;
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Depts";
 		ds.Tables.add(dt);
 
 		//人员.
 		sql = "SELECT distinct a.No,a.Name, a.FK_Dept FROM Port_Emp a,  WF_NodeEmp b WHERE a.No=b.FK_Emp AND b.FK_Node=" + nodeID;
-		DataTable dtEmp = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dtEmp = DBAccess.RunSQLReturnTable(sql);
 		dtEmp.TableName = "Emps";
 		ds.Tables.add(dtEmp);
 		return ds;
@@ -441,7 +441,7 @@ public class Selector extends Entity
 			sql = "SELECT distinct a.No, a.Name, a.ParentNo FROM Port_Dept a, WF_NodeStation b, Port_DeptEmpStation c, Port_Emp d WHERE a.No=d.FK_Dept AND b.FK_Station=c.FK_Station AND C.FK_Emp=D.No AND B.FK_Node=" + nodeID;
 		 
 
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Depts";
 		ds.Tables.add(dt);
 
@@ -449,7 +449,7 @@ public class Selector extends Entity
 			sql = "SELECT distinct a.No,a.Name, a.FK_Dept FROM Port_Emp a,  WF_NodeStation b, Port_DeptEmpStation c WHERE a.No=c.FK_Emp AND B.FK_Station=C.FK_Station AND b.FK_Node=" + nodeID;
 		 
 
-		DataTable dtEmp = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dtEmp = DBAccess.RunSQLReturnTable(sql);
 		dtEmp.TableName = "Emps";
 		ds.Tables.add(dtEmp);
 		return ds;
@@ -464,14 +464,14 @@ public class Selector extends Entity
         //部门.
         String sql = "";
         sql = "SELECT d.No,d.Name,d.ParentNo  FROM  Port_DeptEmp  de,port_dept as d where de.FK_Dept = d.No and de.FK_Emp ='"+ WebUser.getNo() +"'";
-        DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+        DataTable dt = DBAccess.RunSQLReturnTable(sql);
 
         //人员.
         if (SystemConfig.getAppCenterDBType() == DBType.Oracle)
             sql = "SELECT * FROM (SELECT distinct a.No,a.Name, a.FK_Dept FROM Port_Emp a,  WF_NodeStation b, Port_DeptEmpStation c WHERE a.No=c.FK_Emp AND B.FK_Station=C.FK_Station AND C.FK_Dept='" + WebUser.getFK_Dept() + "' AND b.FK_Node=" + nodeID + ")  ";
         else
             sql = "SELECT distinct a.No,a.Name, a.FK_Dept FROM Port_Emp a,  WF_NodeStation b, Port_DeptEmpStation c WHERE a.No=c.FK_Emp AND C.FK_Dept='" + WebUser.getFK_Dept() + "' AND B.FK_Station=C.FK_Station AND b.FK_Node=" + nodeID;
-        DataTable dtEmp = BP.DA.DBAccess.RunSQLReturnTable(sql);
+        DataTable dtEmp = DBAccess.RunSQLReturnTable(sql);
         
         if (dtEmp.Rows.toArray().length > 0)
         {
@@ -489,7 +489,7 @@ public class Selector extends Entity
 
             sql = " select No,Name, ParentNo from port_dept where no  in (  select  ParentNo from port_dept where no  in"
             +"( SELECT FK_Dept FROM WF_GenerWorkerlist WHERE WorkID ='" + workID + "' ))";
-            dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+            dt = DBAccess.RunSQLReturnTable(sql);
             dt.TableName = "Depts";
             ds.Tables.add(dt);
 
@@ -520,13 +520,13 @@ public class Selector extends Entity
 		  
 			//部门.
 			String sql = "SELECT distinct a.No, a.Name, a.ParentNo FROM Port_Dept a, WF_NodeStation b, Port_DeptEmpStation c, Port_Emp d WHERE a.No=d.FK_Dept AND b.FK_Station=c.FK_Station AND C.FK_Emp=D.No AND B.FK_Node=" + nodeID;
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			DataTable dt = DBAccess.RunSQLReturnTable(sql);
 			dt.TableName = "Depts";
 			ds.Tables.add(dt);
 
 			//人员.
 			sql = "SELECT distinct a.No,a.Name, a.FK_Dept FROM Port_Emp a,  WF_NodeStation b, Port_DeptEmpStation c WHERE a.No=c.FK_Emp AND B.FK_Station=C.FK_Station AND b.FK_Node=" + nodeID;
-			DataTable dtEmp = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			DataTable dtEmp = DBAccess.RunSQLReturnTable(sql);
 			dtEmp.TableName = "Emps";
 			ds.Tables.add(dtEmp);
 		

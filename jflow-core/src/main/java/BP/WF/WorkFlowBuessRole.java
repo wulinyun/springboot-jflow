@@ -374,7 +374,7 @@ public class WorkFlowBuessRole
 		}
 		if (billNo.contains("@"))
 		{
-			billNo = BP.WF.Glo.DealExp(billNo, en, null);
+			billNo = Glo.DealExp(billNo, en, null);
 		}
 
 		//如果，Bill 有规则 
@@ -419,7 +419,7 @@ public class WorkFlowBuessRole
 				}
 
 				sql = "SELECT COUNT(OID) FROM " + flowPTable + " WHERE PWorkID =" + pWorkID + " AND WFState >1 ";
-				num = BP.DA.DBAccess.RunSQLReturnValInt(sql, 0);
+				num = DBAccess.RunSQLReturnValInt(sql, 0);
 				billNo = billNo+ StringHelper.padLeft(String.valueOf(num), i, '0');
 				billNo = billNo.replace("{LSH" + i + "}", "");
 				break;
@@ -430,7 +430,7 @@ public class WorkFlowBuessRole
 			String sql = "";
 			int num = 0;
 			String supposeBillNo = billNo; //假设单据号，长度与真实单据号一致
-			java.util.ArrayList<java.util.Map.Entry<Integer, Integer>> loc = new java.util.ArrayList<java.util.Map.Entry<Integer, Integer>>(); //流水号位置，流水号位数
+			java.util.ArrayList<Entry<Integer, Integer>> loc = new java.util.ArrayList<Entry<Integer, Integer>>(); //流水号位置，流水号位数
 			String lsh; //流水号设置码
 			int lshIdx = -1; //流水号设置码所在位置
 
@@ -472,7 +472,7 @@ public class WorkFlowBuessRole
 			if (StringHelper.isNullOrWhiteSpace(maxBillNo))
 			{
 				//没有数据，则所有流水号都从1开始
-				for (java.util.Map.Entry<Integer, Integer> kv : loc)
+				for (Entry<Integer, Integer> kv : loc)
 				{
 					supposeBillNo = (kv.getKey() == 0 ? "" : supposeBillNo.substring(0, kv.getKey())) + StringHelper.padLeft("1", kv.getValue(), '0') + (kv.getKey() + kv.getValue() + 1 < supposeBillNo.length() ? supposeBillNo.substring(kv.getKey() + kv.getValue()) : "");
 				}
@@ -480,7 +480,7 @@ public class WorkFlowBuessRole
 			else
 			{
 				//有数据，则从右向左开始判断流水号，当右侧的流水号达到最大值，则左侧的流水号自动加1
-				java.util.HashMap<Integer, Integer> mlsh = new java.util.HashMap<Integer, Integer>();
+				HashMap<Integer, Integer> mlsh = new HashMap<Integer, Integer>();
 				int plus1idx = -1;
 
 				for (int i = loc.size() - 1; i >= 0; i--)
@@ -529,7 +529,7 @@ public class WorkFlowBuessRole
 				}
 
 				//拼接单据号
-				for (java.util.Map.Entry<Integer, Integer> kv : loc)
+				for (Entry<Integer, Integer> kv : loc)
 				{
 					supposeBillNo = (kv.getKey() == 0 ? "" : supposeBillNo.substring(0, kv.getKey())) + StringHelper.padLeft(mlsh.get(kv.getKey()).toString(), kv.getValue(), '0') + (kv.getKey() + kv.getValue() + 1 < supposeBillNo.length() ? supposeBillNo.substring(kv.getKey() + kv.getValue()) : "");
 				}
@@ -646,7 +646,7 @@ public class WorkFlowBuessRole
 		// 如果没有找到.
 		if (myNodes.size() == 0)
 		{
-			throw new RuntimeException("@当前用户(" + BP.Web.WebUser.getName() + "),定义节点的方向条件错误:从{" + currNode.getNodeID() + currNode.getName() + "}节点到其它节点,定义的所有转向条件都不成立.");
+			throw new RuntimeException("@当前用户(" + WebUser.getName() + "),定义节点的方向条件错误:从{" + currNode.getNodeID() + currNode.getName() + "}节点到其它节点,定义的所有转向条件都不成立.");
 		}
 
 		//如果找到1个.
@@ -700,14 +700,14 @@ public class WorkFlowBuessRole
 		String FK_Emp;
 
 		//变量.
-		String dbStr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbStr = SystemConfig.getAppCenterDBVarStr();
 
 		Paras ps = new Paras();
 		// 按上一节点发送人处理。
 		if (toNode.getHisDeliveryWay() == DeliveryWay.ByPreviousNodeEmp)
 		{
 			DataRow dr = dt.NewRow();
-			dr.setValue(0,BP.Web.WebUser.getNo());
+			dr.setValue(0,WebUser.getNo());
 			dt.Rows.add(dr);
 			return dt;
 		}
@@ -784,9 +784,9 @@ public class WorkFlowBuessRole
 			}
 
 			currNode.WorkID = workid; //为获得表单id，设置的参数.
-			BP.Sys.MapDtls dtls = new BP.Sys.MapDtls(currNode.getNodeFrmID());
+			MapDtls dtls = new MapDtls(currNode.getNodeFrmID());
 			String msg = null;
-			for (BP.Sys.MapDtl dtl : dtls.ToJavaList())
+			for (MapDtl dtl : dtls.ToJavaList())
 			{
 				try
 				{
@@ -886,7 +886,7 @@ public class WorkFlowBuessRole
 				{
 					// 有可能当前节点就是第一个节点，那个时间还没有初始化数据，就返回当前人. 
 					DataRow dr = dt.NewRow();
-					dr.setValue(0,BP.Web.WebUser.getNo());
+					dr.setValue(0,WebUser.getNo());
 					dt.Rows.add(dr);
 					return dt;
 				}
@@ -1208,7 +1208,7 @@ public class WorkFlowBuessRole
 					sql += ")";
 					sql += "AND NO IN ";
 					sql += "(";
-					sql += "SELECT FK_Emp FROM " + BP.WF.Glo.getEmpStation() + " WHERE FK_Station IN ";
+					sql += "SELECT FK_Emp FROM " + Glo.getEmpStation() + " WHERE FK_Station IN ";
 					sql += "( SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + dbStr + "FK_Node2)";
 					sql += ")";
 					sql += " ORDER BY No";
@@ -1237,7 +1237,7 @@ public class WorkFlowBuessRole
 			///#region 仅按岗位计算
 		if (toNode.getHisDeliveryWay() == DeliveryWay.ByStationOnly)
 		{
-			sql = "SELECT A.FK_Emp FROM " + BP.WF.Glo.getEmpStation() + " A, WF_NodeStation B WHERE A.FK_Station=B.FK_Station AND B.FK_Node=" + dbStr + "FK_Node ORDER BY A.FK_Emp";
+			sql = "SELECT A.FK_Emp FROM " + Glo.getEmpStation() + " A, WF_NodeStation B WHERE A.FK_Station=B.FK_Station AND B.FK_Node=" + dbStr + "FK_Node ORDER BY A.FK_Emp";
 			ps = new Paras();
 			ps.Add("FK_Node", toNode.getNodeID());
 			ps.SQL = sql;
@@ -1310,7 +1310,7 @@ public class WorkFlowBuessRole
 					throw new RuntimeException("@字段{" + para + "}不能为空，没有取出来处理人员。");
 				}
 
-				BP.Port.Emp em = new BP.Port.Emp(empNo);
+				Emp em = new Emp(empNo);
 				empDept = em.getFK_Dept();
 			}
 		}
@@ -1325,7 +1325,7 @@ public class WorkFlowBuessRole
 			if (flowAppType == FlowAppType.Normal || flowAppType == FlowAppType.DocFlow)
 			{
 				// 如果当前的节点不是开始节点， 从轨迹里面查询。
-				sql = "SELECT DISTINCT FK_Emp  FROM " + BP.WF.Glo.getEmpStation() + " WHERE FK_Station IN " + "(SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + toNode.getNodeID() + ") " + "AND FK_Emp IN (SELECT FK_Emp FROM WF_GenerWorkerlist WHERE WorkID=" + dbStr + "WorkID AND FK_Node IN (" + DataType.PraseAtToInSql(toNode.getGroupStaNDs(), true) + ") )";
+				sql = "SELECT DISTINCT FK_Emp  FROM " + Glo.getEmpStation() + " WHERE FK_Station IN " + "(SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + toNode.getNodeID() + ") " + "AND FK_Emp IN (SELECT FK_Emp FROM WF_GenerWorkerlist WHERE WorkID=" + dbStr + "WorkID AND FK_Node IN (" + DataType.PraseAtToInSql(toNode.getGroupStaNDs(), true) + ") )";
 
 				sql += " ORDER BY FK_Emp ";
 
@@ -1349,7 +1349,7 @@ public class WorkFlowBuessRole
 				if (dt.Rows.size() == 0)
 				{
 					// 如果项目组里没有工作人员就提交到公共部门里去找。
-					sql = "SELECT DISTINCT FK_Emp  FROM " + BP.WF.Glo.getEmpStation() + " WHERE FK_Station IN " + "(SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + dbStr + "FK_Node ) " + "AND FK_Emp IN (SELECT FK_Emp FROM WF_GenerWorkerlist WHERE WorkID=" + dbStr + "WorkID AND FK_Node IN (" + DataType.PraseAtToInSql(toNode.getGroupStaNDs(), true) + ") )";
+					sql = "SELECT DISTINCT FK_Emp  FROM " + Glo.getEmpStation() + " WHERE FK_Station IN " + "(SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + dbStr + "FK_Node ) " + "AND FK_Emp IN (SELECT FK_Emp FROM WF_GenerWorkerlist WHERE WorkID=" + dbStr + "WorkID AND FK_Node IN (" + DataType.PraseAtToInSql(toNode.getGroupStaNDs(), true) + ") )";
 					sql += " ORDER BY FK_Emp ";
 
 					ps = new Paras();
@@ -1391,7 +1391,7 @@ public class WorkFlowBuessRole
 			// 没有查询到的情况下, 先按照本部门计算。
 			if (flowAppType == FlowAppType.Normal)
 			{
-				if (BP.Sys.SystemConfig.getOSDBSrc() == OSDBSrc.Database)
+				if (SystemConfig.getOSDBSrc() == OSDBSrc.Database)
 				{
 				 
 						sql = "SELECT FK_Emp as No FROM Port_DeptEmpStation A, WF_NodeStation B         WHERE A.FK_Station=B.FK_Station AND B.FK_Node=" + dbStr + "FK_Node AND A.FK_Dept=" + dbStr + "FK_Dept";
@@ -1402,9 +1402,9 @@ public class WorkFlowBuessRole
 					ps.Add("FK_Dept", empDept);
 				}
 
-				if (BP.Sys.SystemConfig.getOSDBSrc() == OSDBSrc.WebServices)
+				if (SystemConfig.getOSDBSrc() == OSDBSrc.WebServices)
 				{
-					DataTable dtStas = BP.DA.DBAccess.RunSQLReturnTable("SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + toNode.getNodeID());
+					DataTable dtStas = DBAccess.RunSQLReturnTable("SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + toNode.getNodeID());
 					String stas = DBAccess.GenerWhereInPKsString(dtStas);
 
 					PortalInterface ws = DataType.GetPortalInterfaceSoapClientInstance();
@@ -1427,7 +1427,7 @@ public class WorkFlowBuessRole
 				{
 					// 如果项目组里没有工作人员就提交到公共部门里去找。  
 					 
-						sql = "SELECT No FROM Port_Emp WHERE NO IN " + "(SELECT  FK_Emp  FROM " + BP.WF.Glo.getEmpStation() + " WHERE FK_Station IN (SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + dbStr + "FK_Node))" + " AND  NO IN " + "(SELECT FK_Emp FROM Port_DeptEmp WHERE FK_Dept =" + dbStr + "FK_Dept)";
+						sql = "SELECT No FROM Port_Emp WHERE NO IN " + "(SELECT  FK_Emp  FROM " + Glo.getEmpStation() + " WHERE FK_Station IN (SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + dbStr + "FK_Node))" + " AND  NO IN " + "(SELECT FK_Emp FROM Port_DeptEmp WHERE FK_Dept =" + dbStr + "FK_Dept)";
 						sql += " ORDER BY No ";
 				 
 
@@ -1457,7 +1457,7 @@ public class WorkFlowBuessRole
 				boolean isInit = false;
 				for (DataRow dr : dt.Rows)
 				{
-					if (dr.getValue(0).toString().equals(BP.Web.WebUser.getNo()))
+					if (dr.getValue(0).toString().equals(WebUser.getNo()))
 					{
 //                             如果岗位分组不一样，并且结果集合里还有当前的人员，就说明了出现了当前操作员，拥有本节点上的岗位也拥有下一个节点的工作岗位
 //                             导致：节点的分组不同，传递到同一个人身上。 
@@ -1475,7 +1475,7 @@ public class WorkFlowBuessRole
 		String nowDeptID = (String)((tempVar instanceof String) ? tempVar : null);
 		while (true)
 		{
-			BP.Port.Dept myDept = new BP.Port.Dept(nowDeptID);
+			Dept myDept = new Dept(nowDeptID);
 			nowDeptID = myDept.getParentNo();
 			if (nowDeptID.equals("-1") || nowDeptID.toString().equals("0"))
 			{
@@ -1507,9 +1507,9 @@ public class WorkFlowBuessRole
 	 @return 
 	 * @throws Exception 
 	*/
-	private static DataTable RequetNextNodeWorkers_DiGui_ByDepts(BP.Port.Depts subDepts, String empNo, Node toNode) throws Exception
+	private static DataTable RequetNextNodeWorkers_DiGui_ByDepts(Depts subDepts, String empNo, Node toNode) throws Exception
 	{
-		for (BP.Port.Dept item : subDepts.ToJavaList())
+		for (Dept item : subDepts.ToJavaList())
 		{
 			DataTable dt = RequetNextNodeWorkers_DiGui(item.getNo(), empNo, toNode);
 			if (dt != null)
@@ -1535,7 +1535,7 @@ public class WorkFlowBuessRole
 	private static DataTable RequetNextNodeWorkers_DiGui(String deptNo, String empNo, Node toNode) throws Exception
 	{
 		String sql;
-		String dbStr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbStr = SystemConfig.getAppCenterDBVarStr();
 
 	 
 			sql = "SELECT FK_Emp as No FROM Port_DeptEmpStation A, WF_NodeStation B WHERE A.FK_Station=B.FK_Station AND B.FK_Node=" + dbStr + "FK_Node AND A.FK_Dept=" + dbStr + "FK_Dept AND A.FK_Emp!=" + dbStr + "FK_Emp";
@@ -1556,7 +1556,7 @@ public class WorkFlowBuessRole
 			}
 
 			sql = "SELECT No FROM Port_Emp WHERE No IN ";
-			sql += "(SELECT  FK_Emp  FROM " + BP.WF.Glo.getEmpStation() + " WHERE FK_Station IN (SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + dbStr + "FK_Node ) )";
+			sql += "(SELECT  FK_Emp  FROM " + Glo.getEmpStation() + " WHERE FK_Station IN (SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + dbStr + "FK_Node ) )";
 			sql += " AND No IN ";
 
 			if (deptNo.equals("1"))
@@ -1565,7 +1565,7 @@ public class WorkFlowBuessRole
 			}
 			else
 			{
-				BP.Port.Dept deptP = new BP.Port.Dept(deptNo);
+				Dept deptP = new Dept(deptNo);
 				sql += "(SELECT No as FK_Emp FROM Port_Emp WHERE No!=" + dbStr + "FK_Emp AND FK_Dept = '" + deptP.getParentNo() + "')";
 			}
 
@@ -1615,7 +1615,7 @@ public class WorkFlowBuessRole
             return "@设置的抄送规则，没有找到抄送人员。";
 
         String ccMsg = "@消息自动抄送给";
-        String basePath = BP.WF.Glo.getHostURL();
+        String basePath = Glo.getHostURL();
 
         for(DataRow dr : dt.Rows)
         {
@@ -1624,10 +1624,10 @@ public class WorkFlowBuessRole
 
             //生成标题与内容.
         	String ccTitle = ccEn.getCCTitle();
-            ccTitle = BP.WF.Glo.DealExp(ccTitle, rpt, null);
+            ccTitle = Glo.DealExp(ccTitle, rpt, null);
 
             String ccDoc = ccEn.getCCDoc();
-            ccDoc = BP.WF.Glo.DealExp(ccDoc, rpt, null);
+            ccDoc = Glo.DealExp(ccDoc, rpt, null);
 
             ccDoc = ccDoc.replace("@Accepter", toUserNo);
             ccTitle = ccTitle.replace("@Accepter", toUserNo);
@@ -1669,12 +1669,12 @@ public class WorkFlowBuessRole
             {
                 list.Insert();
             }
-            catch (java.lang.Exception e)
+            catch (Exception e)
             {
                 list.Update();
             }
 
-            if (BP.WF.Glo.getIsEnableSysMessage() == true)
+            if (Glo.getIsEnableSysMessage() == true)
             {
                 //     //写入消息提示.
                 //     ccMsg += list.CCTo + "(" + dr[1].ToString() + ");";
@@ -1710,10 +1710,10 @@ public class WorkFlowBuessRole
 
         //生成标题与内容.
         String ccTitle = cc.getCCTitle();
-        ccTitle = BP.WF.Glo.DealExp(ccTitle, rptGE, null);
+        ccTitle = Glo.DealExp(ccTitle, rptGE, null);
 
         String ccDoc = cc.getCCDoc();
-        ccDoc = BP.WF.Glo.DealExp(ccDoc, rptGE, null);
+        ccDoc = Glo.DealExp(ccDoc, rptGE, null);
 
         //取出抄送人列表
         String ccers = rptGE.GetValStrByKey("SysCCEmps");
@@ -1727,9 +1727,9 @@ public class WorkFlowBuessRole
 			ht.put(tmp[0], tmp[1]);
         }
         String ccMsg = "@消息自动抄送给";
-        String basePath = BP.WF.Glo.getHostURL();
+        String basePath = Glo.getHostURL();
 
-        String mailTemp = BP.DA.DataType.ReadTextFile2Html(BP.Sys.SystemConfig.getPathOfDataUser() + "/EmailTemplete/CC_" + WebUser.getSysLang() + ".txt");
+        String mailTemp = DataType.ReadTextFile2Html(SystemConfig.getPathOfDataUser() + "/EmailTemplete/CC_" + WebUser.getSysLang() + ".txt");
         for (Object item : ht.keySet())
 		{
 			ccDoc = ccDoc.replace("@Accepter", ht.get(item).toString());
@@ -1771,7 +1771,7 @@ public class WorkFlowBuessRole
             {
                 list.Insert();
             }
-            catch (java.lang.Exception e)
+            catch (Exception e)
             {
                 list.CheckPhysicsTable();
                 list.Update();
@@ -1779,10 +1779,10 @@ public class WorkFlowBuessRole
             //如果要写入抄送
 
             //写入消息机制.
-            if (BP.WF.Glo.getIsEnableSysMessage() == true)
+            if (Glo.getIsEnableSysMessage() == true)
             {
             	ccMsg += list.getCCTo() + "(" + item.toString() + ");";
-                BP.WF.Port.WFEmp wfemp = new WFEmp(list.getCCTo());
+                WFEmp wfemp = new WFEmp(list.getCCTo());
 
                 String sid = list.getCCTo() + "_" + list.getWorkID() + "_" + list.getFK_Node() + "_" + list.getRDT();
                 String url = basePath + "WF/Do.htm?DoType=OF&SID=" + sid;
@@ -1798,7 +1798,7 @@ public class WorkFlowBuessRole
 
 				String title = String.format("工作抄送:%1$s.工作:%2$s,发送人:%3$s,需您查阅",  nd.getFlowName(), nd.getName(), WebUser.getName());
 
-				BP.WF.Dev2Interface.Port_SendMsg(wfemp.getNo(), title, mytemp, null, BP.WF.SMSMsgType.CC, list.getFK_Flow(), list.getFK_Node(), list.getWorkID(), list.getFID());
+				Dev2Interface.Port_SendMsg(wfemp.getNo(), title, mytemp, null, SMSMsgType.CC, list.getFK_Flow(), list.getFK_Node(), list.getWorkID(), list.getFID());
             }
             //写入消息机制.
         }

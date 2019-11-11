@@ -303,7 +303,7 @@ public class FindWorkerRole extends EntityOIDName
 	public WorkNode town = null;
 	public WorkNode currWn = null;
 	public Flow fl = null;
-	private String dbStr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+	private String dbStr = SystemConfig.getAppCenterDBVarStr();
 	public Paras ps = null;
 	public long WorkID = 0;
 	public Node HisNode = null;
@@ -430,7 +430,7 @@ public class FindWorkerRole extends EntityOIDName
 						break;
 					case SpecNodeSubmiter: // 指定节点提交人的直线领导.
 						sql = "SELECT FK_Emp,FK_Dept FROM WF_GenerWorkerlist WHERE WorkID=" + this.WorkID + " AND FK_Node=" + this.getTagVal1();
-						dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+						dt = DBAccess.RunSQLReturnTable(sql);
 						if (dt.Rows.size() == 0)
 						{
 							throw new RuntimeException("@没有找到指定节点数据，请反馈给系统管理员，技术信息:" + sql);
@@ -440,7 +440,7 @@ public class FindWorkerRole extends EntityOIDName
 						break;
 					case BySpecField: //指定节点字段人员的直接领导..
 						sql = " SELECT " + this.getTagVal1() + " FROM " + this.HisNode.getHisFlow().getPTable() + " WHERE OID=" + this.WorkID;
-						dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+						dt = DBAccess.RunSQLReturnTable(sql);
 						empNo = (String)((dt.Rows.get(0).getValue(0) instanceof String) ? dt.Rows.get(0).getValue(0) : null);
 						if (StringHelper.isNullOrEmpty(empNo))
 						{
@@ -539,7 +539,7 @@ public class FindWorkerRole extends EntityOIDName
 		{
 			case All: // 所有该部门性质下的人员.
 				sql = "SELECT Leader FROM Port_DeptEmp WHERE FK_Emp='" + empNo + "' AND FK_Dept='" + empDept + "'";
-				dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				dt = DBAccess.RunSQLReturnTable(sql);
 				leader = (String)((dt.Rows.get(0).getValue(0) instanceof String) ? dt.Rows.get(0).getValue(0) : null);
 				if (StringHelper.isNullOrEmpty(leader))
 				{
@@ -620,7 +620,7 @@ public class FindWorkerRole extends EntityOIDName
 		{
 			case DirLeader: // 直接领导.
 				sql = "SELECT Leader FROM Port_DeptEmp WHERE FK_Emp='" + empNo + "' AND FK_Dept='" + empDept + "'";
-				dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				dt = DBAccess.RunSQLReturnTable(sql);
 				leader = (String)((dt.Rows.get(0).getValue(0) instanceof String) ? dt.Rows.get(0).getValue(0) : null);
 				if (StringHelper.isNullOrEmpty(leader))
 				{

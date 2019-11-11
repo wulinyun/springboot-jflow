@@ -50,7 +50,7 @@ public abstract class XmlEn
 		try
 		{
 			return Integer.parseInt(this.GetValByKey(key).toString().trim());
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			throw new RuntimeException("key=" + key + "不能向int 类型转换。val="
 					+ this.GetValByKey(key));

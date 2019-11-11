@@ -62,9 +62,9 @@ public class FrmBtns extends EntitiesMyPK
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<FrmBtn> Tolist()
+	public final ArrayList<FrmBtn> Tolist()
 	{
-		java.util.ArrayList<FrmBtn> list = new java.util.ArrayList<FrmBtn>();
+		ArrayList<FrmBtn> list = new ArrayList<FrmBtn>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((FrmBtn)this.get(i));

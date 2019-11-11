@@ -296,7 +296,7 @@ public class Json
 
 		}
 
-		return BP.Tools.Json.DataTableToJson(dt, false);
+		return Json.DataTableToJson(dt, false);
     }
 	
 	/**
@@ -921,7 +921,7 @@ public class Json
 
 			}
 
-			return BP.Tools.Json.DataTableToJson(dt, false);
+			return Json.DataTableToJson(dt, false);
 	    }
 		
 		public static String ToJson_object(Object table){

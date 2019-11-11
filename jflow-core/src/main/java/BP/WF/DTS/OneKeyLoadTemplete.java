@@ -321,7 +321,7 @@ public class OneKeyLoadTemplete extends Method
 				for (File filePath : fls)
 				{
 					msg += "\t\n@开始调度流程模板文件:" + filePath;
-					Flow myflow = BP.WF.Flow.DoLoadFlowTemplate(fs.getNo(), filePath.getPath(), ImpFlowTempleteModel.AsTempleteFlowNo);
+					Flow myflow = Flow.DoLoadFlowTemplate(fs.getNo(), filePath.getPath(), ImpFlowTempleteModel.AsTempleteFlowNo);
 					msg += "\t\n@流程:" + myflow.getName() + "装载成功。";
 					myflow.setName(filePath.getName().replace(".xml", ""));
 					if (myflow.getName().substring(2, 3).equals("."))
@@ -339,10 +339,10 @@ public class OneKeyLoadTemplete extends Method
 
 		///#endregion 6.恢复流程数据.
 
-		BP.DA.Log.DefaultLogWriteLineInfo(msg);
+		Log.DefaultLogWriteLineInfo(msg);
 
 		//删除多余的空格.
-		BP.WF.DTS.DeleteBlankGroupField dts = new DeleteBlankGroupField();
+		DeleteBlankGroupField dts = new DeleteBlankGroupField();
 		dts.Do();
 
 		//执行生成签名.

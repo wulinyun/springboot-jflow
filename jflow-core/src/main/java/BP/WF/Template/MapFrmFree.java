@@ -174,11 +174,11 @@ public class MapFrmFree extends EntityNoName {
 		map.AddTBString(MapFrmFreeAttr.Name, null, "表单名称", true, false, 0, 500, 20, true);
 
 		// 数据源.
-		map.AddDDLEntities(MapFrmFreeAttr.DBSrc, "local", "数据源", new BP.Sys.SFDBSrcs(), true);
+		map.AddDDLEntities(MapFrmFreeAttr.DBSrc, "local", "数据源", new SFDBSrcs(), true);
 		map.AddDDLEntities(MapFrmFreeAttr.FK_FormTree, "01", "表单类别", new SysFormTrees(), true);
 
 		// 表单的运行类型.
-		map.AddDDLSysEnum(MapFrmFreeAttr.FrmType, BP.Sys.FrmType.FreeFrm.getValue(), "表单类型", true, true,
+		map.AddDDLSysEnum(MapFrmFreeAttr.FrmType, FrmType.FreeFrm.getValue(), "表单类型", true, true,
 				MapFrmFreeAttr.FrmType);
 
 		/// #endregion 基本属性.
@@ -357,7 +357,7 @@ public class MapFrmFree extends EntityNoName {
 		rm = new RefMethod();
 		rm.Title = "手机端表单";
 		rm.GroupName = "高级设置";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Admin/CCFormDesigner/Img/telephone.png";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Admin/CCFormDesigner/Img/telephone.png";
 		rm.ClassMethodName = this.toString() + ".DoSortingMapAttrs";
 		rm.refMethodType = RefMethodType.RightFrameOpen;
 		// map.AddRefMethod(rm);
@@ -396,7 +396,7 @@ public class MapFrmFree extends EntityNoName {
 	@Override
 	protected boolean beforeUpdate() throws Exception {
 		// 注册事件表单实体.
-		BP.Sys.FormEventBase feb = BP.Sys.Glo.GetFormEventBaseByEnName(this.getNo());
+		FormEventBase feb = BP.Sys.Glo.GetFormEventBaseByEnName(this.getNo());
 		if (feb == null) {
 			this.setFromEventEntity("");
 		} else
@@ -437,7 +437,7 @@ public class MapFrmFree extends EntityNoName {
 	 * @throws Exception
 	 */
 	public final String DoCopyFrm(String frmID, String frmName, String fk_frmTree) throws Exception {
-		return BP.Sys.CCFormAPI.CopyFrm(this.getNo(), frmID, frmName, fk_frmTree);
+		return CCFormAPI.CopyFrm(this.getNo(), frmID, frmName, fk_frmTree);
 	}
 
 	/**
@@ -589,7 +589,7 @@ public class MapFrmFree extends EntityNoName {
 	public final String DoDFrom() throws Exception {
 		String url = Glo.getCCFlowAppPath() + "WF/Admin/FoolFormDesigner/CCForm/Frm.jsp?FK_MapData=" + this.getNo()
 				+ "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType="
-				+ BP.DA.DBAccess.getAppCenterDBType() + "&CustomerNo=" + BP.Sys.SystemConfig.getCustomerNo();
+				+ DBAccess.getAppCenterDBType() + "&CustomerNo=" + SystemConfig.getCustomerNo();
 		try {
 			PubClass.WinOpen(ContextHolderUtils.getResponse(), url, 800, 650);
 		} catch (IOException e) {
@@ -607,8 +607,8 @@ public class MapFrmFree extends EntityNoName {
 	public final String DoDFromCol4() throws Exception {
 		String url = Glo.getCCFlowAppPath() + "WF/Admin/FoolFormDesigner/Designer.htm?FK_MapData=" + this.getNo()
 				+ "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID()
-				+ "&IsFirst=1&AppCenterDBType=" + BP.DA.DBAccess.getAppCenterDBType() + "&CustomerNo="
-				+ BP.Sys.SystemConfig.getCustomerNo();
+				+ "&IsFirst=1&AppCenterDBType=" + DBAccess.getAppCenterDBType() + "&CustomerNo="
+				+ SystemConfig.getCustomerNo();
 		try {
 			PubClass.WinOpen(ContextHolderUtils.getResponse(), url, 800, 650);
 		} catch (IOException e) {

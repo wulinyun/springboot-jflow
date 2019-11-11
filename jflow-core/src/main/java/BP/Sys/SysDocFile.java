@@ -405,9 +405,9 @@ public class SysDocFile extends EntityMyPK
 	{
 		try
 		{
-			return BP.DA.DataType.ReadTextFile(BP.Sys.SystemConfig
+			return DataType.ReadTextFile(SystemConfig
 					.getPathOfFDB() + enName + "/" + pkVal + ".fdb");
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			return null;
 		}
@@ -429,17 +429,17 @@ public class SysDocFile extends EntityMyPK
 	{
 		try
 		{
-			String dir = BP.Sys.SystemConfig.getPathOfFDB() + enName + "\\";
+			String dir = SystemConfig.getPathOfFDB() + enName + "\\";
 			File file = new File(dir);
 			if (!file.exists())
 			{
 				file.createNewFile();
 			}
 			
-			BP.DA.DataType.SaveAsFile(dir + "\\" + pkVal + ".fdb", val);
+			DataType.SaveAsFile(dir + "\\" + pkVal + ".fdb", val);
 		} catch (RuntimeException ex)
 		{
-			String filePath = BP.Sys.SystemConfig.getPathOfFDB() + enName;
+			String filePath = SystemConfig.getPathOfFDB() + enName;
 			File file = new File(filePath);
 			if (!file.exists())
 			{

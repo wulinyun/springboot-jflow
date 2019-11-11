@@ -64,9 +64,9 @@ public class FrmImgs extends EntitiesMyPK
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<FrmImg> Tolist()
+	public final ArrayList<FrmImg> Tolist()
 	{
-		java.util.ArrayList<FrmImg> list = new java.util.ArrayList<FrmImg>();
+		ArrayList<FrmImg> list = new ArrayList<FrmImg>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((FrmImg)this.get(i));

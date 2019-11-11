@@ -50,7 +50,7 @@ public class Rpt2Attr
 			return title;
 		}
 		
-		ArrayList<String> keys = BP.Sys.Glo.getQueryStringKeys();
+		ArrayList<String> keys = Glo.getQueryStringKeys();
 		
 		for (String key : keys)
 		{
@@ -228,7 +228,7 @@ public class Rpt2Attr
 			sql = sql.replace("WebUser.No", WebUser.getNo());
 			sql = sql.replace("@WebUser.Name", WebUser.getName());
 			
-			ArrayList<String> keys = BP.Sys.Glo.getQueryStringKeys();
+			ArrayList<String> keys = Glo.getQueryStringKeys();
 			
 			for (String k : keys)
 			{
@@ -236,7 +236,7 @@ public class Rpt2Attr
 			}
 			if (sql.contains("@") == true)
 			{
-				BP.DA.AtPara ap = new BP.DA.AtPara(this.DefaultParas);
+				AtPara ap = new AtPara(this.DefaultParas);
 				for (String k : ap.getHisHT().keySet())
 				{
 					sql = sql.replace("@" + k, ap.getHisHT().get(k).toString());

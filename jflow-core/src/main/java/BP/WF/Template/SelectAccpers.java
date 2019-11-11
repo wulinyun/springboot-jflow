@@ -132,7 +132,7 @@ public class SelectAccpers extends EntitiesMyPK
 	*/
 	public SelectAccpers(long workid) throws Exception
 	{
-		BP.En.QueryObject qo = new QueryObject(this);
+		QueryObject qo = new QueryObject(this);
 		qo.AddWhere(SelectAccperAttr.WorkID, workid);
 		qo.addOrderByDesc(SelectAccperAttr.FK_Node,SelectAccperAttr.Idx);
 		qo.DoQuery();

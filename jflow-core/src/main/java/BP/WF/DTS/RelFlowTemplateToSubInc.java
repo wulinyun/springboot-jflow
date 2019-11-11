@@ -86,7 +86,7 @@ public class RelFlowTemplateToSubInc extends Method
                 String incName = dr.getValue("Name").toString();
 
                 //检查该公司是否创建了树节点, 如果没有就插入一个.
-                BP.WF.Template.FlowSort fs = new FlowSort();
+                FlowSort fs = new FlowSort();
                 fs.setNo(incNo);
                 if (fs.RetrieveFromDBSources() == 0)
                 {

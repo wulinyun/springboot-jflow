@@ -153,10 +153,10 @@ public class OneKeyBackCCFlow extends Method
 			{
 				String sql = "SELECT * FROM " + item.getNo() + " ";
 				DataSet ds = new DataSet();
-				ds.Tables.add(BP.DA.DBAccess.RunSQLReturnTable(sql));
+				ds.Tables.add(DBAccess.RunSQLReturnTable(sql));
 				ds.WriteXml(pathOfTables + "\\" + item.getNo() + ".xml");
 			}
-			catch (java.lang.Exception e)
+			catch (Exception e)
 			{
 
 			}

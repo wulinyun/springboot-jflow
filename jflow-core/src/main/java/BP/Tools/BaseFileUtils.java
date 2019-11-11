@@ -888,7 +888,7 @@ public class BaseFileUtils extends org.apache.commons.io.FileUtils {
         
         // 客户端请求的下载的文件块的开始字节
         if (request.getHeader(Constant4Comm.REQ_HEAD_RANGE) != null) {
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_PARTIAL_CONTENT);
+            response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
             logger.debug("request.getHeader(\"Range\") = " + request.getHeader(Constant4Comm.REQ_HEAD_RANGE));
             rangeBytes = request.getHeader(Constant4Comm.REQ_HEAD_RANGE).replaceAll("bytes=", "");
             if (rangeBytes.indexOf(Constant4Comm.CHAR_MINUS) == rangeBytes.length() - 1) {

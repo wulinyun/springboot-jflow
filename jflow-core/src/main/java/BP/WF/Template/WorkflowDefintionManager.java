@@ -57,7 +57,7 @@ public class WorkflowDefintionManager
 				{
 					enDir.Insert();
 				}
-				catch (java.lang.Exception e)
+				catch (Exception e)
 				{
 				   // enDir.Update();
 				}
@@ -98,7 +98,7 @@ public class WorkflowDefintionManager
 
 				AtPara ap = new AtPara(lab);
 				LabNote ln = new LabNote();
-				ln.setMyPK(BP.DA.DBAccess.GenerGUID()); // ap.GetValStrByKey("MyPK");
+				ln.setMyPK(DBAccess.GenerGUID()); // ap.GetValStrByKey("MyPK");
 				ln.setFK_Flow(fk_flow);
 				ln.setName(ap.GetValStrByKey("Label"));
 				ln.setX(ap.GetValIntByKey("X"));
@@ -151,7 +151,7 @@ public class WorkflowDefintionManager
 	*/
 	public static String DeleteFlowTemplete(String flowNo) throws Exception
 	{
-		BP.WF.Flow fl1 = new BP.WF.Flow(flowNo);
+		Flow fl1 = new Flow(flowNo);
 		try
 		{
 			fl1.DoDelete();

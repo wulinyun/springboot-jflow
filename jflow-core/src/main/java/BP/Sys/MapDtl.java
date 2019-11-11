@@ -929,7 +929,7 @@ public class MapDtl extends EntityNoName
 
 		if (isdebug == false)
 		{
-			Map m = BP.DA.Cash.GetMap(this.getNo());
+			Map m = Cash.GetMap(this.getNo());
 			if (m != null)
 			{
 				return m;
@@ -948,7 +948,7 @@ public class MapDtl extends EntityNoName
 			map.AddAttr(mapAttr.getHisAttr());
 		}
 
-		BP.DA.Cash.SetMap(this.getNo(), map);
+		Cash.SetMap(this.getNo(), map);
 		return map;
 	}
 	public final GEDtl getHisGEDtl()
@@ -1151,26 +1151,26 @@ public class MapDtl extends EntityNoName
 	*/
 	public final int GetCountByFK(int workID)
 	{
-		return BP.DA.DBAccess.RunSQLReturnValInt("select COUNT(OID) from " + this.getPTable() + " WHERE WorkID=" + workID);
+		return DBAccess.RunSQLReturnValInt("select COUNT(OID) from " + this.getPTable() + " WHERE WorkID=" + workID);
 	}
 	public final int GetCountByFK(String field, String val)
 	{
-		return BP.DA.DBAccess.RunSQLReturnValInt("select COUNT(OID) from " + this.getPTable() + " WHERE " + field + "='" + val + "'");
+		return DBAccess.RunSQLReturnValInt("select COUNT(OID) from " + this.getPTable() + " WHERE " + field + "='" + val + "'");
 	}
 	public final int GetCountByFK(String field, long val)
 	{
-		return BP.DA.DBAccess.RunSQLReturnValInt("select COUNT(OID) from " + this.getPTable() + " WHERE " + field + "=" + val);
+		return DBAccess.RunSQLReturnValInt("select COUNT(OID) from " + this.getPTable() + " WHERE " + field + "=" + val);
 	}
 	public final int GetCountByFK(String f1, long val1, String f2, String val2)
 	{
-		return BP.DA.DBAccess.RunSQLReturnValInt("SELECT COUNT(OID) from " + this.getPTable() + " WHERE " + f1 + "=" + val1 + " AND " + f2 + "='" + val2 + "'");
+		return DBAccess.RunSQLReturnValInt("SELECT COUNT(OID) from " + this.getPTable() + " WHERE " + f1 + "=" + val1 + " AND " + f2 + "='" + val2 + "'");
 	}
 
 		///#endregion
 
 	public final void IntMapAttrs() throws Exception
 	{
-		BP.Sys.MapData md = new BP.Sys.MapData();
+		MapData md = new MapData();
 		md.setNo(this.getNo());
 		if (md.RetrieveFromDBSources() == 0)
 		{
@@ -1179,16 +1179,16 @@ public class MapDtl extends EntityNoName
 		}
 
 		MapAttrs attrs = new MapAttrs(this.getNo());
-		BP.Sys.MapAttr attr = new BP.Sys.MapAttr();
+		MapAttr attr = new MapAttr();
 		if (attrs.Contains(MapAttrAttr.KeyOfEn, "OID") == false)
 		{
-			attr = new BP.Sys.MapAttr();
+			attr = new MapAttr();
 			attr.setFK_MapData(this.getNo());
 			attr.setHisEditType(EditType.Readonly);
 
 			attr.setKeyOfEn("OID");
 			attr.setName("主键");
-			attr.setMyDataType(BP.DA.DataType.AppInt);
+			attr.setMyDataType(DataType.AppInt);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
@@ -1199,13 +1199,13 @@ public class MapDtl extends EntityNoName
 
 		if (attrs.Contains(MapAttrAttr.KeyOfEn, "RefPK") == false)
 		{
-			attr = new BP.Sys.MapAttr();
+			attr = new MapAttr();
 			attr.setFK_MapData(this.getNo());
 			attr.setHisEditType(EditType.Readonly);
 
 			attr.setKeyOfEn("RefPK");
 			attr.setName("关联ID");
-			attr.setMyDataType(BP.DA.DataType.AppString);
+			attr.setMyDataType(DataType.AppString);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
@@ -1216,13 +1216,13 @@ public class MapDtl extends EntityNoName
 
 		if (attrs.Contains(MapAttrAttr.KeyOfEn, "FID") == false)
 		{
-			attr = new BP.Sys.MapAttr();
+			attr = new MapAttr();
 			attr.setFK_MapData(this.getNo());
 			attr.setHisEditType(EditType.Readonly);
 
 			attr.setKeyOfEn("FID");
 			attr.setName("FID");
-			attr.setMyDataType(BP.DA.DataType.AppInt);
+			attr.setMyDataType(DataType.AppInt);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
@@ -1233,13 +1233,13 @@ public class MapDtl extends EntityNoName
 
 		if (attrs.Contains(MapAttrAttr.KeyOfEn, "RDT") == false)
 		{
-			attr = new BP.Sys.MapAttr();
+			attr = new MapAttr();
 			attr.setFK_MapData(this.getNo());
 			attr.setHisEditType(EditType.UnDel);
 
 			attr.setKeyOfEn("RDT");
 			attr.setName("记录时间");
-			attr.setMyDataType(BP.DA.DataType.AppDateTime);
+			attr.setMyDataType(DataType.AppDateTime);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
@@ -1250,13 +1250,13 @@ public class MapDtl extends EntityNoName
 
 		if (attrs.Contains(MapAttrAttr.KeyOfEn, "Rec") == false)
 		{
-			attr = new BP.Sys.MapAttr();
+			attr = new MapAttr();
 			attr.setFK_MapData(this.getNo());
 			attr.setHisEditType(EditType.Readonly);
 
 			attr.setKeyOfEn("Rec");
 			attr.setName("记录人");
-			attr.setMyDataType(BP.DA.DataType.AppString);
+			attr.setMyDataType(DataType.AppString);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
@@ -1273,7 +1273,7 @@ public class MapDtl extends EntityNoName
 		// 如果启用了多附件
 		if (this.getIsEnableAthM())
 		{
-			BP.Sys.FrmAttachment athDesc = new BP.Sys.FrmAttachment();
+			FrmAttachment athDesc = new FrmAttachment();
 			athDesc.setMyPK(this.getNo() + "_AthMDtl");
 			if (athDesc.RetrieveFromDBSources() == 0)
 			{
@@ -1307,7 +1307,7 @@ public class MapDtl extends EntityNoName
 	@Override
 	protected boolean beforeUpdateInsertAction() throws Exception
 	{
-		BP.Sys.MapData md = new BP.Sys.MapData();
+		MapData md = new MapData();
 		md.setNo(this.getNo());
 		if (md.RetrieveFromDBSources() == 0)
 		{
@@ -1352,7 +1352,7 @@ public class MapDtl extends EntityNoName
 		this.InitExtMembers();
 
 		//更新MapData中的名称
-		BP.Sys.MapData md = new BP.Sys.MapData();
+		MapData md = new MapData();
 		md.setNo(this.getNo());
 		if (md.RetrieveFromDBSources() == 1)
 		{

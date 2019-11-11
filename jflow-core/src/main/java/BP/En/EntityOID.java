@@ -33,7 +33,7 @@ public abstract class EntityOID extends Entity {
 	public long getOID() {
 		try {
 			return this.GetValIntByKey(EntityOIDAttr.OID);
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return 0;
 		}
 	}
@@ -127,7 +127,7 @@ public abstract class EntityOID extends Entity {
 			this.setOID(-1);
 		} else {
 			try {
-				this.setOID(BP.DA.DBAccess.GenerOID());
+				this.setOID(DBAccess.GenerOID());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

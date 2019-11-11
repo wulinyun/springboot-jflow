@@ -40,7 +40,7 @@ public class CC extends Entity
          if (this.getCCIsDepts() == true)
          {
              /*如果抄送到部门. */
-             if (Glo.getOSModel() == BP.Sys.OSModel.OneOne)
+             if (Glo.getOSModel() == OSModel.OneOne)
                  sql = "SELECT A.No, A.Name FROM Port_Emp A, WF_CCDept B WHERE  A.FK_Dept=B.FK_Dept AND B.FK_Node=" + this.getNodeID();
              else
                  sql = "SELECT C.No,C.Name FROM PORT_DEPTEMP A LEFT JOIN WF_CCDEPT B ON A.FK_Dept=B.FK_DEPT LEFT JOIN PORT_EMP C ON A.FK_EMP=C.NO WHERE B.FK_Node=" + this.getNodeID();
@@ -139,7 +139,7 @@ public class CC extends Entity
 
                  while (true)
                  {
-                     BP.Port.Dept dept = new Dept(deptNo);
+                     Dept dept = new Dept(deptNo);
 
                   
                          sql = "SELECT No,Name FROM Port_Emp A, Port_DeptEmpStation B, WF_CCStation C WHERE A.No=B.FK_Emp AND B.FK_Station=C.FK_Station  AND C.FK_Node="+this.getNodeID()+" AND B.FK_Dept='"+deptNo+"'";
@@ -168,7 +168,7 @@ public class CC extends Entity
              sql = sql.replace("@WebUser.Name", BP.Web.WebUser.getName());
              sql = sql.replace("@WebUser.FK_Dept", BP.Web.WebUser.getFK_Dept());
              if (sql.contains("@") == true)
-                 sql = BP.WF.Glo.DealExp(sql, rpt, null);
+                 sql = Glo.DealExp(sql, rpt, null);
 
              /*按照SQL抄送. */
              mydt = DBAccess.RunSQLReturnTable(sql);
@@ -390,11 +390,11 @@ public class CC extends Entity
 		//map.AddSearchAttr(CCAttr.CCCtrlWay);
 
 			// 相关功能。
-		map.getAttrsOfOneVSM().Add(new BP.WF.Template.CCStations(), new BP.WF.Port.Stations(), NodeStationAttr.FK_Node, NodeStationAttr.FK_Station, DeptAttr.Name, DeptAttr.No, "抄送岗位");
+		map.getAttrsOfOneVSM().Add(new CCStations(), new BP.WF.Port.Stations(), NodeStationAttr.FK_Node, NodeStationAttr.FK_Station, DeptAttr.Name, DeptAttr.No, "抄送岗位");
 
-		map.getAttrsOfOneVSM().Add(new BP.WF.Template.CCDepts(), new BP.WF.Port.Depts(), NodeDeptAttr.FK_Node, NodeDeptAttr.FK_Dept, DeptAttr.Name, DeptAttr.No, "抄送部门");
+		map.getAttrsOfOneVSM().Add(new CCDepts(), new BP.WF.Port.Depts(), NodeDeptAttr.FK_Node, NodeDeptAttr.FK_Dept, DeptAttr.Name, DeptAttr.No, "抄送部门");
 
-		map.getAttrsOfOneVSM().Add(new BP.WF.Template.CCEmps(), new BP.WF.Port.Emps(), NodeEmpAttr.FK_Node, NodeEmpAttr.FK_Emp, DeptAttr.Name, DeptAttr.No, "抄送人员");
+		map.getAttrsOfOneVSM().Add(new CCEmps(), new BP.WF.Port.Emps(), NodeEmpAttr.FK_Node, NodeEmpAttr.FK_Emp, DeptAttr.Name, DeptAttr.No, "抄送人员");
 
 		this.set_enMap(map);
 		return this.get_enMap();

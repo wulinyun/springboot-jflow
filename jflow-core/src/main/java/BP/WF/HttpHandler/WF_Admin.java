@@ -49,7 +49,7 @@ public class WF_Admin extends WebContralBase {
     /// <returns></returns>
     public String TestFlow_GetRunOnPlant()
     {
-        return BP.Sys.SystemConfig.getRunOnPlant();
+        return SystemConfig.getRunOnPlant();
     }
 	
 	public final String getRefNo() {
@@ -65,7 +65,7 @@ public class WF_Admin extends WebContralBase {
 	 */
 	public final String TestFlow_Init() throws Exception {
 		
-		BP.Sys.SystemConfig.DoClearCash();
+		SystemConfig.DoClearCash();
 
 		// 让admin 登录.
 		BP.WF.Dev2Interface.Port_Login("admin");
@@ -84,7 +84,7 @@ public class WF_Admin extends WebContralBase {
 		int nodeid = Integer.parseInt(this.getFK_Flow() + "01");
 		DataTable dt = null;
 		String sql = "";
-		BP.WF.Node nd = new BP.WF.Node(nodeid);
+		Node nd = new Node(nodeid);
 
 		if (nd.getIsGuestNode()) {
 			// 如果是guest节点，就让其跳转到 guest登录界面，让其发起流程。
@@ -151,7 +151,7 @@ public class WF_Admin extends WebContralBase {
 																		// 2016年11月开始约定此规则.
 			{
 				sql = "SELECT No as FK_Emp FROM Port_Emp ";
-				dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				dt = DBAccess.RunSQLReturnTable(sql);
 				if (dt.Rows.size() > 300) {
 					if (SystemConfig.getAppCenterDBType() == BP.DA.DBType.MSSQL) {
 						sql = "SELECT top 300 No as FK_Emp FROM Port_Emp ";
@@ -178,7 +178,7 @@ public class WF_Admin extends WebContralBase {
 				}
 			}
 
-			dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			dt = DBAccess.RunSQLReturnTable(sql);
 			if (dt.Rows.size() == 0) {
 				return "err@您按照:" + nd.getHisDeliveryWay()
 						+ "的方式设置的开始节点的访问规则，但是开始节点没有人员。";
@@ -200,7 +200,7 @@ public class WF_Admin extends WebContralBase {
 
 				emps += "," + myemp + ",";
 
-				BP.Port.Emp emp = new Emp(myemp);
+				Emp emp = new Emp(myemp);
 
 				DataRow drNew = dtEmps.NewRow();
 
@@ -269,7 +269,7 @@ public class WF_Admin extends WebContralBase {
              BP.WF.Glo.IsCanInstall();
 
              //判断是不是有.
-             if (BP.DA.DBAccess.IsExitsObject("WF_Flow") == true)
+             if (DBAccess.IsExitsObject("WF_Flow") == true)
                  return "err@info数据库已经安装上了，您不必在执行安装. 点击:<a href='./CCBPMDesigner/Login.htm' >这里直接登录流程设计器</a>";
 
 
@@ -318,10 +318,10 @@ public class WF_Admin extends WebContralBase {
 	 */
 	public final String BindFrms_Init() throws Exception {
 		// 注册这个枚举，防止第一次运行出错.
-		BP.Sys.SysEnums ses = new SysEnums("FrmEnableRole");
+		SysEnums ses = new SysEnums("FrmEnableRole");
 
 		String text = "";
-		BP.WF.Node nd = new BP.WF.Node(this.getFK_Node());
+		Node nd = new Node(this.getFK_Node());
 
 		FrmNodes fns = new FrmNodes(this.getFK_Flow(), this.getFK_Node());
 
@@ -393,7 +393,7 @@ public class WF_Admin extends WebContralBase {
 		String userNo = this.GetValFromFrmByKey("TB_UserNo");
 		String password = this.GetValFromFrmByKey("TB_Pass");
 
-		BP.Port.Emp emp = new BP.Port.Emp();
+		Emp emp = new Emp();
 		emp.setNo(userNo);
 		if (emp.RetrieveFromDBSources() == 0) {
 			return "err@用户名或密码错误.";
@@ -419,7 +419,7 @@ public class WF_Admin extends WebContralBase {
 				String templateType = this.GetRequestVal("TemplateType");
 				String condType = this.GetRequestVal("CondType");
 
-				BP.WF.Template.SQLTemplates sqls = new SQLTemplates();
+				SQLTemplates sqls = new SQLTemplates();
 				//sqls.Retrieve(BP.WF.Template.SQLTemplateAttr.SQLType, sqlType);
 
 				DataTable dt = null;
@@ -498,7 +498,7 @@ public class WF_Admin extends WebContralBase {
 				String strs = "";
 				for (DataRow dr : dt.Rows)
 				{
-					BP.WF.Template.SQLTemplate en = new SQLTemplate();
+					SQLTemplate en = new SQLTemplate();
 					en.setNo(dr.getValue(0).toString());
 					en.setName(dr.getValue(1).toString());
 					en.setDocs(dr.getValue(2).toString());

@@ -110,7 +110,7 @@ public class GEEntity extends Entity
 		 
 		
 		try {
-			this.set_enMap(BP.Sys.MapData.GenerHisMap(this.FK_MapData));
+			this.set_enMap(MapData.GenerHisMap(this.FK_MapData));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -160,7 +160,7 @@ public class GEEntity extends Entity
 		for (MapDtl dtl : dtls.ToJavaList())
 		{
 			//删除旧的数据.
-			BP.DA.DBAccess.RunSQL("DELETE FROM " + dtl.getPTable() + " WHERE RefPK=" + this.getOID());
+			DBAccess.RunSQL("DELETE FROM " + dtl.getPTable() + " WHERE RefPK=" + this.getOID());
 
 			GEDtls ensDtl = new GEDtls(dtl.getNo());
 			ensDtl.Retrieve(GEDtlAttr.RefPK, oidOID);

@@ -32,7 +32,7 @@ public class Days extends SimpleNoNameFixs
 			
 			for (int i = 1; i <= 31; i++)
 			{
-				BP.Pub.Day yf = new Day();
+				Day yf = new Day();
 				
 				// String str = new Integer(i).toString();
 				// if (str.length() == 1) {

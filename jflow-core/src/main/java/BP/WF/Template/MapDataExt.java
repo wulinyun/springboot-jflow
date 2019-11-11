@@ -970,7 +970,7 @@ public class MapDataExt extends EntityNoName
 
 		rm = new RefMethod();
 		rm.Title = "批量设置验证规则";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 		rm.ClassMethodName = this.toString() + ".DoRegularExpressionBatch";
 		rm.refMethodType = RefMethodType.RightFrameOpen;
 		map.AddRefMethod(rm);
@@ -997,7 +997,7 @@ public class MapDataExt extends EntityNoName
 
 		rm = new RefMethod();
 		rm.Title = "手机端表单";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/DTS.gif";
 		rm.ClassMethodName = this.toString() + ".DoSortingMapAttrs";
 		rm.refMethodType = RefMethodType.RightFrameOpen;
 		map.AddRefMethod(rm);

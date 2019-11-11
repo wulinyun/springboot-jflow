@@ -168,10 +168,10 @@ public class MapFrmExcel extends EntityNoName
 		map.AddTBString(MapFrmExcelAttr.PTable, null, "存储表", true, false, 0, 100, 20);
 		map.AddTBString(MapFrmExcelAttr.Name, null, "表单名称", true, false, 0, 500, 20,true);
 			//数据源.
-		map.AddDDLEntities(MapFrmExcelAttr.DBSrc, "local", "数据源", new BP.Sys.SFDBSrcs(), true);
+		map.AddDDLEntities(MapFrmExcelAttr.DBSrc, "local", "数据源", new SFDBSrcs(), true);
 		map.AddDDLEntities(MapFrmExcelAttr.FK_FormTree, "01", "表单类别", new SysFormTrees(), true);
 			//表单的运行类型.
-		map.AddDDLSysEnum(MapFrmExcelAttr.FrmType, BP.Sys.FrmType.FreeFrm.getValue(), "表单类型", true, false, MapFrmExcelAttr.FrmType);
+		map.AddDDLSysEnum(MapFrmExcelAttr.FrmType, FrmType.FreeFrm.getValue(), "表单类型", true, false, MapFrmExcelAttr.FrmType);
 			///#region 模版属性。
 		map.AddTBString(MapFrmExcelAttr.TemplaterVer, null, "模版编号", true, false, 0, 30, 20);
 			///#region 设计者信息.
@@ -322,7 +322,7 @@ public class MapFrmExcel extends EntityNoName
 		rm = new RefMethod();
 		rm.Title = "手机端表单";
 		rm.GroupName = "高级设置";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Admin/CCFormDesigner/Img/telephone.png";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Admin/CCFormDesigner/Img/telephone.png";
 		rm.ClassMethodName = this.toString() + ".DoSortingMapAttrs";
 		rm.refMethodType = RefMethodType.RightFrameOpen;
 		map.AddRefMethod(rm);
@@ -512,7 +512,7 @@ public class MapFrmExcel extends EntityNoName
 	*/
 	public final String DoDFrom() throws Exception
 	{
-		String url = Glo.getCCFlowAppPath() + "WF/Admin/FoolFormDesigner/CCForm/Frm.jsp?FK_MapData=" + this.getNo() + "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType=" + BP.DA.DBAccess.getAppCenterDBType() + "&CustomerNo=" + BP.Sys.SystemConfig.getCustomerNo();
+		String url = Glo.getCCFlowAppPath() + "WF/Admin/FoolFormDesigner/CCForm/Frm.jsp?FK_MapData=" + this.getNo() + "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType=" + DBAccess.getAppCenterDBType() + "&CustomerNo=" + SystemConfig.getCustomerNo();
 		try {
 			PubClass.WinOpen(ContextHolderUtils.getResponse(),url, 800, 650);
 		} catch (IOException e) {
@@ -528,7 +528,7 @@ public class MapFrmExcel extends EntityNoName
 	*/
 	public final String DoDFromCol4() throws Exception
 	{
-		String url = Glo.getCCFlowAppPath() + "WF/Admin/FoolFormDesigner/Designer.htm?FK_MapData=" + this.getNo() + "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType=" + BP.DA.DBAccess.getAppCenterDBType() + "&IsFirst=1&CustomerNo=" + BP.Sys.SystemConfig.getCustomerNo();
+		String url = Glo.getCCFlowAppPath() + "WF/Admin/FoolFormDesigner/Designer.htm?FK_MapData=" + this.getNo() + "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType=" + DBAccess.getAppCenterDBType() + "&IsFirst=1&CustomerNo=" + SystemConfig.getCustomerNo();
 		try {
 			PubClass.WinOpen(ContextHolderUtils.getResponse(),url, 800, 650);
 		} catch (IOException e) {

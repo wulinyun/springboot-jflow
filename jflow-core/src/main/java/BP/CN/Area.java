@@ -92,8 +92,8 @@ public class Area extends EntityNoName
 	public static String GenerAreaNoByName(String name1, String name2,
 			String oldcity)
 	{
-		String fk_city1 = BP.CN.Area.GenerAreaNoByName(name1, "");
-		String fk_city2 = BP.CN.Area.GenerAreaNoByName(name2, "");
+		String fk_city1 = Area.GenerAreaNoByName(name1, "");
+		String fk_city2 = Area.GenerAreaNoByName(name2, "");
 		String fk_city = null;
 		
 		if (fk_city1.length() >= 4)

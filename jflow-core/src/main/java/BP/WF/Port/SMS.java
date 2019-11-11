@@ -40,7 +40,7 @@ public class SMS extends EntityMyPK
 		try
 		{
 			sms.Insert();
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			sms.CheckPhysicsTable();
 			sms.Insert();
@@ -138,7 +138,7 @@ public class SMS extends EntityMyPK
 			{
 				sms.setMyPK(msgFlag);
 				sms.Insert();
-			} catch (java.lang.Exception e)
+			} catch (Exception e)
 			{
 			}
 		}

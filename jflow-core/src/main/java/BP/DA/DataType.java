@@ -85,7 +85,7 @@ public class DataType {
 		return spanStr;
 	}
 
-	public static Date WeekOfMonday(java.util.Date dt) {
+	public static Date WeekOfMonday(Date dt) {
 		Calendar monday = Calendar.getInstance();
 		monday.setTime(dt);
 		int FIRST_DAY_OF_WEEK = Calendar.MONDAY;
@@ -94,7 +94,7 @@ public class DataType {
 		return monday.getTime();
 	}
 
-	public static Date WeekOfSunday(java.util.Date dt) {
+	public static Date WeekOfSunday(Date dt) {
 		Calendar cal = Calendar.getInstance();
 		int dayWeek = cal.get(Calendar.DAY_OF_WEEK);
 		if (1 == dayWeek) {
@@ -114,7 +114,7 @@ public class DataType {
 	 * @param days
 	 * @return
 	 */
-	public static Date AddDays(java.util.Date dt, int days) {
+	public static Date AddDays(Date dt, int days) {
 		if (dt == null) {
 			return null;
 		}
@@ -149,10 +149,10 @@ public class DataType {
 	 * @return
 	 */
 	public static Date AddDays(String dt, int days, TWay tway) {
-		return AddDays(BP.DA.DataType.ParseSysDate2DateTime(dt), days, tway);
+		return AddDays(DataType.ParseSysDate2DateTime(dt), days, tway);
 	}
 
-	public static Date AddDays(java.util.Date dt, int days, TWay tway) {
+	public static Date AddDays(Date dt, int days, TWay tway) {
 		if (dt == null) {
 			return null;
 		}
@@ -192,7 +192,7 @@ public class DataType {
 	 *            给定的日期
 	 * @return 数字 一年中的第几周
 	 */
-	public static int WeekOfYear(java.util.Date dtime) {
+	public static int WeekOfYear(Date dtime) {
 		Calendar c = Calendar.getInstance();
 		c.setTime(dtime);
 		int week_of_year = c.get(Calendar.WEEK_OF_YEAR);
@@ -283,7 +283,7 @@ public class DataType {
 	 * @return key value 模式的json
 	 */
 	public static String ToJsonEntityModel(Hashtable ht) {
-		return BP.Tools.Json.ToJsonEntityModel(ht);
+		return Json.ToJsonEntityModel(ht);
 	}
 
 	/**
@@ -295,7 +295,7 @@ public class DataType {
 	public static float PraseToMB(long val) {
 		try {
 			return Float.parseFloat(String.format("%0s", val / 1048576));
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return 0;
 		}
 	}
@@ -462,8 +462,8 @@ public class DataType {
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
 			conn.setReadTimeout(timeOut);
-			java.io.BufferedReader in = new java.io.BufferedReader(
-					new java.io.InputStreamReader(conn.getInputStream(), "UTF-8"));
+			BufferedReader in = new BufferedReader(
+					new InputStreamReader(conn.getInputStream(), "UTF-8"));
 			String line;
 			while ((line = in.readLine()) != null) {
 				doc += line;
@@ -596,8 +596,8 @@ public class DataType {
 	 * @param b
 	 * @return
 	 */
-	public static String GetPercent(java.math.BigDecimal a, java.math.BigDecimal b) {
-		java.math.BigDecimal p = a.divide(b);
+	public static String GetPercent(BigDecimal a, BigDecimal b) {
+		BigDecimal p = a.divide(b);
 		DecimalFormat df = new DecimalFormat("0.00%");
 		return df.format(p);
 
@@ -922,7 +922,7 @@ public class DataType {
 				str = chs2py.convert((new Character(c)).toString());
 				pinYin += str.substring(0, 1).toUpperCase() + str.substring(1);
 
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 				pinYin += c;
 			}
 		}
@@ -940,7 +940,7 @@ public class DataType {
 		try {
 			String _Temp = "";
 			for (int i = 0; i < str.length(); i++) {
-				_Temp = _Temp + BP.DA.DataType.ParseStringToPinyin(str.substring(i, i + 1));
+				_Temp = _Temp + DataType.ParseStringToPinyin(str.substring(i, i + 1));
 			}
 			return _Temp;
 		} catch (RuntimeException ex) {
@@ -960,7 +960,7 @@ public class DataType {
 		try {
 			String _Temp = "";
 			for (int i = 0; i < str.length(); i++) {
-				_Temp += BP.DA.DataType.ParseStringToPinyin(str.substring(i, i + 1)).substring(0, 1);
+				_Temp += DataType.ParseStringToPinyin(str.substring(i, i + 1)).substring(0, 1);
 			}
 			return _Temp;
 		} catch (RuntimeException ex) {
@@ -1009,7 +1009,7 @@ public class DataType {
 		try {
 			BigDecimal bigDecimal1 = new BigDecimal(exp);
 			return bigDecimal1;
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			Log.DebugWriteError("ParseExpToDecimal " + e.getMessage());
 		}
 
@@ -1074,7 +1074,7 @@ public class DataType {
 	 * @return
 	 */
 	public final Date Parse(String dataStr) {
-		return new Date(java.util.Date.parse(dataStr));
+		return new Date(Date.parse(dataStr));
 	}
 
 	/**
@@ -1385,9 +1385,9 @@ public class DataType {
 	 *            yyyy-MM-dd
 	 * @return DateTime
 	 */
-	public static java.util.Date ParseSysDate2DateTime(String sysDateformat) {
+	public static Date ParseSysDate2DateTime(String sysDateformat) {
 		if (sysDateformat == null || sysDateformat.trim().length() == 0) {
-			return new java.util.Date();
+			return new Date();
 		}
 
 		try {
@@ -1411,7 +1411,7 @@ public class DataType {
 			int day = Integer.parseInt(strs[2]);
 
 			// DateTime dt= DateTime.Now;
-			return new java.util.Date(year, month, day, 0, 0, 0);
+			return new Date(year, month, day, 0, 0, 0);
 		} catch (RuntimeException ex) {
 			throw new RuntimeException("日期[" + sysDateformat + "]转换出现错误:" + ex.getMessage() + "无效的日期是格式。");
 		}
@@ -1424,7 +1424,7 @@ public class DataType {
 	 * @return
 	 * @throws ParseException
 	 */
-	public static java.util.Date ParseSysDateTime2DateTime(String sysDateformat) {
+	public static Date ParseSysDateTime2DateTime(String sysDateformat) {
 		// try
 		// {
 		// DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -1460,8 +1460,8 @@ public class DataType {
 	 * @throws ParseException
 	 */
 	public static int GetSpanDays(String dtoffrom, String dtofto) {
-		java.util.Date dtfrom = DataType.ParseSysDate2DateTime(dtoffrom);
-		java.util.Date dtto = DataType.ParseSysDate2DateTime(dtofto);
+		Date dtfrom = DataType.ParseSysDate2DateTime(dtoffrom);
+		Date dtto = DataType.ParseSysDate2DateTime(dtofto);
 		long diff = dtto.getTime() - dtfrom.getTime();
 		long day = diff / (1000 * 60 * 60 * 24);
 		int ds = (int) day;
@@ -1469,8 +1469,8 @@ public class DataType {
 	}
 
 	public static int GetSpanMinute(String fromdatetim, String toDateTime) throws ParseException {
-		java.util.Date dtfrom = DataType.ParseSysDateTime2DateTime(fromdatetim);
-		java.util.Date dtto = DataType.ParseSysDateTime2DateTime(toDateTime);
+		Date dtfrom = DataType.ParseSysDateTime2DateTime(fromdatetim);
+		Date dtto = DataType.ParseSysDateTime2DateTime(toDateTime);
 		long diff = dtto.getTime() - dtfrom.getTime();
 		long day = diff / (24 * 60 * 60 * 1000);
 		long hour = (diff / (60 * 60 * 1000) - day * 24);
@@ -1486,8 +1486,8 @@ public class DataType {
 	 * @return 分中数
 	 */
 	public static int GetSpanMinute(String fromdatetim) throws ParseException {
-		java.util.Date dtfrom = DataType.ParseSysDateTime2DateTime(fromdatetim);
-		java.util.Date dtto = new java.util.Date();
+		Date dtfrom = DataType.ParseSysDateTime2DateTime(fromdatetim);
+		Date dtto = new Date();
 		long diff = dtto.getTime() - dtfrom.getTime();
 		long day = diff / (24 * 60 * 60 * 1000);
 		long hour = (diff / (60 * 60 * 1000) - day * 24);
@@ -1781,7 +1781,7 @@ public class DataType {
 	 * @return
 	 */
 	public static String ParseSysDate2DateTimeFriendly(String sysDateformat) {
-		BP.DA.DTTemp dt = new DTTemp();
+		DTTemp dt = new DTTemp();
 		return dt.DateStringFromNow(sysDateformat);
 	}
 

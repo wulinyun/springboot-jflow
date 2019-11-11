@@ -78,8 +78,8 @@ public class SysEnumMain extends EntityNoName
 		int i = qo.DoQuery();
 		if (i == 0)
 		{
-			BP.Sys.SysEnums ses = new SysEnums();
-			ses.Delete(BP.Sys.SysEnumAttr.EnumKey, this.getNo());
+			SysEnums ses = new SysEnums();
+			ses.Delete(SysEnumAttr.EnumKey, this.getNo());
 		}
 		else
 		{

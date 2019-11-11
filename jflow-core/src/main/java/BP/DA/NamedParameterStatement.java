@@ -64,7 +64,7 @@ public class NamedParameterStatement extends PreparedStatementWrapper
 	
 	/**
 	 * Creates a NamedParameterStatement. Wraps a call to c.
-	 * {@link Connection#prepareStatement(java.lang.String) prepareStatement}.
+	 * {@link Connection#prepareStatement(String) prepareStatement}.
 	 * 
 	 * @param conn
 	 *            the database connection

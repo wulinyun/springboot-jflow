@@ -69,7 +69,7 @@ public class CCMobile_MyFlow extends WebContralBase
 
 	public final String Focus() throws Exception
     {
-        BP.WF.Dev2Interface.Flow_Focus( this.getWorkID());
+        Dev2Interface.Flow_Focus( this.getWorkID());
         return "设置成功.";
     }
 	
@@ -92,7 +92,7 @@ public class CCMobile_MyFlow extends WebContralBase
 
 	public String MyFlowGener_Delete() throws Exception
     {
-        BP.WF.Dev2Interface.Flow_DoDeleteFlowByWriteLog(this.getFK_Flow(), this.getWorkID(), WebUser.getName()+"用户删除", true);
+        Dev2Interface.Flow_DoDeleteFlowByWriteLog(this.getFK_Flow(), this.getWorkID(), WebUser.getName()+"用户删除", true);
         return "删除成功...";
     }
 	

@@ -444,7 +444,7 @@ public class Track extends BP.En.Entity
 		}
 		catch(RuntimeException ex)
 		{
-			BP.DA.Log.DebugWriteError(ex.getMessage()+" @可以容忍的异常....");
+			Log.DebugWriteError(ex.getMessage()+" @可以容忍的异常....");
 		}
 
 		// 删除主键.
@@ -611,15 +611,15 @@ public class Track extends BP.En.Entity
 		{
 			if (BP.Web.WebUser.getIsAuthorize())
 			{
-				this.setExer(BP.WF.Glo.DealUserInfoShowModel(BP.Web.WebUser.getAuth(), BP.Web.WebUser.getName()));
+				this.setExer(Glo.DealUserInfoShowModel(BP.Web.WebUser.getAuth(), BP.Web.WebUser.getName()));
 			}
 			else
 			{
-				this.setExer(BP.WF.Glo.DealUserInfoShowModel(BP.Web.WebUser.getNo(), BP.Web.WebUser.getName()));
+				this.setExer(Glo.DealUserInfoShowModel(BP.Web.WebUser.getNo(), BP.Web.WebUser.getName()));
 			}
 		}
 
-		this.setRDT(BP.DA.DataType.getCurrentDataTimess());//getCurrentDataTimess
+		this.setRDT(DataType.getCurrentDataTimess());//getCurrentDataTimess
 
 		this.DoInsert(0);
 		return false;

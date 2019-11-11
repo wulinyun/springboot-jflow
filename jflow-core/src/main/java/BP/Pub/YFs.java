@@ -47,7 +47,7 @@ public class YFs extends SimpleNoNameFixs
 			
 			for (int i = 1; i <= 12; i++)
 			{
-				BP.Pub.YF yf = new YF();
+				YF yf = new YF();
 				if (i <= 9)
 					tmpStr = "0" + Integer.toString(i);
 				else

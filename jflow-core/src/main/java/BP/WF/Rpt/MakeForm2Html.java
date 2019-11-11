@@ -79,7 +79,7 @@ public class MakeForm2Html
         FrmEles eles = mapData.getFrmEles();
         if (eles.size()>= 1)
         {
-            for( BP.Sys.FrmEle ele :eles.ToJavaList())
+            for( FrmEle ele :eles.ToJavaList())
             {
             	  float y = ele.getY();
                   x = ele.getX() + wtX;
@@ -158,7 +158,7 @@ public class MakeForm2Html
        
 
         FrmImgs imgs = mapData.getFrmImgs();
-        for(BP.Sys.FrmImg img :imgs.ToJavaList())
+        for(FrmImg img :imgs.ToJavaList())
         {
             float y = img.getY();
             String imgSrc = "";
@@ -260,7 +260,7 @@ public class MakeForm2Html
                             if (sealType == "1")
                             {
                                 sql = "SELECT FK_Dept FROM WF_GenerWorkFlow WHERE WorkID=" + en.GetValStrByKey("OID");
-                                fk_dept = BP.DA.DBAccess.RunSQLReturnString(sql);
+                                fk_dept = DBAccess.RunSQLReturnString(sql);
                             }
                             //表单字段
                             if (sealType == "2" && !DataType.IsNullOrEmpty(sealField))
@@ -280,7 +280,7 @@ public class MakeForm2Html
                     //判断本部门下是否有此人
                     //sql = "SELECT fk_station from port_deptEmpStation where fk_dept='" + fk_dept + "' and fk_emp='" + WebUser.No + "'";
                     sql = String.format(" select FK_Station from Port_DeptStation where FK_Dept ='{0}' and FK_Station in (select FK_Station from " + BP.WF.Glo.getEmpStation()+ " where FK_Emp='{1}')", fk_dept, WebUser.getNo());
-                    DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+                    DataTable dt = DBAccess.RunSQLReturnTable(sql);
                     for (DataRow dr : dt.Rows)
                     {
                         if (fk_station.contains(dr.getValue(0).toString() + ","))
@@ -359,7 +359,7 @@ public class MakeForm2Html
                         //如果没有查到记录，控件不显示。说明没有走盖章的一步
                         x =  img.getX() + wtX;
                         sb.append("\t\n<DIV id=" + img.getMyPK() + " style='position:absolute;left:" + x + "px;top:" + y + "px;text-align:left;vertical-align:top' >");
-                        sb.append("\t\n<img src='" + imgSrc + "' onerror='javascript:this.src='" + appPath + "DataUser/ICON/" + BP.Sys.SystemConfig.getCustomerNo() + "/LogBiger.png';' style='padding: 0px;margin: 0px;border-width: 0px;width:" + img.getW() + "px;height:" + img.getH() + "px;' />");
+                        sb.append("\t\n<img src='" + imgSrc + "' onerror='javascript:this.src='" + appPath + "DataUser/ICON/" + SystemConfig.getCustomerNo() + "/LogBiger.png';' style='padding: 0px;margin: 0px;border-width: 0px;width:" + img.getW() + "px;height:" + img.getH() + "px;' />");
                         sb.append("\t\n</DIV>");
                     }
                 }
@@ -488,8 +488,8 @@ public class MakeForm2Html
         }
 
        //  ////#region  输出 rb.
-        BP.Sys.FrmRBs myrbs = mapData.getFrmRBs();
-        for (BP.Sys.FrmRB rb : myrbs.ToJavaList())
+        FrmRBs myrbs = mapData.getFrmRBs();
+        for (FrmRB rb : myrbs.ToJavaList())
         {
             x = rb.getX() + wtX;
             sb.append("<DIV id='F" + rb.getMyPK() + "' style='position:absolute; left:" + x + "px; top:" + rb.getY() + "px; height:16px;text-align: left;word-break: keep-all;' >");
@@ -1634,7 +1634,7 @@ private static StringBuilder GenerHtmlOfFool(MapData mapData, String frmID, long
          if (DataType.IsNullOrEmpty(fileNameFormat) == true)
              fileNameFormat = String.valueOf(workid);
 
-         fileNameFormat = BP.DA.DataType.PraseStringToFileName(fileNameFormat);
+         fileNameFormat = DataType.PraseStringToFileName(fileNameFormat);
         
          Hashtable ht = new Hashtable();
 		
@@ -1866,7 +1866,7 @@ private static StringBuilder GenerHtmlOfFool(MapData mapData, String frmID, long
 	         if (DataType.IsNullOrEmpty(fileNameFormat) == true)
 	             fileNameFormat = String.valueOf(workid);
 
-	         fileNameFormat = BP.DA.DataType.PraseStringToFileName(fileNameFormat);
+	         fileNameFormat = DataType.PraseStringToFileName(fileNameFormat);
 	         
 			 //判断 who is pk
 			 if(flowNo!=null && frmNode.getWhoIsPK() == WhoIsPK.PWorkID) //如果是父子流程
@@ -2017,13 +2017,13 @@ private static StringBuilder GenerHtmlOfFool(MapData mapData, String frmID, long
             		
             	}
             	String sb="<iframe style='width:100%;height:auto;' ID='" + mapData.getNo() + "'    src='" + url + "' frameborder=0  leftMargin='0'  topMargin='0' scrolling=auto></iframe></div>";
-            	String  docs = BP.DA.DataType.ReadTextFile(SystemConfig.getPathOfDataUser() + "InstancePacketOfData/Template/indexUrl.htm");
+            	String  docs = DataType.ReadTextFile(SystemConfig.getPathOfDataUser() + "InstancePacketOfData/Template/indexUrl.htm");
             	docs = docs.replace("@Docs", sb.toString());
             	docs = docs.replace("@Width", String.valueOf(mapData.getFrmW())+"px");
             	docs = docs.replace("@Height", String.valueOf(mapData.getFrmH())+"px");
             	if(gwf!=null)
             		docs = docs.replace("@Title", gwf.getTitle());
-            	 BP.DA.DataType.WriteFile(indexFile, docs);
+            	 DataType.WriteFile(indexFile, docs);
             	return indexFile;
             }
             GEEntity en = new GEEntity(frmID, workid);
@@ -2077,13 +2077,13 @@ private static StringBuilder GenerHtmlOfFool(MapData mapData, String frmID, long
 
                 if (mapData.getHisFrmType() == FrmType.FoolForm)
                 {
-                    docs = BP.DA.DataType.ReadTextFile(SystemConfig.getPathOfDataUser() + "InstancePacketOfData/Template/indexFool.htm");
+                    docs = DataType.ReadTextFile(SystemConfig.getPathOfDataUser() + "InstancePacketOfData/Template/indexFool.htm");
                     sb =GenerHtmlOfFool(mapData, frmID, workid, en, path, flowNo,nodeID,basePath);
                     docs = docs.replace("@Width", String.valueOf(mapData.getFrmW())+"px");
                 }
                 else if(mapData.getHisFrmType() == FrmType.FreeFrm)
                 {
-                    docs = BP.DA.DataType.ReadTextFile(SystemConfig.getPathOfDataUser() + "InstancePacketOfData/Template/indexFree.htm");
+                    docs = DataType.ReadTextFile(SystemConfig.getPathOfDataUser() + "InstancePacketOfData/Template/indexFree.htm");
                     sb = GenerHtmlOfFree(mapData, frmID, workid, en, path, flowNo,nodeID,basePath);
                     docs = docs.replace("@Width", String.valueOf(mapData.getFrmW()*1.5)+"px");
                     
@@ -2130,7 +2130,7 @@ private static StringBuilder GenerHtmlOfFool(MapData mapData, String frmID, long
             }
 
             //indexFile = SystemConfig.getPathOfDataUser() + "\\InstancePacketOfData\\" + frmID + "\\" + workid + "\\index.htm";
-            BP.DA.DataType.WriteFile(indexFile, docs);
+            DataType.WriteFile(indexFile, docs);
             
             return indexFile;
         }

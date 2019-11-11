@@ -56,11 +56,11 @@ public class PackAutoErrFormatFieldTable extends Method
 			DBAccess.RunSQL("update sys_mapattr set keyofen=REPLACE(keyofen,'" + c + "' , '')");
 		}
 
-		BP.Sys.MapAttrs attrs = new MapAttrs();
+		MapAttrs attrs = new MapAttrs();
 		attrs.RetrieveAll();
 		int idx = 0;
 		String msg = "";
-		for (BP.Sys.MapAttr item : attrs.ToJavaList())
+		for (MapAttr item : attrs.ToJavaList())
 		{
 			String f = item.getKeyOfEn();
 			try
@@ -79,7 +79,7 @@ public class PackAutoErrFormatFieldTable extends Method
 					msg += "@" + ex.getMessage();
 				}
 			}
-			catch (java.lang.Exception e)
+			catch (Exception e)
 			{
 				continue;
 			}
@@ -88,7 +88,7 @@ public class PackAutoErrFormatFieldTable extends Method
 			idx++;
 		}
 
-		BP.DA.DBAccess.RunSQL("UPDATE Sys_MapAttr SET MyPK=FK_MapData+'_'+KeyOfEn WHERE MyPK!=FK_MapData+'_'+KeyOfEn");
+		DBAccess.RunSQL("UPDATE Sys_MapAttr SET MyPK=FK_MapData+'_'+KeyOfEn WHERE MyPK!=FK_MapData+'_'+KeyOfEn");
 		return "修复信息如下:"+msg;
 	}
 }

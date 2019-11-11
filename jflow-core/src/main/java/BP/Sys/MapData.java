@@ -60,7 +60,7 @@ public class MapData extends EntityNoName
             return null;
 
         if (_HisFEB == null)
-            _HisFEB = BP.Sys.Glo.GetFormEventBaseByEnName(this.getNo());
+            _HisFEB = Glo.GetFormEventBaseByEnName(this.getNo());
 
         return _HisFEB;
         
@@ -113,71 +113,71 @@ public class MapData extends EntityNoName
 		String sql = "";
 
 			///#region 升级ccform控件.
-		if (BP.DA.DBAccess.IsExitsObject("Sys_FrmLine") == true)
+		if (DBAccess.IsExitsObject("Sys_FrmLine") == true)
 		{
 			//重命名.
-			BP.Sys.SFDBSrc dbsrc = new SFDBSrc("local");
+			SFDBSrc dbsrc = new SFDBSrc("local");
 			dbsrc.Rename("Table", "Sys_FrmLine", "Sys_FrmLineBak", sql);
 
 			//检查是否升级.
 			sql = "SELECT * FROM Sys_FrmLineBak ORDER BY FK_MapData ";
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			DataTable dt = DBAccess.RunSQLReturnTable(sql);
 			for (DataRow dr : dt.Rows)
 			{
-				BP.Sys.FrmEle ele = new FrmEle();
+				FrmEle ele = new FrmEle();
 				ele.Copy(dr);
-				ele.setEleType(BP.Sys.FrmEle.Line);
+				ele.setEleType(FrmEle.Line);
 
 				if (ele.getIsExits() == true)
 				{
-					ele.setMyPK(BP.DA.DBAccess.GenerGUID());
+					ele.setMyPK(DBAccess.GenerGUID());
 				}
 				ele.Insert();
 			}
 		}
-		if (BP.DA.DBAccess.IsExitsObject("Sys_FrmLab") == true)
+		if (DBAccess.IsExitsObject("Sys_FrmLab") == true)
 		{
 			//重命名.
-			BP.Sys.SFDBSrc dbsrc = new SFDBSrc("local");
+			SFDBSrc dbsrc = new SFDBSrc("local");
 			dbsrc.Rename("Table", "Sys_FrmLab", "Sys_FrmLabBak", sql);
 
 			//检查是否升级.
 			sql = "SELECT * FROM Sys_FrmLabBak ORDER BY FK_MapData ";
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			DataTable dt = DBAccess.RunSQLReturnTable(sql);
 			for (DataRow dr : dt.Rows)
 			{
-				BP.Sys.FrmEle ele = new FrmEle();
+				FrmEle ele = new FrmEle();
 				ele.Copy(dr);
-				ele.setEleType(BP.Sys.FrmEle.Label);
+				ele.setEleType(FrmEle.Label);
 
 				ele.setEleName(dr.get(FrmLabAttr.Text).toString());
 
 
 				if (ele.getIsExits() == true)
 				{
-					ele.setMyPK(BP.DA.DBAccess.GenerGUID());
+					ele.setMyPK(DBAccess.GenerGUID());
 				}
 				ele.Insert();
 			}
 		}
-		if (BP.DA.DBAccess.IsExitsObject("Sys_FrmBtn") == true)
+		if (DBAccess.IsExitsObject("Sys_FrmBtn") == true)
 		{
 			//重命名.
-			BP.Sys.SFDBSrc dbsrc = new SFDBSrc("local");
+			SFDBSrc dbsrc = new SFDBSrc("local");
 			dbsrc.Rename("Table", "Sys_FrmLab", "Sys_FrmLabBak", sql);
 
 			//检查是否升级.
 			sql = "SELECT * FROM Sys_FrmLabBak ORDER BY FK_MapData ";
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			DataTable dt = DBAccess.RunSQLReturnTable(sql);
 			for (DataRow dr : dt.Rows)
 			{
-				BP.Sys.FrmEle ele = new FrmEle();
+				FrmEle ele = new FrmEle();
 				ele.Copy(dr);
-				ele.setEleType(BP.Sys.FrmEle.Line);
+				ele.setEleType(FrmEle.Line);
 
 				if (ele.getIsExits() == true)
 				{
-					ele.setMyPK(BP.DA.DBAccess.GenerGUID());
+					ele.setMyPK(DBAccess.GenerGUID());
 				}
 				ele.Insert();
 			}
@@ -848,7 +848,7 @@ public class MapData extends EntityNoName
     /// </summary>
     public void ClearCash()
     {
-        BP.DA.CashFrmTemplate.Remove(this.getNo());
+        CashFrmTemplate.Remove(this.getNo());
         CleanObject();
     }
 	public static boolean getIsEditDtlModel()
@@ -1033,7 +1033,7 @@ public class MapData extends EntityNoName
 	{
 		if (_HisEns == null)
 		{
-			_HisEns = BP.En.ClassFactory.GetEns(this.getNo());
+			_HisEns = ClassFactory.GetEns(this.getNo());
 		}
 		return _HisEns;
 	}
@@ -1295,14 +1295,14 @@ public class MapData extends EntityNoName
 		}
 		else
 		{
-			Map map = BP.DA.Cash.GetMap(no);
+			Map map = Cash.GetMap(no);
 			if (map == null)
 			{
 				MapData md = new MapData();
 				md.setNo(no);
 				md.Retrieve();
 				map = md.GenerHisMap();
-				BP.DA.Cash.SetMap(no, map);
+				Cash.SetMap(no, map);
 			}
 			return map;
 		}
@@ -1471,10 +1471,10 @@ public class MapData extends EntityNoName
 		//MapData md = new MapData(frmID);
 
 		//获得原始数据.
-		DataTable dt = BP.DA.DBAccess.GetTableSchema( pTable);
+		DataTable dt = DBAccess.GetTableSchema( pTable);
 
 		//创建样本表结构.
-		DataTable mydt = BP.DA.DBAccess.GetTableSchema(pTable);
+		DataTable mydt = DBAccess.GetTableSchema(pTable);
 		mydt.Rows.clear();
 
 		//获得现有的列..
@@ -1991,7 +1991,7 @@ public class MapData extends EntityNoName
 						{
 							en.Save();
 						}
-						catch (java.lang.Exception e)
+						catch (Exception e)
 						{
 						}
 					}
@@ -2025,7 +2025,7 @@ public class MapData extends EntityNoName
 						{
 							en.Insert();
 						}
-						catch (java.lang.Exception e2)
+						catch (Exception e2)
 						{
 						}
 					}
@@ -2126,7 +2126,7 @@ public class MapData extends EntityNoName
 						{
 							en.DirectInsert();
 						}
-						catch (java.lang.Exception e4)
+						catch (Exception e4)
 						{
 						}
 					}
@@ -2149,7 +2149,7 @@ public class MapData extends EntityNoName
 							{
 								en.SetValByKey(dc.ColumnName, val.toString().replace(oldMapID, fk_mapdata));
 							}
-							catch (java.lang.Exception e5)
+							catch (Exception e5)
 							{
 								throw new RuntimeException("val:" + val.toString() + "oldMapID:" + oldMapID + "fk_mapdata:" + fk_mapdata);
 							}
@@ -2244,6 +2244,8 @@ public class MapData extends EntityNoName
 	*/
 	public final void RepairMap() throws Exception
 	{
+		if(DataType.IsNullOrEmpty(this.getNo()))
+			return;
 		GroupFields gfs = new GroupFields(this.getNo());
 		if (gfs.size() == 0)
 		{
@@ -2273,12 +2275,12 @@ public class MapData extends EntityNoName
 				{
 					DBAccess.RunSQLs(sqls);
 				}
-				catch (java.lang.Exception e)
+				catch (Exception e)
 				{
 				}
              }
 		}
-		BP.Sys.MapAttr attr = new BP.Sys.MapAttr();
+		MapAttr attr = new MapAttr();
 		if (this.getEnPK().equals("OID"))
 		{
 			if (attr.IsExit(MapAttrAttr.KeyOfEn, "OID", MapAttrAttr.FK_MapData, this.getNo()) == false)
@@ -2286,13 +2288,13 @@ public class MapData extends EntityNoName
 				attr.setFK_MapData(this.getNo());
 				attr.setKeyOfEn("OID");
 				attr.setName("OID");
-				attr.setMyDataType(BP.DA.DataType.AppInt);
+				attr.setMyDataType(DataType.AppInt);
 				attr.setUIContralType(UIContralType.TB);
 				attr.setLGType(FieldTypeS.Normal);
 				attr.setUIVisible(false);
 				attr.setUIIsEnable(false);
 				attr.setDefVal("0");
-				attr.setHisEditType(BP.En.EditType.Readonly);
+				attr.setHisEditType(EditType.Readonly);
 				attr.Insert();
 			}
 		}
@@ -2303,26 +2305,26 @@ public class MapData extends EntityNoName
 				attr.setFK_MapData(this.getNo());
 				attr.setKeyOfEn(this.getEnPK());
 				attr.setName(this.getEnPK());
-				attr.setMyDataType(BP.DA.DataType.AppInt);
+				attr.setMyDataType(DataType.AppInt);
 				attr.setUIContralType(UIContralType.TB);
 				attr.setLGType(FieldTypeS.Normal);
 				attr.setUIVisible(false);
 				attr.setUIIsEnable(false);
 				attr.setDefVal("0");
-				attr.setHisEditType(BP.En.EditType.Readonly);
+				attr.setHisEditType(EditType.Readonly);
 				attr.Insert();
 			}
 		}
 
 		if (attr.IsExit(MapAttrAttr.KeyOfEn, "RDT", MapAttrAttr.FK_MapData, this.getNo()) == false)
 		{
-			attr = new BP.Sys.MapAttr();
+			attr = new MapAttr();
 			attr.setFK_MapData(this.getNo());
-			attr.setHisEditType(BP.En.EditType.UnDel);
+			attr.setHisEditType(EditType.UnDel);
 			attr.setKeyOfEn("RDT");
 			attr.setName("更新时间");
 
-			attr.setMyDataType(BP.DA.DataType.AppDateTime);
+			attr.setMyDataType(DataType.AppDateTime);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
@@ -2656,8 +2658,8 @@ public class MapData extends EntityNoName
 	*/
 	public final void UpdateVer()
 	{
-		String sql = "UPDATE Sys_MapData SET VER='" + BP.DA.DataType.getCurrentDataTimess() + "' WHERE No='" + this.getNo() + "'";
-		BP.DA.DBAccess.RunSQL(sql);
+		String sql = "UPDATE Sys_MapData SET VER='" + DataType.getCurrentDataTimess() + "' WHERE No='" + this.getNo() + "'";
+		DBAccess.RunSQL(sql);
 	}
 	@Override
 	protected boolean beforeDelete() throws Exception
@@ -2782,7 +2784,7 @@ public class MapData extends EntityNoName
 	*/
 	public final boolean ExcelGenerFile(int oid, RefObject<byte[]> bytes)
 	{
-		byte[] by = BP.DA.DBAccess.GetByteFromDB(this.getPTable(), this.getEnPK(), (new Integer(oid)).toString(), "DBFile");
+		byte[] by = DBAccess.GetByteFromDB(this.getPTable(), this.getEnPK(), (new Integer(oid)).toString(), "DBFile");
 		if (by != null)
 		{
 			bytes.argvalue = by;
@@ -2790,11 +2792,11 @@ public class MapData extends EntityNoName
 		}
 		else //说明当前excel文件没有生成.
 		{
-			String tempExcel = BP.Sys.SystemConfig.getPathOfDataUser() + "FrmOfficeTemplate/" + this.getNo() + ".xlsx";
+			String tempExcel = SystemConfig.getPathOfDataUser() + "FrmOfficeTemplate/" + this.getNo() + ".xlsx";
 			File file = new File(tempExcel);
 			if (file.exists() == true)
 			{
-				bytes.argvalue = BP.DA.DataType.ConvertFileToByte(tempExcel);
+				bytes.argvalue = DataType.ConvertFileToByte(tempExcel);
 				return false;
 			}
 			else //模板文件也不存在时
@@ -2811,7 +2813,7 @@ public class MapData extends EntityNoName
 	*/
 	public final void ExcelSaveFile(int oid, byte[] bty) throws Exception
 	{
-		BP.DA.DBAccess.SaveFileToDB(bty.toString(), this.getPTable(), this.getEnPK(), (new Integer(oid)).toString(), "DBFile");
+		DBAccess.SaveFileToDB(bty.toString(), this.getPTable(), this.getEnPK(), (new Integer(oid)).toString(), "DBFile");
 	}
 	//#endregion 与Excel相关的操作 .
 	

@@ -92,7 +92,7 @@ public class SysEnum extends EntityMyPK
 			if (i == 0)
 			{
 				//尝试注册系统的枚举的配置.
-				BP.Sys.SysEnums myee = new SysEnums(enumKey);
+				SysEnums myee = new SysEnums(enumKey);
 
 				throw new RuntimeException("@ EnumKey=" + getEnumKey() + " Val=" + val + " Lang=" + BP.Web.WebUser.getSysLang() + " ...Error");
 			}

@@ -117,7 +117,7 @@ public class FrmImg extends EntityMyPK
 		String src = this.GetValStringByKey(FrmImgAttr.ImgPath);
 		if (StringHelper.isNullOrEmpty(src))
 		{
-			src =  "DataUser/ICON/" + BP.Sys.SystemConfig.getCustomerNo() + "/LogBiger.png";
+			src =  "DataUser/ICON/" + SystemConfig.getCustomerNo() + "/LogBiger.png";
 		}
 		return src;
 	}
@@ -130,7 +130,7 @@ public class FrmImg extends EntityMyPK
 		String src = this.GetValStringByKey(FrmImgAttr.ImgURL);
 		if (StringHelper.isNullOrEmpty(src) || src.contains("component/Img"))
 		{
-			src =  "DataUser/ICON/" + BP.Sys.SystemConfig.getCustomerNo() + "/LogBiger.png";
+			src =  "DataUser/ICON/" + SystemConfig.getCustomerNo() + "/LogBiger.png";
 		}
 		return src;
 	}

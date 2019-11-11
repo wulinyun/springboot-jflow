@@ -273,7 +273,7 @@ public class BtnLab extends Entity
 	public final String getSendJS()
 	{
 		String str = this.GetValStringByKey(BtnAttr.SendJS).replace("~", "'");
-		if (this.getCCRole() == BP.WF.CCRole.WhenSend)
+		if (this.getCCRole() == CCRole.WhenSend)
 		{
 			str = str + "  if ( OpenCC()==false) return false;";
 		}

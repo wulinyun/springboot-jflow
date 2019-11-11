@@ -78,7 +78,7 @@ public class FindWorker {
 		// 按上一节点发送人处理。
 		if (town.getHisNode().getHisDeliveryWay() == DeliveryWay.ByPreviousNodeEmp) {
 			DataRow dr = dt.NewRow();
-			dr.setValue(0, BP.Web.WebUser.getNo());
+			dr.setValue(0, WebUser.getNo());
 			dt.Rows.add(dr);
 			return dt;
 		}
@@ -261,7 +261,7 @@ public class FindWorker {
 				/* 有可能当前节点就是第一个节点，那个时间还没有初始化数据，就返回当前人. */
 				if (this.currWn.getHisNode().getIsStartNode()) {
 					DataRow dr = dt.NewRow();
-					dr.setValue(0, BP.Web.WebUser.getNo());
+					dr.setValue(0, WebUser.getNo());
 					dt.Rows.add(dr);
 					return dt;
 				}
@@ -822,7 +822,7 @@ public class FindWorker {
 				}
 
 				if (BP.Sys.SystemConfig.getOSDBSrc() == OSDBSrc.WebServices) {
-					DataTable dtStas = BP.DA.DBAccess.RunSQLReturnTable(
+					DataTable dtStas = DBAccess.RunSQLReturnTable(
 							"SELECT FK_Station FROM WF_NodeStation WHERE FK_Node=" + town.getHisNode().getNodeID());
 					String stas = DBAccess.GenerWhereInPKsString(dtStas);
 					PortalInterface ws = DataType.GetPortalInterfaceSoapClientInstance();
@@ -880,7 +880,7 @@ public class FindWorker {
 			} else {
 				boolean isInit = false;
 				for (DataRow dr : dt.Rows) {
-					if (dr.getValue(0).toString().equals(BP.Web.WebUser.getNo())) {
+					if (dr.getValue(0).toString().equals(WebUser.getNo())) {
 						// 如果岗位分组不一样，并且结果集合里还有当前的人员，就说明了出现了当前操作员，拥有本节点上的岗位也拥有下一个节点的工作岗位
 						// 导致：节点的分组不同，传递到同一个人身上。
 						isInit = true;

@@ -97,7 +97,7 @@ public class FrmNodeComponent extends Entity
 		{
 			this.setNodeID(Integer.parseInt(mapdata));
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			return;
 		}

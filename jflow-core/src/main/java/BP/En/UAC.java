@@ -17,7 +17,7 @@ public class UAC
     private static final String DataRow = null;
 	public void LoadRightFromCCGPM(Entity en) throws Exception
     {
-        String sql = "SELECT Tag1  FROM V_GPM_EmpMenu WHERE  FK_Emp='"+BP.Web.WebUser.getNo()+"'  AND Url LIKE '%" + en.toString()+ "%'  ";
+        String sql = "SELECT Tag1  FROM V_GPM_EmpMenu WHERE  FK_Emp='"+WebUser.getNo()+"'  AND Url LIKE '%" + en.toString()+ "%'  ";
         DataTable dt = DBAccess.RunSQLReturnTable(sql);
         for (BP.DA.DataRow dr : dt.Rows)
         {

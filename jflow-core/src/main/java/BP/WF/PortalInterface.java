@@ -89,7 +89,7 @@ public class PortalInterface
 
 
 
-		Emp empStarter = new Emp(BP.Web.WebUser.getNo());
+		Emp empStarter = new Emp(WebUser.getNo());
 		Work wk = fl.NewWork(empStarter, htPara);
 		long workID = wk.getOID();
 
@@ -154,7 +154,7 @@ public class PortalInterface
 			ps.SQL = "UPDATE " + fl.getPTable() + " SET WFState=" + dbstr + "WFState,FK_Dept=" + dbstr + "FK_Dept,Title=" + dbstr + "Title WHERE OID=" + dbstr + "OID";
 			ps.Add(GERptAttr.WFState, WFState.Blank.getValue());
 			ps.Add(GERptAttr.FK_Dept, empStarter.getFK_Dept());
-			ps.Add(GERptAttr.Title, BP.WF.WorkFlowBuessRole.GenerTitle(fl, wk));
+			ps.Add(GERptAttr.Title, WorkFlowBuessRole.GenerTitle(fl, wk));
 			ps.Add(GERptAttr.OID, wk.getOID());
 			DBAccess.RunSQL(ps);
 		}
@@ -175,7 +175,7 @@ public class PortalInterface
 		// 设置流程信息
 		if (parentWorkID != 0)
 		{
-			BP.WF.Dev2Interface.SetParentInfo(flowNo, workID, parentFlowNo, parentWorkID, parentNodeID, parentEmp);
+			Dev2Interface.SetParentInfo(flowNo, workID, parentFlowNo, parentWorkID, parentNodeID, parentEmp);
 		}
 
 		return wk.getOID();
@@ -237,7 +237,7 @@ public class PortalInterface
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
 
 		Paras ps = new Paras();
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String sql;
 
 		//不是授权状态
@@ -252,7 +252,7 @@ public class PortalInterface
 			ps.Add("FK_Flow", fk_flow);
 			ps.Add("GuestNo", guestNo);
 		}
-		return BP.DA.DBAccess.RunSQLReturnTable(ps);
+		return DBAccess.RunSQLReturnTable(ps);
 	}
 	/** 
 	 获取未完成的流程(也称为在途流程:我参与的但是此流程未完成)
@@ -298,13 +298,13 @@ public class PortalInterface
 	*/
 	public static void SetGuestInfo(String flowNo, long workID, String guestNo, String guestName) throws Exception
 	{
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "UPDATE WF_GenerWorkFlow SET GuestNo=" + dbstr + "GuestNo, GuestName=" + dbstr + "GuestName WHERE WorkID=" + dbstr + "WorkID";
 		ps.Add("GuestNo", guestNo);
 		ps.Add("GuestName", guestName);
 		ps.Add("WorkID", workID);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 
 		Flow fl = new Flow(flowNo);
 		ps = new Paras();
@@ -312,7 +312,7 @@ public class PortalInterface
 		ps.Add("GuestNo", guestNo);
 		ps.Add("GuestName", guestName);
 		ps.Add("OID", workID);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 	}
 	/** 
 	 设置当前用户的待办
@@ -332,13 +332,13 @@ public class PortalInterface
 			throw new RuntimeException("@设置外部用户待办信息失败:参数workID不能为0.");
 		}
 
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "UPDATE WF_GenerWorkerList SET GuestNo=" + dbstr + "GuestNo, GuestName=" + dbstr + "GuestName WHERE WorkID=" + dbstr + "WorkID AND IsPass=0";
 		ps.Add("GuestNo", guestNo);
 		ps.Add("GuestName", guestName);
 		ps.Add("WorkID", workID);
-		int i = BP.DA.DBAccess.RunSQL(ps);
+		int i = DBAccess.RunSQL(ps);
 		if (i == 0)
 		{
 			throw new RuntimeException("@设置外部用户待办信息失败:参数workID不能为空.");
@@ -349,7 +349,7 @@ public class PortalInterface
 		ps.Add("GuestNo", guestNo);
 		ps.Add("GuestName", guestName);
 		ps.Add("WorkID", workID);
-		i = BP.DA.DBAccess.RunSQL(ps);
+		i = DBAccess.RunSQL(ps);
 		if (i == 0)
 		{
 			throw new RuntimeException("@WF_GenerWorkFlow - 设置外部用户待办信息失败:参数WorkID不能为空.");
@@ -415,9 +415,9 @@ public class PortalInterface
 	{
 	 //   BP.DA.Log.DefaultLogWriteLineInfo("接口调用成功: SendToWebServices  MyPK" + mypk +" UserNo:"+userNo+ " Tel:" + tel + " msgInfo:" + msgInfo);
 
-		if (BP.Sys.SystemConfig.getIsEnableCCIM() && sendToEmpNo != null)
+		if (SystemConfig.getIsEnableCCIM() && sendToEmpNo != null)
 		{
-			BP.WF.Glo.SendMessageToCCIM(sender, sendToEmpNo, msgInfo, BP.DA.DataType.getCurrentDataTime());
+			Glo.SendMessageToCCIM(sender, sendToEmpNo, msgInfo, DataType.getCurrentDataTime());
 		}
 		return true;
 	}
@@ -435,9 +435,9 @@ public class PortalInterface
 	{
 	   // BP.DA.Log.DefaultLogWriteLineInfo("接口调用成功: SendToWeiXin  MyPK" + mypk + " UserNo:" + userNo + " Tel:" + tel + " msgInfo:" + msgInfo);
 
-		if (BP.Sys.SystemConfig.getIsEnableCCIM() && sendToEmpNo != null)
+		if (SystemConfig.getIsEnableCCIM() && sendToEmpNo != null)
 		{
-			BP.WF.Glo.SendMessageToCCIM(sender, sendToEmpNo, msgInfo, BP.DA.DataType.getCurrentDataTime());
+			Glo.SendMessageToCCIM(sender, sendToEmpNo, msgInfo, DataType.getCurrentDataTime());
 		}
 		return true;
 	}
@@ -457,9 +457,9 @@ public class PortalInterface
 	public static boolean SendToEmail(String mypk, String sender, String sendToEmpNo, String email, String title, String maildoc)
 	{
 	    BP.DA.Log.DefaultLogWriteLineInfo("接口调用成功: SendToEmail  MyPK" + mypk + " email:" + email + " title:" + title + " maildoc:" + maildoc);
-		if (BP.Sys.SystemConfig.getIsEnableCCIM() && sendToEmpNo != null)
+		if (SystemConfig.getIsEnableCCIM() && sendToEmpNo != null)
 		{
-			BP.WF.Glo.SendMessageToCCIM(sender, sendToEmpNo, title + " \t\n " + maildoc, DataType.getCurrentDataTime());
+			Glo.SendMessageToCCIM(sender, sendToEmpNo, title + " \t\n " + maildoc, DataType.getCurrentDataTime());
 		}
 		return true;
 	}
@@ -476,9 +476,9 @@ public class PortalInterface
 	{
 	 //   BP.DA.Log.DefaultLogWriteLineInfo("接口调用成功: SendToEmail  MyPK" + mypk + " userNo:" + userNo + " msg:" + msg);
 
-		if (BP.Sys.SystemConfig.getIsEnableCCIM() && userNo != null)
+		if (SystemConfig.getIsEnableCCIM() && userNo != null)
 		{
-			BP.WF.Glo.SendMessageToCCIM(WebUser.getNo(), userNo, msg, DataType.getCurrentDataTime());
+			Glo.SendMessageToCCIM(WebUser.getNo(), userNo, msg, DataType.getCurrentDataTime());
 		}
 		return true;
 	}
@@ -521,12 +521,12 @@ public class PortalInterface
 					}
 
 					//判断是否视图，如果为视图则不进行修改 @于庆海 需要翻译
-					if (BP.DA.DBAccess.IsView("Port_Emp") == true)
+					if (DBAccess.IsView("Port_Emp") == true)
 					{
 						return false;
 					}
 					String sql = "UPDATE Port_Emp SET SID='" + sid + "' WHERE No='" + userNo + "'";
-					BP.DA.DBAccess.RunSQL(sql);
+					DBAccess.RunSQL(sql);
 					return true;
 				}
 				catch (RuntimeException ex)

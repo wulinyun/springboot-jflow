@@ -253,7 +253,7 @@ public class WFEmp extends EntityNoName
 				this.Insert();
 			}
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			this.CheckPhysicsTable();
 		}
@@ -350,14 +350,14 @@ public class WFEmp extends EntityNoName
 		for (DataRow dr : dt.Rows)
 		{
 			BP.Port.Emp emp1 = new BP.Port.Emp(dr.getValue("No").toString());
-			BP.WF.Port.WFEmp empWF = new BP.WF.Port.WFEmp();
+			WFEmp empWF = new WFEmp();
 			empWF.Copy(emp1);
 			try
 			{
 				empWF.setUseSta(1);
 				empWF.DirectInsert();
 			}
-			catch (java.lang.Exception e)
+			catch (Exception e)
 			{
 			}
 		}

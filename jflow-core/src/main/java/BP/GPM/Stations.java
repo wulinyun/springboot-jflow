@@ -20,7 +20,7 @@ public class Stations extends EntitiesNoName
 	@Override
 	public Entity getGetNewEntity()
 	{
-		return new BP.GPM.Station();
+		return new Station();
 	}
 
 	/** 

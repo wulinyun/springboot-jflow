@@ -260,7 +260,7 @@ public class Cond extends EntityMyPK {
 		this.RunSQL("UPDATE WF_Node SET IsCCFlow=1 WHERE NodeID IN (SELECT NodeID FROM WF_Cond WHERE CondType="
 				+ CondType.Flow.getValue() + ")");
 
-		this.setMyPOID(BP.DA.DBAccess.GenerOID());
+		this.setMyPOID(DBAccess.GenerOID());
 		return super.beforeUpdateInsertAction();
 	}
 
@@ -282,7 +282,7 @@ public class Cond extends EntityMyPK {
 
 		this.SetValByKey(CondAttr.FK_Attr, value);
 
-		BP.Sys.MapAttr attr = new BP.Sys.MapAttr(value);
+		MapAttr attr = new MapAttr(value);
 		this.SetValByKey(CondAttr.AttrKey, attr.getKeyOfEn());
 		this.SetValByKey(CondAttr.AttrName, attr.getName());
 	}
@@ -467,7 +467,7 @@ public class Cond extends EntityMyPK {
 			String strs = this.getOperatorValue().toString();
 			String strs1 = "";
 
-			if (BP.WF.Glo.getOSModel() == BP.Sys.OSModel.OneMore) {
+			if (BP.WF.Glo.getOSModel() == OSModel.OneMore) {
 				BP.GPM.DeptEmpStations sts = new BP.GPM.DeptEmpStations();
 				sts.Retrieve("FK_Emp", this.getSpecOper());
 				for (BP.GPM.DeptEmpStation st : sts.ToJavaList()) {
@@ -590,7 +590,7 @@ public class Cond extends EntityMyPK {
 				url = url + "?1=2";
 			}
 
-			url = url.replace("@SDKFromServHost", (String) BP.Sys.SystemConfig.getAppSettings().get("SDKFromServHost"));
+			url = url.replace("@SDKFromServHost", (String) SystemConfig.getAppSettings().get("SDKFromServHost"));
 			url = BP.WF.Glo.DealExp(url, this.en, "");
 
 			/// #region 加入必要的参数.

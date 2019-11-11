@@ -98,19 +98,19 @@ public class WF_WorkOpt extends WebContralBase {
 		String fk_dept = this.getFK_Dept();
 
 		if (DataType.IsNullOrEmpty(fk_dept) == true || fk_dept.equals("undefined") == true) {
-			fk_dept = BP.Web.WebUser.getFK_Dept();
+			fk_dept = WebUser.getFK_Dept();
 		}
 
 		DataSet ds = new DataSet();
 
 		String sql = "SELECT No,Name,ParentNo FROM Port_Dept WHERE No='" + fk_dept + "' OR ParentNo='" + fk_dept + "' ";
-		DataTable dtDept = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dtDept = DBAccess.RunSQLReturnTable(sql);
 
 		if (dtDept.Rows.size() == 0) {
-			fk_dept = BP.Web.WebUser.getFK_Dept();
+			fk_dept = WebUser.getFK_Dept();
 
 			sql = "SELECT No,Name,ParentNo FROM Port_Dept WHERE No='" + fk_dept + "' OR ParentNo='" + fk_dept + "' ";
-			dtDept = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			dtDept = DBAccess.RunSQLReturnTable(sql);
 
 			// return "err@部门编号错误:"+fk_dept;
 		}
@@ -133,7 +133,7 @@ public class WF_WorkOpt extends WebContralBase {
         sql += " ORDER BY A.Idx ";
 
 
-		DataTable dtEmps = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dtEmps = DBAccess.RunSQLReturnTable(sql);
 		dtEmps.TableName = "Emps";
 		ds.Tables.add(dtEmps);
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
@@ -230,7 +230,7 @@ public class WF_WorkOpt extends WebContralBase {
 		if (isReadonly == true)
 			isCanDo = false;
 		else
-			isCanDo = BP.WF.Dev2Interface.Flow_IsCanDoCurrentWork(this.getWorkID(), WebUser.getNo());
+			isCanDo = Dev2Interface.Flow_IsCanDoCurrentWork(this.getWorkID(), WebUser.getNo());
 
 		// 如果是查看状态, 为了屏蔽掉正在审批的节点, 在查看审批意见中.
 		Boolean isShowCurrNodeInfo = true;
@@ -252,7 +252,7 @@ public class WF_WorkOpt extends WebContralBase {
 		String checkerPassed = ",";
 		if (gwf.getWFState() != WFState.Complete) {
 			String sql = "SELECT FK_Emp FROM WF_Generworkerlist where workid=" + this.getWorkID()
-					+ " AND IsPass=1 AND FK_Node=" + this.getFK_Node()+"Order By RDT,CDT";
+					+ " AND IsPass=1 AND FK_Node=" + this.getFK_Node()+" Order By RDT,CDT";
 			DataTable checkerPassedDt = DBAccess.RunSQLReturnTable(sql);
 			for (DataRow dr : checkerPassedDt.Rows) {
 				checkerPassed += dr.getValue("FK_Emp") + ",";
@@ -269,7 +269,7 @@ public class WF_WorkOpt extends WebContralBase {
 			// 已走过节点
 			int empIdx = 0;
 			int lastNodeId = 0;
-			for (BP.WF.Track tk : tks.ToJavaList()) {
+			for (Track tk : tks.ToJavaList()) {
 				if (tk.getHisActionType() == ActionType.FlowBBS)
 					continue;
 
@@ -372,7 +372,7 @@ public class WF_WorkOpt extends WebContralBase {
 				row.setValue("NodeName", tk.getNDFromT());
 				isDoc = false;
 				// zhoupeng 增加了判断，在会签的时候最后会签人发送前不能填写意见.
-				if (tk.getNDFrom() == this.getFK_Node() && tk.getEmpFrom() == BP.Web.WebUser.getNo() && isCanDo
+				if (tk.getNDFrom() == this.getFK_Node() && tk.getEmpFrom() == WebUser.getNo() && isCanDo
 						&& isDoc == false)
 					isDoc = true;
 
@@ -586,7 +586,7 @@ public class WF_WorkOpt extends WebContralBase {
 
 			//是否已审核.
 			Boolean isHave = false;
-			for (BP.WF.Track tk : tks.ToJavaList())
+			for (Track tk : tks.ToJavaList())
 			{
 				//翻译.
 				if (tk.getNDFrom() == this.getFK_Node() && tk.getHisActionType() == ActionType.WorkCheck)
@@ -728,7 +728,7 @@ public class WF_WorkOpt extends WebContralBase {
 		if (isReadonly == true)
 			isCanDo = false;
 		else
-			isCanDo = BP.WF.Dev2Interface.Flow_IsCanDoCurrentWork(this.getWorkID(), WebUser.getNo());
+			isCanDo = Dev2Interface.Flow_IsCanDoCurrentWork(this.getWorkID(), WebUser.getNo());
 
 		// 如果是查看状态, 为了屏蔽掉正在审批的节点, 在查看审批意见中.
 		Boolean isShowCurrNodeInfo = true;
@@ -767,7 +767,7 @@ public class WF_WorkOpt extends WebContralBase {
 			// 已走过节点
 			int empIdx = 0;
 			int lastNodeId = 0;
-			for (BP.WF.Track tk : tks.ToJavaList()) {
+			for (Track tk : tks.ToJavaList()) {
 				if (tk.getHisActionType() == ActionType.FlowBBS)
 					continue;
 
@@ -860,7 +860,7 @@ public class WF_WorkOpt extends WebContralBase {
 						row.setValue("NodeName", tk.getNDFromT());
 						isDoc = false;
 						// zhoupeng 增加了判断，在会签的时候最后会签人发送前不能填写意见.
-						if (tk.getNDFrom() == this.getFK_Node() && tk.getEmpFrom() == BP.Web.WebUser.getNo() && isCanDo
+						if (tk.getNDFrom() == this.getFK_Node() && tk.getEmpFrom() == WebUser.getNo() && isCanDo
 								&& isDoc == false)
 							isDoc = true;
 
@@ -1087,7 +1087,7 @@ public class WF_WorkOpt extends WebContralBase {
 
              //是否已审核.
              Boolean isHave = false;
-             for (BP.WF.Track tk : tks.ToJavaList())
+             for (Track tk : tks.ToJavaList())
              {
                  //翻译.
                  if (tk.getNDFrom() == this.getFK_Node() && tk.getHisActionType() == ActionType.WorkCheck)
@@ -1362,7 +1362,7 @@ public class WF_WorkOpt extends WebContralBase {
 		ht.put("CCTo", toAllEmps);
 
 		// 根据他判断是否显示权限组。
-		if (BP.DA.DBAccess.IsExitsObject("GPM_Group") == true) {
+		if (DBAccess.IsExitsObject("GPM_Group") == true) {
 			ht.put("IsGroup", "1");
 		} else {
 			ht.put("IsGroup", "0");
@@ -1384,13 +1384,13 @@ public class WF_WorkOpt extends WebContralBase {
 		// 岗位类型.
 		String sql = "SELECT NO,NAME FROM Port_StationType ORDER BY NO";
 		DataSet ds = new DataSet();
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Port_StationType";
 		ds.Tables.add(dt);
 
 		// 岗位.
 		String sqlStas = "SELECT NO,NAME,FK_STATIONTYPE FROM Port_Station ORDER BY FK_STATIONTYPE,NO";
-		DataTable dtSta = BP.DA.DBAccess.RunSQLReturnTable(sqlStas);
+		DataTable dtSta = DBAccess.RunSQLReturnTable(sqlStas);
 		dtSta.TableName = "Port_Station";
 		ds.Tables.add(dtSta);
 		return BP.Tools.Json.ToJson(ds);
@@ -1420,7 +1420,7 @@ public class WF_WorkOpt extends WebContralBase {
 		String doc = this.GetRequestVal("TB_Doc");
 
 		// 调用抄送接口执行抄送.
-		String ccRec = BP.WF.Dev2Interface.Node_CC_WriteTo_CClist(this.getFK_Node(), this.getWorkID(), title, doc, emps,
+		String ccRec = Dev2Interface.Node_CC_WriteTo_CClist(this.getFK_Node(), this.getWorkID(), title, doc, emps,
 				depts, stations, groups);
 
 		if (ccRec.equals("")) {
@@ -1433,13 +1433,13 @@ public class WF_WorkOpt extends WebContralBase {
 	public String DealSubThreadReturnToHL_Init() throws Exception {
 
 		// 如果工作节点退回了
-		BP.WF.ReturnWorks rws = new BP.WF.ReturnWorks();
-		rws.Retrieve(BP.WF.ReturnWorkAttr.ReturnToNode, this.getFK_Node(), BP.WF.ReturnWorkAttr.WorkID,
-				this.getWorkID(), BP.WF.ReturnWorkAttr.RDT);
+		ReturnWorks rws = new ReturnWorks();
+		rws.Retrieve(ReturnWorkAttr.ReturnToNode, this.getFK_Node(), ReturnWorkAttr.WorkID,
+				this.getWorkID(), ReturnWorkAttr.RDT);
 
 		String msgInfo = "";
 		if (rws.size() != 0) {
-			for (BP.WF.ReturnWork rw : rws.ToJavaList()) {
+			for (ReturnWork rw : rws.ToJavaList()) {
 				msgInfo += "<fieldset width='100%' ><legend>&nbsp; 来自节点:" + rw.getReturnNodeName() + " 退回人:"
 						+ rw.getReturnerName() + "  " + rw.getRDT() + "</legend>";
 				msgInfo += rw.getBeiZhuHtml();
@@ -1448,8 +1448,8 @@ public class WF_WorkOpt extends WebContralBase {
 		}
 
 		// 把节点信息也传入过去，用于判断不同的按钮显示.
-		BP.WF.Template.BtnLab btn = new BtnLab(this.getFK_Node());
-		BP.WF.Node nd = new Node(this.getFK_Node());
+		BtnLab btn = new BtnLab(this.getFK_Node());
+		Node nd = new Node(this.getFK_Node());
 
 		java.util.Hashtable ht = new java.util.Hashtable();
 		// 消息.
@@ -1494,10 +1494,10 @@ public class WF_WorkOpt extends WebContralBase {
 
 		if (actionType.equals("Return")) {
 			// 如果是退回.
-			BP.WF.ReturnWork rw = new BP.WF.ReturnWork();
-			rw.Retrieve(BP.WF.ReturnWorkAttr.ReturnToNode, this.getFK_Node(), BP.WF.ReturnWorkAttr.WorkID,
+			ReturnWork rw = new ReturnWork();
+			rw.Retrieve(ReturnWorkAttr.ReturnToNode, this.getFK_Node(), ReturnWorkAttr.WorkID,
 					this.getWorkID());
-			String info = BP.WF.Dev2Interface.Node_ReturnWork(this.getFK_Flow(), this.getWorkID(), this.getFID(),
+			String info = Dev2Interface.Node_ReturnWork(this.getFK_Flow(), this.getWorkID(), this.getFID(),
 					this.getFK_Node(), rw.getReturnNode(), note, false);
 			return info;
 		}
@@ -1505,12 +1505,12 @@ public class WF_WorkOpt extends WebContralBase {
 		if (actionType.equals("Shift")) {
 			// 如果是移交操作.
 			String toEmps = this.GetRequestVal("ShiftToEmp");
-			return BP.WF.Dev2Interface.Node_Shift(this.getFK_Flow(), this.getFK_Node(), this.getWorkID(), this.getFID(),
+			return Dev2Interface.Node_Shift(this.getFK_Flow(), this.getFK_Node(), this.getWorkID(), this.getFID(),
 					toEmps, note);
 		}
 
 		if (actionType.equals("Kill")) {
-			msg = BP.WF.Dev2Interface.Flow_DeleteSubThread(this.getFK_Flow(), this.getWorkID(), "手工删除");
+			msg = Dev2Interface.Flow_DeleteSubThread(this.getFK_Flow(), this.getWorkID(), "手工删除");
 			// 提示信息.
 			if (msg.equals("") || msg == null) {
 				msg = "该工作删除成功...";
@@ -1519,7 +1519,7 @@ public class WF_WorkOpt extends WebContralBase {
 		}
 
 		if (actionType.equals("UnSend")) {
-			return BP.WF.Dev2Interface.Flow_DoUnSend(this.getFK_Flow(), this.getFID(), this.getFK_Node());
+			return Dev2Interface.Flow_DoUnSend(this.getFK_Flow(), this.getFID(), this.getFK_Node());
 		}
 
 		return "err@没有判断的类型" + actionType;
@@ -1527,8 +1527,8 @@ public class WF_WorkOpt extends WebContralBase {
 
 	public final String DeleteFlowInstance_Init() {
 		try {
-			if (BP.WF.Dev2Interface.Flow_IsCanDeleteFlowInstance(this.getFK_Flow(), this.getWorkID(),
-					BP.Web.WebUser.getNo()) == false) {
+			if (Dev2Interface.Flow_IsCanDeleteFlowInstance(this.getFK_Flow(), this.getWorkID(),
+					WebUser.getNo()) == false) {
 				return "err@您没有删除该流程的权限";
 			}
 		} catch (Exception e) {
@@ -1547,8 +1547,8 @@ public class WF_WorkOpt extends WebContralBase {
 	public String DeleteFlowInstance_DoDelete() throws Exception {
 
 		try {
-			if (BP.WF.Dev2Interface.Flow_IsCanDeleteFlowInstance(this.getFK_Flow(), this.getWorkID(),
-					BP.Web.WebUser.getNo()) == false) {
+			if (Dev2Interface.Flow_IsCanDeleteFlowInstance(this.getFK_Flow(), this.getWorkID(),
+					WebUser.getNo()) == false) {
 				return "您没有删除该流程的权限.";
 			}
 		} catch (Exception e) {
@@ -1568,17 +1568,17 @@ public class WF_WorkOpt extends WebContralBase {
 
 		// 按照标记删除.
 		if (deleteWay.equals("0")) {
-			BP.WF.Dev2Interface.Flow_DoDeleteFlowByFlag(this.getFK_Flow(), this.getWorkID(), doc, isDelSubFlow);
+			Dev2Interface.Flow_DoDeleteFlowByFlag(this.getFK_Flow(), this.getWorkID(), doc, isDelSubFlow);
 		}
 
 		// 彻底删除.
 		if (deleteWay.equals("1")) {
-			BP.WF.Dev2Interface.Flow_DoDeleteFlowByReal(this.getFK_Flow(), this.getWorkID(), isDelSubFlow);
+			Dev2Interface.Flow_DoDeleteFlowByReal(this.getFK_Flow(), this.getWorkID(), isDelSubFlow);
 		}
 
 		// 彻底并放入到删除轨迹里.
 		if (deleteWay.equals("2")) {
-			BP.WF.Dev2Interface.Flow_DoDeleteFlowByWriteLog(this.getFK_Flow(), this.getWorkID(), doc, isDelSubFlow);
+			Dev2Interface.Flow_DoDeleteFlowByWriteLog(this.getFK_Flow(), this.getWorkID(), doc, isDelSubFlow);
 		}
 
 		return "流程删除成功.";
@@ -1604,7 +1604,7 @@ public class WF_WorkOpt extends WebContralBase {
 
 		// 表单模版.
 		DataSet myds = BP.Sys.CCFormAPI.GenerHisDataSet(nd.getNodeFrmID(), null);
-		String json = BP.WF.Dev2Interface.CCFrom_GetFrmDBJson(this.getFK_Flow(), this.getMyPK());
+		String json = Dev2Interface.CCFrom_GetFrmDBJson(this.getFK_Flow(), this.getMyPK());
 		DataTable mainTable = BP.Tools.Json.ToDataTableOneRow(json);
 		mainTable.TableName = "MainTable";
 		myds.Tables.add(mainTable);
@@ -1620,7 +1620,7 @@ public class WF_WorkOpt extends WebContralBase {
 	public String AskForRe() throws Exception {
 		/// 签信息.
 		String note = this.GetRequestVal("Note"); // 原因.
-		return BP.WF.Dev2Interface.Node_AskforReply(this.getWorkID(), note);
+		return Dev2Interface.Node_AskforReply(this.getWorkID(), note);
 	}
 
 	public String Askfor() throws Exception {
@@ -1630,24 +1630,24 @@ public class WF_WorkOpt extends WebContralBase {
 		String note = this.GetRequestVal("Note"); // 原因.
 		String model = this.GetRequestVal("Model"); // 模式.
 
-		BP.WF.AskforHelpSta sta = BP.WF.AskforHelpSta.AfterDealSend;
+		AskforHelpSta sta = AskforHelpSta.AfterDealSend;
 		if (model.equals("1")) {
-			sta = BP.WF.AskforHelpSta.AfterDealSendByWorker;
+			sta = AskforHelpSta.AfterDealSendByWorker;
 		}
-		return BP.WF.Dev2Interface.Node_Askfor(workID, sta, toEmp, note);
+		return Dev2Interface.Node_Askfor(workID, sta, toEmp, note);
 	}
 
 	public String SelectEmps() throws Exception {
 		// 人员选择器
 		String fk_dept = this.GetRequestVal("FK_Dept");
 		if (fk_dept == null || StringUtils.isEmpty(fk_dept)) {
-			fk_dept = BP.Web.WebUser.getFK_Dept();
+			fk_dept = WebUser.getFK_Dept();
 		}
 
 		DataSet ds = new DataSet();
 
 		String sql = "SELECT No,Name,ParentNo FROM Port_Dept WHERE No='" + fk_dept + "' OR ParentNo='" + fk_dept + "' ";
-		DataTable dtDept = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dtDept = DBAccess.RunSQLReturnTable(sql);
 		dtDept.TableName = "Depts";
 		ds.Tables.add(dtDept);
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
@@ -1657,7 +1657,7 @@ public class WF_WorkOpt extends WebContralBase {
 		}
 
 		sql = "SELECT No,Name,FK_Dept FROM Port_Emp WHERE FK_Dept='" + fk_dept + "'";
-		DataTable dtEmps = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dtEmps = DBAccess.RunSQLReturnTable(sql);
 		dtEmps.TableName = "Emps";
 		ds.Tables.add(dtEmps);
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
@@ -1684,7 +1684,7 @@ public class WF_WorkOpt extends WebContralBase {
 				/* 说明我是主持人之一, 我就可以选择接受人,发送到下一个节点上去. */
 			} else {
 				/* 不是主持人就执行发送，返回发送结果. */
-				SendReturnObjs objs = BP.WF.Dev2Interface.Node_SendWork(FK_Flow, WorkID);
+				SendReturnObjs objs = Dev2Interface.Node_SendWork(FK_Flow, WorkID);
 				throw new Exception("info@" + objs.ToMsgOfHtml());
 			}
 		}
@@ -1782,7 +1782,7 @@ public class WF_WorkOpt extends WebContralBase {
              if (num != 1)
              {
                  /* 如果不是最后一位，返回发送结果. */
-                 SendReturnObjs objs = BP.WF.Dev2Interface.Node_SendWork(this.getFK_Flow(), this.getWorkID());
+                 SendReturnObjs objs = Dev2Interface.Node_SendWork(this.getFK_Flow(), this.getWorkID());
                  return "info@" + objs.ToMsgOfHtml();
              }
 			
@@ -1884,7 +1884,7 @@ public class WF_WorkOpt extends WebContralBase {
 			selectEmps = selectEmps.replace(";", ",");
 
 			// 保存接受人.
-			BP.WF.Dev2Interface.Node_AddNextStepAccepters(this.getWorkID(), toNodeID, selectEmps, true);
+			Dev2Interface.Node_AddNextStepAccepters(this.getWorkID(), toNodeID, selectEmps, true);
 			return "SaveOK@" + selectEmps;
 		} catch (RuntimeException ex) {
 			return "err@" + ex.getMessage();
@@ -1911,7 +1911,7 @@ public class WF_WorkOpt extends WebContralBase {
 			selectEmps = selectEmps.replace(";", ",");
 
 			// 执行发送.
-			SendReturnObjs objs = BP.WF.Dev2Interface.Node_SendWork(this.getFK_Flow(), this.getWorkID(), toNodeID,
+			SendReturnObjs objs = Dev2Interface.Node_SendWork(this.getFK_Flow(), this.getWorkID(), toNodeID,
 					selectEmps);
 			return objs.ToMsgOfHtml();
 		} catch (RuntimeException ex) {
@@ -1962,7 +1962,7 @@ public class WF_WorkOpt extends WebContralBase {
 
 		try {
 
-			DataTable dt = BP.WF.Dev2Interface.DB_GenerWillReturnNodes(this.getFK_Node(), this.getWorkID(),
+			DataTable dt = Dev2Interface.DB_GenerWillReturnNodes(this.getFK_Node(), this.getWorkID(),
 					this.getFID());
 			//如果只有一个退回节点，就需要判断是否启用了单节点退回规则.
             if (dt.Rows.size() == 1)
@@ -1990,7 +1990,7 @@ public class WF_WorkOpt extends WebContralBase {
 
                    int toNodeID = Integer.parseInt(dt.getValue(0, 0).toString());
 
-                   String info = BP.WF.Dev2Interface.Node_ReturnWork(this.getFK_Flow(), this.getWorkID(), 0, this.getFK_Node(), toNodeID, returnMsg, false);
+                   String info = Dev2Interface.Node_ReturnWork(this.getFK_Flow(), this.getWorkID(), 0, this.getFK_Node(), toNodeID, returnMsg, false);
                    return "info@" + info;
                }
             }
@@ -2025,7 +2025,7 @@ public class WF_WorkOpt extends WebContralBase {
 				isBackBoolen = true;
 			}
 
-			return BP.WF.Dev2Interface.Node_ReturnWork(this.getFK_Flow(), this.getWorkID(), this.getFID(),
+			return Dev2Interface.Node_ReturnWork(this.getFK_Flow(), this.getWorkID(), this.getFID(),
 					this.getFK_Node(), toNodeID,toEmp, reMesage, isBackBoolen);
 		} catch (Exception ex) {
 			return "err@" + ex.getMessage();
@@ -2035,20 +2035,20 @@ public class WF_WorkOpt extends WebContralBase {
 	public String Shift() throws Exception {
 		String msg = this.GetRequestVal("Message");
 		String toEmp = this.GetRequestVal("ToEmp");
-		return BP.WF.Dev2Interface.Node_Shift(this.getFK_Flow(), this.getFK_Node(), this.getWorkID(), this.getFID(),
+		return Dev2Interface.Node_Shift(this.getFK_Flow(), this.getFK_Node(), this.getWorkID(), this.getFID(),
 				toEmp, msg);
 	}
 
 	public String Allot() throws Exception {
 		String msg = this.GetRequestVal("Message");
 		String toEmp = this.GetRequestVal("ToEmp");
-		return BP.WF.Dev2Interface.Node_Allot(this.getFK_Flow(), this.getFK_Node(), this.getWorkID(), this.getFID(),
+		return Dev2Interface.Node_Allot(this.getFK_Flow(), this.getFK_Node(), this.getWorkID(), this.getFID(),
 				toEmp, msg);
 	}
 
 	public String UnShift() throws Exception {
 
-		return BP.WF.Dev2Interface.Node_ShiftUn(this.getFK_Flow(), this.getWorkID());
+		return Dev2Interface.Node_ShiftUn(this.getFK_Flow(), this.getWorkID());
 	}
 
 	public String Press() throws Exception {
@@ -2056,17 +2056,17 @@ public class WF_WorkOpt extends WebContralBase {
 		String msg = this.GetRequestVal("Msg");
 
 		// 调用API.
-		return BP.WF.Dev2Interface.Flow_DoPress(this.getWorkID(), msg, true);
+		return Dev2Interface.Flow_DoPress(this.getWorkID(), msg, true);
 	}
 
 	public String FlowBBSList() {
 		Paras ps = new Paras();
 		ps.SQL = "SELECT * FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track WHERE ActionType="
-				+ BP.Sys.SystemConfig.getAppCenterDBVarStr() + "ActionType";
-		ps.Add("ActionType", BP.WF.ActionType.FlowBBS.getValue());
+				+ SystemConfig.getAppCenterDBVarStr() + "ActionType";
+		ps.Add("ActionType", ActionType.FlowBBS.getValue());
 
 		// 转化成json
-		return BP.Tools.Json.ToJson(BP.DA.DBAccess.RunSQLReturnTable(ps));
+		return BP.Tools.Json.ToJson(DBAccess.RunSQLReturnTable(ps));
 	}
 
 	/**
@@ -2086,7 +2086,7 @@ public class WF_WorkOpt extends WebContralBase {
 	 */
 	public final String getUTF8ToString(String param) {
 		try {
-			return java.net.URLDecoder.decode(this.getRequest().getParameter(param), "utf-8");
+			return URLDecoder.decode(this.getRequest().getParameter(param), "utf-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return "";
@@ -2122,7 +2122,7 @@ public class WF_WorkOpt extends WebContralBase {
 			}
 
 			// 标记为自己.
-			if (item.getFK_Emp().equals(BP.Web.WebUser.getNo())) {
+			if (item.getFK_Emp().equals(WebUser.getNo())) {
 				item.setFK_EmpText("" + item.getFK_EmpText());
 				item.setIsPassInt(99);
 			}
@@ -2155,7 +2155,7 @@ public class WF_WorkOpt extends WebContralBase {
 
 		// 要找到主持人.
 		GenerWorkFlow gwf = new GenerWorkFlow(this.getWorkID());
-		if (gwf.getTodoEmps().contains(BP.Web.WebUser.getNo() + ",") == false) {
+		if (gwf.getTodoEmps().contains(WebUser.getNo() + ",") == false) {
 			return "err@您不是主持人，您不能删除。";
 		}
 
@@ -2176,7 +2176,7 @@ public class WF_WorkOpt extends WebContralBase {
 		}
 
 		// 从待办里移除.
-		BP.Port.Emp myemp = new BP.Port.Emp(this.getFK_Emp());
+		Emp myemp = new Emp(this.getFK_Emp());
 		String str = gwf.getTodoEmps();
 		str = str.replace(";" + myemp.getName() + ";", "");
 		gwf.setTodoEmps(str);
@@ -2232,7 +2232,7 @@ public class WF_WorkOpt extends WebContralBase {
 		gwlOfMe.Insert(); // 插入作为待办.
 
 		// 发送消息.
-		BP.WF.Dev2Interface.Port_SendMsg(emp.getNo(), "bpm会签邀请",
+		Dev2Interface.Port_SendMsg(emp.getNo(), "bpm会签邀请",
 				"HuiQian" + gwf.getWorkID() + "_" + gwf.getFK_Node() + "_" + emp.getNo(),
 				WebUser.getName() + "邀请您对工作｛" + gwf.getTitle() + "｝进行会签,请您在{" + gwlOfMe.getSDT() + "}前完成.", "HuiQian",
 				gwf.getFK_Flow(), gwf.getFK_Node(), gwf.getWorkID(), gwf.getFID());
@@ -2311,7 +2311,7 @@ public class WF_WorkOpt extends WebContralBase {
 		if (gwf.getHuiQianTaskSta() == HuiQianTaskSta.None) {
 			String mysql = "SELECT COUNT(WorkID) FROM WF_GenerWorkerList WHERE FK_Node=" + this.getFK_Node()
 					+ " AND WorkID=" + this.getWorkID() + " AND (IsPass=0 OR IsPass=-1) AND FK_Emp!='"
-					+ BP.Web.WebUser.getNo() + "'";
+					+ WebUser.getNo() + "'";
 			if (DBAccess.RunSQLReturnValInt(mysql, 0) == 0)
 				return "info@您没有设置会签人，请在文本框输入会签人，或者选择会签人。";
 		}
@@ -2359,7 +2359,7 @@ public class WF_WorkOpt extends WebContralBase {
 		// gwf.getFK_Node(), gwf.getNodeName(), gwf.getWorkID(),
 		// gwf.getFID(), empsOfHuiQian, ActionType.HuiQian, "执行会签", null);
 
-		BP.WF.Dev2Interface.WriteTrack(gwf.getFK_Flow(), gwf.getFK_Node(), gwf.getWorkID(), gwf.getFID(), "执行会签",
+		Dev2Interface.WriteTrack(gwf.getFK_Flow(), gwf.getFK_Node(), gwf.getWorkID(), gwf.getFID(), "执行会签",
 				ActionType.HuiQian, "执行会签", "执行会签", "执行会签", WebUser.getNo(), WebUser.getName());
 
 		String str = "";
@@ -2369,7 +2369,7 @@ public class WF_WorkOpt extends WebContralBase {
 			str += "\t\n如果您要增加或者移除会签人请到会签列表找到该记录,执行操作.";
 
 			// 删除自己的意见，以防止其他人员看到.
-			BP.WF.Dev2Interface.DeleteCheckInfo(gwf.getFK_Flow(), this.getWorkID(), gwf.getFK_Node());
+			Dev2Interface.DeleteCheckInfo(gwf.getFK_Flow(), this.getWorkID(), gwf.getFK_Node());
 			return str;
 		}
 
@@ -2423,7 +2423,7 @@ public class WF_WorkOpt extends WebContralBase {
 					emps = dt.Rows.get(0).getValue("EmpTo").toString();
 
 				if (emps.contains(",") == false)
-					BP.WF.Dev2Interface.Node_AddNextStepAccepters(this.getWorkID(), toNodeID, emps, false);
+					Dev2Interface.Node_AddNextStepAccepters(this.getWorkID(), toNodeID, emps, false);
 
 			}
 			if (dt.Rows.size() != 0)
@@ -2444,7 +2444,7 @@ public class WF_WorkOpt extends WebContralBase {
 			String emps = this.GetRequestVal("AddEmps");
 
 			// 增加到里面去.s
-			BP.WF.Dev2Interface.Node_AddNextStepAccepters(this.getWorkID(), toNodeID, emps, false);
+			Dev2Interface.Node_AddNextStepAccepters(this.getWorkID(), toNodeID, emps, false);
 
 			// 查询出来,已经选择的人员.
 			SelectAccpers sas = new SelectAccpers();
@@ -2465,7 +2465,7 @@ public class WF_WorkOpt extends WebContralBase {
 	/// <returns></returns>
 	public String AccepterOfGener_Delete() throws Exception {
 		// 删除指定的人员.
-		BP.DA.DBAccess.RunSQL("DELETE FROM WF_SelectAccper WHERE WorkID=" + this.getWorkID() + " AND FK_Emp='"
+		DBAccess.RunSQL("DELETE FROM WF_SelectAccper WHERE WorkID=" + this.getWorkID() + " AND FK_Emp='"
 				+ this.getFK_Emp() + "'");
 
 		int toNodeID = this.GetRequestValInt("ToNode");
@@ -2495,7 +2495,7 @@ public class WF_WorkOpt extends WebContralBase {
 				return "err@您只能选择一个接受人,请移除其他的接受人然后执行发送.";
 		}
 
-		SendReturnObjs objs = BP.WF.Dev2Interface.Node_SendWork(this.getFK_Flow() + "", this.getWorkID(), toNodeID,
+		SendReturnObjs objs = Dev2Interface.Node_SendWork(this.getFK_Flow() + "", this.getWorkID(), toNodeID,
 				null);
 		String strs = objs.ToMsgOfHtml();
 		strs = strs.replace("@", "<br>@");
@@ -2576,7 +2576,7 @@ public class WF_WorkOpt extends WebContralBase {
 		// 把模版名称替换 title.
 		for (DataRow dr : dtTemplate.Rows) {
 			String str = dr.getValue(2).toString();
-			BP.DA.AtPara ap = new AtPara(str);
+			AtPara ap = new AtPara(str);
 			dr.setValue("Title", ap.GetValStrByKey("DBTemplateName"));
 		}
 
@@ -2654,7 +2654,7 @@ public class WF_WorkOpt extends WebContralBase {
 			selectEmps = selectEmps.replace(";", ",");
 
 			// 保存接受人.
-			BP.WF.Dev2Interface.Node_AddNextStepAccepters(this.getWorkID(), toNodeID, selectEmps, true);
+			Dev2Interface.Node_AddNextStepAccepters(this.getWorkID(), toNodeID, selectEmps, true);
 			return "SaveOK@" + selectEmps;
 		} catch (RuntimeException ex) {
 			return "err@" + ex.getMessage();
@@ -2852,8 +2852,8 @@ public class WF_WorkOpt extends WebContralBase {
                     {
                         BP.WF.DTS.InitBillDir dir = new BP.WF.DTS.InitBillDir();
                         dir.Do();
-                        path = BP.WF.Glo.getFlowFileBill() + DataType.getCurrentYear() + "/" + WebUser.getFK_Dept() + "/" + func.getNo() + "/";
-                        String msgErr = "@" + String.format("生成单据失败，请让管理员检查目录设置") + "[" + BP.WF.Glo.getFlowFileBill() + "]。@Err：" + ex.getMessage() + " @File=" + file + " @Path:" + path;
+                        path = Glo.getFlowFileBill() + DataType.getCurrentYear() + "/" + WebUser.getFK_Dept() + "/" + func.getNo() + "/";
+                        String msgErr = "@" + String.format("生成单据失败，请让管理员检查目录设置") + "[" + Glo.getFlowFileBill() + "]。@Err：" + ex.getMessage() + " @File=" + file + " @Path:" + path;
                         billInfo += "@<font color=red>" + msgErr + "</font>";
                         throw new Exception(msgErr + "@其它信息:" + ex.getMessage());
                     }
@@ -2883,23 +2883,23 @@ public class WF_WorkOpt extends WebContralBase {
                 }
 
                 //把审核日志表加入里面去.
-                Paras ps = new BP.DA.Paras();
+                Paras ps = new Paras();
                 ps.SQL = "SELECT * FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track WHERE ActionType=" + SystemConfig.getAppCenterDBVarStr() + "ActionType AND WorkID=" + SystemConfig.getAppCenterDBVarStr() + "WorkID";
                 ps.Add(TrackAttr.ActionType, ActionType.WorkCheck.getValue());
                 ps.Add(TrackAttr.WorkID, newWorkID);
 
-                rtf.dtTrack=BP.DA.DBAccess.RunSQLReturnTable(ps);
+                rtf.dtTrack=DBAccess.RunSQLReturnTable(ps);
             }
 
             paths = file.split("_");
             path = paths[0] + "/" + paths[1] + "/" + paths[2] + "/";
 
-            String billUrl = "url@" + BP.WF.Glo.getCCFlowAppPath() + "DataUser/Bill/" + path + file;
+            String billUrl = "url@" + Glo.getCCFlowAppPath() + "DataUser/Bill/" + path + file;
 
             if (func.getHisBillFileType() == BillFileType.PDF)
                 billUrl = billUrl.replace(".doc", ".pdf");
 
-            path = BP.WF.Glo.getFlowFileBill() + DataType.getCurrentYear() + "/" + WebUser.getFK_Dept() + "/" + func.getNo() + "/";
+            path = Glo.getFlowFileBill() + DataType.getCurrentYear() + "/" + WebUser.getFK_Dept() + "/" + func.getNo() + "/";
             File filepath = new File(path);
             if (filepath.exists() == false)
             	filepath.mkdirs();
@@ -2920,7 +2920,7 @@ public class WF_WorkOpt extends WebContralBase {
                 String pdfPath = rtfPath.replace(".doc", ".pdf");
                 try
                 {
-                    BP.WF.Glo.Rtf2PDF(rtfPath, pdfPath);
+                    Glo.Rtf2PDF(rtfPath, pdfPath);
                 }
                 catch (Exception ex)
                 {
@@ -2968,8 +2968,8 @@ public class WF_WorkOpt extends WebContralBase {
         {
             BP.WF.DTS.InitBillDir dir = new BP.WF.DTS.InitBillDir();
             dir.Do();
-            path = BP.WF.Glo.getFlowFileBill() + DataType.getCurrentYear() + "/" + WebUser.getFK_Dept() + "/" + func.getNo() + "/";
-            String msgErr = "@" + String.format("生成单据失败，请让管理员检查目录设置") + "[" + BP.WF.Glo.getFlowFileBill() + "]。@Err：" + ex.getMessage() + " @File=" + file + " @Path:" + path;
+            path = Glo.getFlowFileBill() + DataType.getCurrentYear() + "/" + WebUser.getFK_Dept() + "/" + func.getNo() + "/";
+            String msgErr = "@" + String.format("生成单据失败，请让管理员检查目录设置") + "[" + Glo.getFlowFileBill() + "]。@Err：" + ex.getMessage() + " @File=" + file + " @Path:" + path;
             return "err@<font color=red>" + msgErr + "</font>" + ex.getMessage();
         }
     }
@@ -3055,8 +3055,8 @@ public class WF_WorkOpt extends WebContralBase {
                     {
                         BP.WF.DTS.InitBillDir dir = new BP.WF.DTS.InitBillDir();
                         dir.Do();
-                        path = BP.WF.Glo.getFlowFileBill() + DataType.getCurrentYear() + "/" + WebUser.getFK_Dept() + "/" + func.getNo() + "/";
-                        String msgErr = "@" + String.format("生成单据失败，请让管理员检查目录设置") + "[" + BP.WF.Glo.getFlowFileBill() + "]。@Err：" + ex.getMessage() + " @File=" + file + " @Path:" + path;
+                        path = Glo.getFlowFileBill() + DataType.getCurrentYear() + "/" + WebUser.getFK_Dept() + "/" + func.getNo() + "/";
+                        String msgErr = "@" + String.format("生成单据失败，请让管理员检查目录设置") + "[" + Glo.getFlowFileBill() + "]。@Err：" + ex.getMessage() + " @File=" + file + " @Path:" + path;
                         billInfo += "@<font color=red>" + msgErr + "</font>";
                        
                         throw new Exception(msgErr + "@其它信息:" + ex.getMessage());
@@ -3100,12 +3100,12 @@ public class WF_WorkOpt extends WebContralBase {
                 if (nd != null)
                 {
                     //把审核日志表加入里面去.
-                    Paras ps = new BP.DA.Paras();
+                    Paras ps = new Paras();
                     ps.SQL = "SELECT * FROM ND" + Integer.parseInt(nd.getFK_Flow()) + "Track WHERE ActionType=" + SystemConfig.getAppCenterDBVarStr() + "ActionType AND WorkID=" + SystemConfig.getAppCenterDBVarStr() + "WorkID";
                     ps.Add(TrackAttr.ActionType, ActionType.WorkCheck.getValue());
                     ps.Add(TrackAttr.WorkID, newWorkID);
 
-                    rtf.dtTrack = BP.DA.DBAccess.RunSQLReturnTable(ps);
+                    rtf.dtTrack = DBAccess.RunSQLReturnTable(ps);
                 }
             }
 
@@ -3116,12 +3116,12 @@ public class WF_WorkOpt extends WebContralBase {
             if (func.getTemplateFileModel().getValue() == 1)
                 fileModelT = "word";
             
-            String billUrl = "url@" + fileModelT + "@" + BP.WF.Glo.getCCFlowAppPath() + "DataUser/Bill/" + path + file;
+            String billUrl = "url@" + fileModelT + "@" + Glo.getCCFlowAppPath() + "DataUser/Bill/" + path + file;
             
             if (func.getHisBillFileType() == BillFileType.PDF)
                 billUrl = billUrl.replace(".doc", ".pdf");
 
-            path = BP.WF.Glo.getFlowFileBill() + DataType.getCurrentYear() + "/" + WebUser.getFK_Dept() + "/" + func.getNo() + "/";
+            path = Glo.getFlowFileBill() + DataType.getCurrentYear() + "/" + WebUser.getFK_Dept() + "/" + func.getNo() + "/";
             File filepath = new File(path);
             if (filepath.exists() == false)
             	filepath.mkdirs();
@@ -3141,7 +3141,7 @@ public class WF_WorkOpt extends WebContralBase {
                 String pdfPath = rtfPath.replace(".doc", ".pdf");
                 try
                 {
-                    BP.WF.Glo.Rtf2PDF(rtfPath, pdfPath);
+                    Glo.Rtf2PDF(rtfPath, pdfPath);
                 }
                 catch (Exception ex)
                 {
@@ -3200,8 +3200,8 @@ public class WF_WorkOpt extends WebContralBase {
         {
         	 BP.WF.DTS.InitBillDir dir = new BP.WF.DTS.InitBillDir();
              dir.Do();
-             path = BP.WF.Glo.getFlowFileBill() + DataType.getCurrentYear() + "/" + WebUser.getFK_Dept() + "/" + func.getNo() + "/";
-             String msgErr = "@" + String.format("生成单据失败，请让管理员检查目录设置") + "[" + BP.WF.Glo.getFlowFileBill() + "]。@Err：" + ex.getMessage() + " @File=" + file + " @Path:" + path;
+             path = Glo.getFlowFileBill() + DataType.getCurrentYear() + "/" + WebUser.getFK_Dept() + "/" + func.getNo() + "/";
+             String msgErr = "@" + String.format("生成单据失败，请让管理员检查目录设置") + "[" + Glo.getFlowFileBill() + "]。@Err：" + ex.getMessage() + " @File=" + file + " @Path:" + path;
              return "err@<font color=red>" + msgErr + "</font>" + ex.getMessage();
         }
     }
@@ -3408,12 +3408,12 @@ public class WF_WorkOpt extends WebContralBase {
    public String Note_Init()
    {
        Paras ps = new Paras();
-       ps.SQL = "SELECT * FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track WHERE ActionType=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "ActionType AND WorkID=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "WorkID";
-       ps.Add("ActionType", BP.WF.ActionType.FlowBBS.getValue());
+       ps.SQL = "SELECT * FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track WHERE ActionType=" + SystemConfig.getAppCenterDBVarStr() + "ActionType AND WorkID=" + SystemConfig.getAppCenterDBVarStr() + "WorkID";
+       ps.Add("ActionType", ActionType.FlowBBS.getValue());
        ps.Add("WorkID", this.getWorkID());
 
        //转化成json
-       return BP.Tools.Json.ToJson(BP.DA.DBAccess.RunSQLReturnTable(ps));
+       return BP.Tools.Json.ToJson(DBAccess.RunSQLReturnTable(ps));
    }
 
    /// <summary>
@@ -3425,7 +3425,7 @@ public class WF_WorkOpt extends WebContralBase {
        String msg = this.GetRequestVal("Msg");
        //增加track
        Node nd = new Node(this.getFK_Node());
-       BP.WF.Glo.AddToTrack(ActionType.FlowBBS, this.getFK_Flow(), this.getWorkID(), this.getFID(), nd.getNodeID(), nd.getName(),  WebUser.getNo(), WebUser.getName(),nd.getNodeID(), nd.getName(), WebUser.getNo(), WebUser.getName(), msg, null);
+       Glo.AddToTrack(ActionType.FlowBBS, this.getFK_Flow(), this.getWorkID(), this.getFID(), nd.getNodeID(), nd.getName(),  WebUser.getNo(), WebUser.getName(),nd.getNodeID(), nd.getName(), WebUser.getNo(), WebUser.getName(), msg, null);
       
        //发送消息
        String empsStrs = DBAccess.RunSQLReturnStringIsNull("SELECT Emps FROM WF_GenerWorkFlow WHERE WorkID=" + this.getWorkID(), "");
@@ -3441,7 +3441,7 @@ public class WF_WorkOpt extends WebContralBase {
            //获得当前人的邮件.
            BP.WF.Port.WFEmp empEn = new BP.WF.Port.WFEmp(emp);
 
-           BP.WF.Dev2Interface.Port_SendMsg(empEn.getNo(), title,msg, null,"NoteMessage",this.getFK_Flow(),this.getFK_Node(),this.getWorkID(),this.getFID());
+           Dev2Interface.Port_SendMsg(empEn.getNo(), title,msg, null,"NoteMessage",this.getFK_Flow(),this.getFK_Node(),this.getWorkID(),this.getFID());
 
        }
        return "保存成功";

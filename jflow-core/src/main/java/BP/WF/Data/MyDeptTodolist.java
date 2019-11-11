@@ -391,7 +391,7 @@ public class MyDeptTodolist extends Entity
 	}
 	public final String getWFStateText()
 	{
-		BP.WF.WFState ws = (WFState)this.getWFState();
+		WFState ws = (WFState)this.getWFState();
 		switch(ws)
 		{
 			case Complete:
@@ -467,7 +467,7 @@ public class MyDeptTodolist extends Entity
 			//作为隐藏字段.
 		map.AddTBString(MyDeptTodolistAttr.WorkerDept, null, "工作人员部门编号", false, false, 0, 30, 10);
 		map.AddTBMyNum();
-		map.AddDDLEntities(MyDeptTodolistAttr.FK_Emp, null, "当前处理人", new BP.WF.Data.MyDeptEmps(), false);
+		map.AddDDLEntities(MyDeptTodolistAttr.FK_Emp, null, "当前处理人", new MyDeptEmps(), false);
 		map.AddTBIntPK(MyDeptTodolistAttr.WorkID, 0, "工作ID", true, true);
 
 			//查询条件.
@@ -488,7 +488,7 @@ public class MyDeptTodolist extends Entity
 		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/CC.gif";
 		rm.Title = "移交";
 		rm.ClassMethodName = this.toString() + ".DoShift";
-		rm.getHisAttrs().AddDDLEntities("ToEmp", null, "移交给:", new BP.WF.Flows(), true);
+		rm.getHisAttrs().AddDDLEntities("ToEmp", null, "移交给:", new Flows(), true);
 		rm.getHisAttrs().AddTBString("Note", null, "移交原因", true, false, 0, 300, 100);
 		map.AddRefMethod(rm);
 
@@ -588,7 +588,7 @@ public class MyDeptTodolist extends Entity
 	*/
 	public final String DoComeBack(int nodeid, String note) throws Exception
 	{
-		BP.WF.Template.FlowExt fl = new FlowExt(this.getFK_Flow());
+		FlowExt fl = new FlowExt(this.getFK_Flow());
 		return fl.DoRebackFlowData(this.getWorkID(), nodeid, note);
 	}
 

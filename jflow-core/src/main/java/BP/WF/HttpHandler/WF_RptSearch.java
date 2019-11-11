@@ -31,14 +31,14 @@ public class WF_RptSearch extends WebContralBase{
 
 		//我发起的流程.
 		String sql = "";
-		sql = "select FK_Flow \"FK_Flow\", FlowName \"FlowName\",Count(WorkID) as \"Num\" FROM WF_GenerWorkFlow  WHERE Starter='" + BP.Web.WebUser.getNo() + "' GROUP BY FK_Flow, FlowName ";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		sql = "select FK_Flow \"FK_Flow\", FlowName \"FlowName\",Count(WorkID) as \"Num\" FROM WF_GenerWorkFlow  WHERE Starter='" + WebUser.getNo() + "' GROUP BY FK_Flow, FlowName ";
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Start";
 		ds.Tables.add(dt);
 
 		//待办.
-		sql = "select FK_Flow \"FK_Flow\", FlowName \"FlowName\",Count(WorkID) as \"Num\" FROM wf_empworks  WHERE FK_Emp='" + BP.Web.WebUser.getNo() + "' GROUP BY FK_Flow, FlowName ";
-		DataTable dtTodolist = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		sql = "select FK_Flow \"FK_Flow\", FlowName \"FlowName\",Count(WorkID) as \"Num\" FROM wf_empworks  WHERE FK_Emp='" + WebUser.getNo() + "' GROUP BY FK_Flow, FlowName ";
+		DataTable dtTodolist = DBAccess.RunSQLReturnTable(sql);
 		dtTodolist.TableName = "Todolist";
 		ds.Tables.add(dtTodolist);
 
@@ -76,7 +76,7 @@ public class WF_RptSearch extends WebContralBase{
 	 //打开表单.
     public String KeySearch_OpenFrm() throws Exception
     {
-       BP.WF.HttpHandler.WF wf=new WF(this.context);
+       WF wf=new WF(this.context);
         return wf.Runing_OpenFrm();
     }
 

@@ -112,9 +112,9 @@ public class GroupFields extends EntitiesOID
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<GroupField> Tolist()
+	public final ArrayList<GroupField> Tolist()
 	{
-		java.util.ArrayList<GroupField> list = new java.util.ArrayList<GroupField>();
+		ArrayList<GroupField> list = new ArrayList<GroupField>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((GroupField)this.get(i));

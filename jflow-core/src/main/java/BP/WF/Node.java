@@ -125,14 +125,14 @@ public class Node extends Entity {
 	public final Work getHisWork() throws Exception {
 		Work obj = null;
 		if (this.getIsStartNode()) {
-			obj = new BP.WF.GEStartWork(this.getNodeID(), this.getNodeFrmID());
+			obj = new GEStartWork(this.getNodeID(), this.getNodeFrmID());
 			obj.setHisNode(this);
 			obj.setNodeID(this.getNodeID());
 			return obj;
 		}
 
 		if (this.getFormType() != NodeFormType.FoolTruck || this.WorkID == 0 || this.getIsStartNode() == true) {
-			obj = new BP.WF.GEWork(this.getNodeID(), this.getNodeFrmID());
+			obj = new GEWork(this.getNodeID(), this.getNodeFrmID());
 			obj.setHisNode(this);
 
 			if (this.getFormType() == NodeFormType.FoolTruck)
@@ -143,7 +143,7 @@ public class Node extends Entity {
 		}
 
 		// 如果是累加表单.
-		obj = new BP.WF.GEWork(this.getNodeID(), this.getNodeFrmID());
+		obj = new GEWork(this.getNodeID(), this.getNodeFrmID());
 
 		Map ma = obj.getEnMap();
 
@@ -190,7 +190,7 @@ public class Node extends Entity {
 		obj.setNodeID(this.getNodeID());
 
 		obj.clearSQLCash();
-		BP.DA.Cash.getSQL_Cash().remove("ND" + this.getNodeID());
+		Cash.getSQL_Cash().remove("ND" + this.getNodeID());
 
 		return obj;
 	}
@@ -416,7 +416,7 @@ public class Node extends Entity {
 	public static String CheckFlow(Flow fl) throws Exception {
 		String sqls = "UPDATE WF_Node SET IsCCFlow=0";
 		sqls += "@UPDATE WF_Node  SET IsCCFlow=1 WHERE NodeID IN (SELECT NodeID FROM WF_Cond a WHERE a.NodeID= NodeID AND CondType=1 )";
-		BP.DA.DBAccess.RunSQLs(sqls);
+		DBAccess.RunSQLs(sqls);
 
 		if (SystemConfig.getOSDBSrc() == OSDBSrc.Database) {
 			// 删除必要的数据.
@@ -436,17 +436,17 @@ public class Node extends Entity {
 		}
 
 		// 更新是否是有完成条件的节点。
-		BP.DA.DBAccess.RunSQL("UPDATE WF_Node SET IsCCFlow=0  WHERE FK_Flow='" + fl.getNo() + "'");
-		BP.DA.DBAccess.RunSQL("DELETE FROM WF_Direction WHERE Node=0 OR ToNode=0");
-		BP.DA.DBAccess.RunSQL("DELETE FROM WF_Direction WHERE Node  NOT IN (SELECT NODEID FROM WF_Node )");
-		BP.DA.DBAccess.RunSQL("DELETE FROM WF_Direction WHERE ToNode  NOT IN (SELECT NODEID FROM WF_Node) ");
+		DBAccess.RunSQL("UPDATE WF_Node SET IsCCFlow=0  WHERE FK_Flow='" + fl.getNo() + "'");
+		DBAccess.RunSQL("DELETE FROM WF_Direction WHERE Node=0 OR ToNode=0");
+		DBAccess.RunSQL("DELETE FROM WF_Direction WHERE Node  NOT IN (SELECT NODEID FROM WF_Node )");
+		DBAccess.RunSQL("DELETE FROM WF_Direction WHERE ToNode  NOT IN (SELECT NODEID FROM WF_Node) ");
 
 		String sql = "";
 		DataTable dt = null;
 
 		// 单据信息，岗位，节点信息。
 		for (Node nd : nds.ToJavaList()) {
-			BP.Sys.MapData md = new BP.Sys.MapData();
+			MapData md = new MapData();
 			md.setNo("ND" + nd.getNodeID());
 			if (md.getIsExits() == false) {
 				nd.CreateMap();
@@ -492,7 +492,7 @@ public class Node extends Entity {
 
 		// 处理岗位分组.
 		sql = "SELECT HisStas, COUNT(*) as NUM FROM WF_Node WHERE FK_Flow='" + fl.getNo() + "' GROUP BY HisStas";
-		dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		dt = DBAccess.RunSQLReturnTable(sql);
 		for (DataRow dr : dt.Rows) {
 			String stas = dr.getValue(0).toString();
 			String nodes = "";
@@ -517,7 +517,7 @@ public class Node extends Entity {
 				+ " OR NodeWorkType=" + NodeWorkType.WorkFHL.getValue() + " OR NodeWorkType="
 				+ NodeWorkType.WorkFL.getValue() + " OR NodeWorkType=" + NodeWorkType.WorkHL.getValue()
 				+ ") AND (FK_Flow='" + fl.getNo() + "')";
-		dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		dt = DBAccess.RunSQLReturnTable(sql);
 		fl.DirectUpdate();
 		return null;
 	}
@@ -642,11 +642,11 @@ public class Node extends Entity {
 	/**
 	 * 审核组件
 	 */
-	public final BP.WF.Template.FrmWorkCheckSta getFrmWorkCheckSta() {
+	public final FrmWorkCheckSta getFrmWorkCheckSta() {
 		return FrmWorkCheckSta.forValue(this.GetValIntByKey(NodeAttr.FWCSta));
 	}
 
-	public final void setFrmWorkCheckSta(BP.WF.Template.FrmWorkCheckSta value) {
+	public final void setFrmWorkCheckSta(FrmWorkCheckSta value) {
 		this.SetValByKey(NodeAttr.FWCSta, value.getValue());
 	}
 
@@ -783,7 +783,7 @@ public class Node extends Entity {
 	 */
 	public final String getFormUrl() {
 		String str = this.GetValStrByKey(NodeAttr.FormUrl);
-		str = str.replace("@SDKFromServHost", BP.Sys.SystemConfig.getAppSettings().get("SDKFromServHost").toString());
+		str = str.replace("@SDKFromServHost", SystemConfig.getAppSettings().get("SDKFromServHost").toString());
 		return str;
 	}
 
@@ -1262,7 +1262,7 @@ public class Node extends Entity {
 		String str = this.GetValStringByKey(NodeAttr.BatchParas);
 
 		// 替换约定的URL.
-		str = str.replace("@SDKFromServHost", BP.Sys.SystemConfig.getAppSettings().get("SDKFromServHost").toString());
+		str = str.replace("@SDKFromServHost", SystemConfig.getAppSettings().get("SDKFromServHost").toString());
 		// if (str.Length <=3)
 		// str="Title,RDT"
 		return str;
@@ -1624,7 +1624,7 @@ public class Node extends Entity {
 	 * 是否启用发送短信？
 	 */
 	public final boolean getIsEnableSMSMessage() {
-		int i = BP.DA.DBAccess.RunSQLReturnValInt("SELECT SMSEnable FROM Sys_FrmEvent WHERE FK_MapData='ND"
+		int i = DBAccess.RunSQLReturnValInt("SELECT SMSEnable FROM Sys_FrmEvent WHERE FK_MapData='ND"
 				+ this.getNodeID() + "' AND FK_Event='SendSuccess'", 0);
 		if (i == 0) {
 			return false;
@@ -2264,7 +2264,7 @@ public class Node extends Entity {
 			GenerWorkFlows gwfs = new GenerWorkFlows();
 			gwfs.Retrieve("FK_Flow", this.getFK_Flow());
 			for (GenerWorkFlow gwf : gwfs.ToJavaList()) {
-				BP.WF.Dev2Interface.Flow_DoFlowOver(gwf.getFK_Flow(), gwf.getWorkID(), "流程成功结束",1);
+				Dev2Interface.Flow_DoFlowOver(gwf.getFK_Flow(), gwf.getWorkID(), "流程成功结束",1);
 			}
 
 		}
@@ -2275,17 +2275,17 @@ public class Node extends Entity {
 		}
 
 		// 删除它的节点。
-		BP.Sys.MapData md = new BP.Sys.MapData();
+		MapData md = new MapData();
 		md.setNo("ND" + this.getNodeID());
 		md.Delete();
 
 		// 删除分组.
-		BP.Sys.GroupFields gfs = new BP.Sys.GroupFields();
-		gfs.Delete(BP.Sys.GroupFieldAttr.EnName, md.getNo());
+		GroupFields gfs = new GroupFields();
+		gfs.Delete(GroupFieldAttr.EnName, md.getNo());
 
 		try {
 			// 删除它的明细。
-			BP.Sys.MapDtls dtls = new BP.Sys.MapDtls(md.getNo());
+			MapDtls dtls = new MapDtls(md.getNo());
 			dtls.Delete();
 		} catch (Exception e) {
 			Log.DebugWriteError("Node beforeDelete()删除它的明细" + e);
@@ -2293,7 +2293,7 @@ public class Node extends Entity {
 
 		// 删除框架
 		try {
-			BP.Sys.MapFrames frams = new BP.Sys.MapFrames(md.getNo());
+			MapFrames frams = new MapFrames(md.getNo());
 			frams.Delete();
 		} catch (Exception e) {
 			Log.DebugWriteError("Node beforeDelete() 删除框架" + e);
@@ -2301,22 +2301,22 @@ public class Node extends Entity {
 
 		// 删除扩展
 		try {
-			BP.Sys.MapExts exts = new BP.Sys.MapExts(md.getNo());
+			MapExts exts = new MapExts(md.getNo());
 			exts.Delete();
 		} catch (Exception e) {
 			Log.DebugWriteError("Node beforeDelete() 删除扩展" + e);
 		}
 
 		// 删除节点与岗位的对应.
-		BP.DA.DBAccess.RunSQL("DELETE FROM WF_NodeStation WHERE FK_Node=" + this.getNodeID());
-		BP.DA.DBAccess.RunSQL("DELETE FROM WF_NodeEmp  WHERE FK_Node=" + this.getNodeID());
-		BP.DA.DBAccess.RunSQL("DELETE FROM WF_NodeDept WHERE FK_Node=" + this.getNodeID());
-		BP.DA.DBAccess.RunSQL("DELETE FROM WF_FrmNode  WHERE FK_Node=" + this.getNodeID());
-		BP.DA.DBAccess.RunSQL("DELETE FROM WF_CCEmp  WHERE FK_Node=" + this.getNodeID());
-		BP.DA.DBAccess.RunSQL("DELETE FROM WF_CH  WHERE FK_Node=" + this.getNodeID());
+		DBAccess.RunSQL("DELETE FROM WF_NodeStation WHERE FK_Node=" + this.getNodeID());
+		DBAccess.RunSQL("DELETE FROM WF_NodeEmp  WHERE FK_Node=" + this.getNodeID());
+		DBAccess.RunSQL("DELETE FROM WF_NodeDept WHERE FK_Node=" + this.getNodeID());
+		DBAccess.RunSQL("DELETE FROM WF_FrmNode  WHERE FK_Node=" + this.getNodeID());
+		DBAccess.RunSQL("DELETE FROM WF_CCEmp  WHERE FK_Node=" + this.getNodeID());
+		DBAccess.RunSQL("DELETE FROM WF_CH  WHERE FK_Node=" + this.getNodeID());
 
 		// 删除附件.
-		BP.DA.DBAccess.RunSQL("DELETE FROM Sys_FrmAttachment  WHERE FK_MapData='" + this.getNodeID() + "'");
+		DBAccess.RunSQL("DELETE FROM Sys_FrmAttachment  WHERE FK_MapData='" + this.getNodeID() + "'");
 		return super.beforeDelete();
 	}
 
@@ -2326,15 +2326,15 @@ public class Node extends Entity {
 	 * @param md
 	 * @throws Exception
 	 */
-	private void AddDocAttr(BP.Sys.MapData md) throws Exception {
+	private void AddDocAttr(MapData md) throws Exception {
 		// 如果是单据流程？
-		BP.Sys.MapAttr attr = new BP.Sys.MapAttr();
+		MapAttr attr = new MapAttr();
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
 		attr.setKeyOfEn("KeyWord");
 		attr.setName("主题词");
-		attr.setMyDataType(BP.DA.DataType.AppString);
+		attr.setMyDataType(DataType.AppString);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(true);
@@ -2343,14 +2343,14 @@ public class Node extends Entity {
 		attr.setMinLen(0);
 		attr.setMaxLen(300);
 		attr.setIdx(-99);
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.Insert();
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
 		attr.setKeyOfEn("FZ");
 		attr.setName("附注");
-		attr.setMyDataType(BP.DA.DataType.AppString);
+		attr.setMyDataType(DataType.AppString);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(true);
@@ -2359,14 +2359,14 @@ public class Node extends Entity {
 		attr.setMinLen(0);
 		attr.setMaxLen(300);
 		attr.setIdx(1);
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.Insert();
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
 		attr.setKeyOfEn("DW_SW");
 		attr.setName("收文单位");
-		attr.setMyDataType(BP.DA.DataType.AppString);
+		attr.setMyDataType(DataType.AppString);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(true);
@@ -2375,14 +2375,14 @@ public class Node extends Entity {
 		attr.setMinLen(0);
 		attr.setMaxLen(300);
 		attr.setIdx(1);
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.Insert();
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
 		attr.setKeyOfEn("DW_FW");
 		attr.setName("收文单位");
-		attr.setMyDataType(BP.DA.DataType.AppString);
+		attr.setMyDataType(DataType.AppString);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(true);
@@ -2391,14 +2391,14 @@ public class Node extends Entity {
 		attr.setMinLen(0);
 		attr.setMaxLen(300);
 		attr.setIdx(1);
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.Insert();
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
 		attr.setKeyOfEn("DW_BS");
 		attr.setName("主报(送)单位");
-		attr.setMyDataType(BP.DA.DataType.AppString);
+		attr.setMyDataType(DataType.AppString);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(true);
@@ -2407,14 +2407,14 @@ public class Node extends Entity {
 		attr.setMinLen(0);
 		attr.setMaxLen(300);
 		attr.setIdx(1);
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.Insert();
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
 		attr.setKeyOfEn("DW_CS");
 		attr.setName("抄报(送)单位");
-		attr.setMyDataType(BP.DA.DataType.AppString);
+		attr.setMyDataType(DataType.AppString);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(true);
@@ -2423,14 +2423,14 @@ public class Node extends Entity {
 		attr.setMinLen(0);
 		attr.setMaxLen(300);
 		attr.setIdx(1);
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.Insert();
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
 		attr.setKeyOfEn("NumPrint");
 		attr.setName("印制份数");
-		attr.setMyDataType(BP.DA.DataType.AppString);
+		attr.setMyDataType(DataType.AppString);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(true);
@@ -2439,14 +2439,14 @@ public class Node extends Entity {
 		attr.setMinLen(0);
 		attr.setMaxLen(10);
 		attr.setIdx(1);
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.Insert();
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
 		attr.setKeyOfEn("JMCD");
 		attr.setName("机密程度");
-		attr.setMyDataType(BP.DA.DataType.AppInt);
+		attr.setMyDataType(DataType.AppInt);
 		attr.setUIContralType(UIContralType.DDL);
 		attr.setLGType(FieldTypeS.Enum);
 		attr.setUIVisible(true);
@@ -2455,7 +2455,7 @@ public class Node extends Entity {
 		attr.setMinLen(0);
 		attr.setMaxLen(300);
 		attr.setIdx(1);
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.setUIBindKey("JMCD");
 		attr.Insert();
 
@@ -2463,7 +2463,7 @@ public class Node extends Entity {
 		attr.setFK_MapData(md.getNo());
 		attr.setKeyOfEn("PRI");
 		attr.setName("紧急程度");
-		attr.setMyDataType(BP.DA.DataType.AppInt);
+		attr.setMyDataType(DataType.AppInt);
 		attr.setUIContralType(UIContralType.DDL);
 		attr.setLGType(FieldTypeS.Enum);
 		attr.setUIVisible(true);
@@ -2472,7 +2472,7 @@ public class Node extends Entity {
 		attr.setMinLen(0);
 		attr.setMaxLen(300);
 		attr.setIdx(1);
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.setUIBindKey("PRI");
 		attr.Insert();
 
@@ -2480,7 +2480,7 @@ public class Node extends Entity {
 		attr.setFK_MapData(md.getNo());
 		attr.setKeyOfEn("GWWH");
 		attr.setName("公文文号");
-		attr.setMyDataType(BP.DA.DataType.AppString);
+		attr.setMyDataType(DataType.AppString);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(true);
@@ -2489,7 +2489,7 @@ public class Node extends Entity {
 		attr.setMinLen(0);
 		attr.setMaxLen(300);
 		attr.setIdx(1);
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.Insert();
 	}
 
@@ -2500,7 +2500,7 @@ public class Node extends Entity {
 	 * 
 	 */
 	public final String RepareMap() throws Exception {
-		BP.Sys.MapData md = new BP.Sys.MapData();
+		MapData md = new MapData();
 		md.setNo("ND" + this.getNodeID());
 		if (md.RetrieveFromDBSources() == 0) {
 			this.CreateMap();
@@ -2509,18 +2509,18 @@ public class Node extends Entity {
 		// 检查分组
 		md.RepairMap();
 
-		BP.Sys.MapAttr attr = new BP.Sys.MapAttr();
+		MapAttr attr = new MapAttr();
 		if (attr.IsExit(MapAttrAttr.KeyOfEn, "OID", MapAttrAttr.FK_MapData, md.getNo()) == false) {
 			attr.setFK_MapData(md.getNo());
 			attr.setKeyOfEn("OID");
 			attr.setName("WorkID");
-			attr.setMyDataType(BP.DA.DataType.AppInt);
+			attr.setMyDataType(DataType.AppInt);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
 			attr.setUIIsEnable(false);
 			attr.setDefVal("0");
-			attr.setHisEditType(BP.En.EditType.Readonly);
+			attr.setHisEditType(EditType.Readonly);
 			attr.Insert();
 		}
 
@@ -2529,12 +2529,12 @@ public class Node extends Entity {
 			attr.setFK_MapData(md.getNo());
 			attr.setKeyOfEn("FID");
 			attr.setName("FID");
-			attr.setMyDataType(BP.DA.DataType.AppInt);
+			attr.setMyDataType(DataType.AppInt);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
 			attr.setUIIsEnable(false);
-			attr.setHisEditType(BP.En.EditType.UnDel);
+			attr.setHisEditType(EditType.UnDel);
 			attr.setDefVal("0");
 			attr.Insert();
 		}
@@ -2542,10 +2542,10 @@ public class Node extends Entity {
 		if (attr.IsExit(MapAttrAttr.KeyOfEn, WorkAttr.RDT, MapAttrAttr.FK_MapData, md.getNo()) == false) {
 			attr = new MapAttr();
 			attr.setFK_MapData(md.getNo());
-			attr.setHisEditType(BP.En.EditType.UnDel);
+			attr.setHisEditType(EditType.UnDel);
 			attr.setKeyOfEn(WorkAttr.RDT);
 			attr.setName("接受时间"); // "接受时间";
-			attr.setMyDataType(BP.DA.DataType.AppDateTime);
+			attr.setMyDataType(DataType.AppDateTime);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
@@ -2557,7 +2557,7 @@ public class Node extends Entity {
 		if (attr.IsExit(MapAttrAttr.KeyOfEn, WorkAttr.CDT, MapAttrAttr.FK_MapData, md.getNo()) == false) {
 			attr = new MapAttr();
 			attr.setFK_MapData(md.getNo());
-			attr.setHisEditType(BP.En.EditType.UnDel);
+			attr.setHisEditType(EditType.UnDel);
 			attr.setKeyOfEn(WorkAttr.CDT);
 			if (this.getIsStartNode()) {
 				attr.setName("发起时间"); // "发起时间";
@@ -2565,7 +2565,7 @@ public class Node extends Entity {
 				attr.setName("完成时间"); // "完成时间";
 			}
 
-			attr.setMyDataType(BP.DA.DataType.AppDateTime);
+			attr.setMyDataType(DataType.AppDateTime);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
@@ -2578,7 +2578,7 @@ public class Node extends Entity {
 		if (attr.IsExit(MapAttrAttr.KeyOfEn, WorkAttr.Rec, MapAttrAttr.FK_MapData, md.getNo()) == false) {
 			attr = new MapAttr();
 			attr.setFK_MapData(md.getNo());
-			attr.setHisEditType(BP.En.EditType.UnDel);
+			attr.setHisEditType(EditType.UnDel);
 			attr.setKeyOfEn(WorkAttr.Rec);
 			if (this.getIsStartNode() == false) {
 				attr.setName("记录人"); // "记录人";
@@ -2586,7 +2586,7 @@ public class Node extends Entity {
 				attr.setName("发起人"); // "发起人";
 			}
 
-			attr.setMyDataType(BP.DA.DataType.AppString);
+			attr.setMyDataType(DataType.AppString);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
@@ -2600,10 +2600,10 @@ public class Node extends Entity {
 		if (attr.IsExit(MapAttrAttr.KeyOfEn, WorkAttr.Emps, MapAttrAttr.FK_MapData, md.getNo()) == false) {
 			attr = new MapAttr();
 			attr.setFK_MapData(md.getNo());
-			attr.setHisEditType(BP.En.EditType.UnDel);
+			attr.setHisEditType(EditType.UnDel);
 			attr.setKeyOfEn(WorkAttr.Emps);
 			attr.setName(WorkAttr.Emps);
-			attr.setMyDataType(BP.DA.DataType.AppString);
+			attr.setMyDataType(DataType.AppString);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
@@ -2616,10 +2616,10 @@ public class Node extends Entity {
 		if (attr.IsExit(MapAttrAttr.KeyOfEn, StartWorkAttr.FK_Dept, MapAttrAttr.FK_MapData, md.getNo()) == false) {
 			attr = new MapAttr();
 			attr.setFK_MapData(md.getNo());
-			attr.setHisEditType(BP.En.EditType.UnDel);
+			attr.setHisEditType(EditType.UnDel);
 			attr.setKeyOfEn(StartWorkAttr.FK_Dept);
 			attr.setName("操作员部门"); // "操作员部门";
-			attr.setMyDataType(BP.DA.DataType.AppString);
+			attr.setMyDataType(DataType.AppString);
 			attr.setUIContralType(UIContralType.DDL);
 			attr.setLGType(FieldTypeS.FK);
 			attr.setUIBindKey("BP.Port.Depts");
@@ -2636,11 +2636,11 @@ public class Node extends Entity {
 			// 如果是MD5加密流程.
 			attr = new MapAttr();
 			attr.setFK_MapData(md.getNo());
-			attr.setHisEditType(BP.En.EditType.UnDel);
+			attr.setHisEditType(EditType.UnDel);
 			attr.setKeyOfEn(StartWorkAttr.MD5);
 			attr.setUIBindKey(attr.getKeyOfEn());
 			attr.setName("MD5");
-			attr.setMyDataType(BP.DA.DataType.AppString);
+			attr.setMyDataType(DataType.AppString);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIIsEnable(false);
@@ -2657,10 +2657,10 @@ public class Node extends Entity {
 			if (attr.IsExit(MapAttrAttr.KeyOfEn, StartWorkAttr.Title, MapAttrAttr.FK_MapData, md.getNo()) == false) {
 				attr = new MapAttr();
 				attr.setFK_MapData(md.getNo());
-				attr.setHisEditType(BP.En.EditType.UnDel);
+				attr.setHisEditType(EditType.UnDel);
 				attr.setKeyOfEn(StartWorkAttr.Title);
 				attr.setName("标题"); // "流程标题";
-				attr.setMyDataType(BP.DA.DataType.AppString);
+				attr.setMyDataType(DataType.AppString);
 				attr.setUIContralType(UIContralType.TB);
 				attr.setLGType(FieldTypeS.Normal);
 				attr.setUIVisible(false);
@@ -2679,10 +2679,10 @@ public class Node extends Entity {
 			if (attr.IsExit(MapAttrAttr.KeyOfEn, "FK_NY", MapAttrAttr.FK_MapData, md.getNo()) == false) {
 				attr = new MapAttr();
 				attr.setFK_MapData(md.getNo());
-				attr.setHisEditType(BP.En.EditType.UnDel);
+				attr.setHisEditType(EditType.UnDel);
 				attr.setKeyOfEn("FK_NY");
 				attr.setName("年月"); // "年月";
-				attr.setMyDataType(BP.DA.DataType.AppString);
+				attr.setMyDataType(DataType.AppString);
 				attr.setUIContralType(UIContralType.TB);
 				attr.setUIVisible(false);
 				attr.setUIIsEnable(false);
@@ -2697,11 +2697,11 @@ public class Node extends Entity {
 			if (attr.IsExit(MapAttrAttr.KeyOfEn, "MyNum", MapAttrAttr.FK_MapData, md.getNo()) == false) {
 				attr = new MapAttr();
 				attr.setFK_MapData(md.getNo());
-				attr.setHisEditType(BP.En.EditType.UnDel);
+				attr.setHisEditType(EditType.UnDel);
 				attr.setKeyOfEn("MyNum");
 				attr.setName("个数"); // "个数";
 				attr.setDefVal("1");
-				attr.setMyDataType(BP.DA.DataType.AppInt);
+				attr.setMyDataType(DataType.AppInt);
 				attr.setUIContralType(UIContralType.TB);
 				attr.setUIVisible(false);
 				attr.setUIIsEnable(false);
@@ -2727,7 +2727,7 @@ public class Node extends Entity {
 	 */
 	public final void CreateMap() throws Exception {
 		// 创建节点表单.
-		BP.Sys.MapData md = new BP.Sys.MapData();
+		MapData md = new MapData();
 		md.setNo("ND" + this.getNodeID());
 		md.Delete();
 
@@ -2747,13 +2747,13 @@ public class Node extends Entity {
 		attr.setFK_MapData(md.getNo());
 		attr.setKeyOfEn("OID");
 		attr.setName("WorkID");
-		attr.setMyDataType(BP.DA.DataType.AppInt);
+		attr.setMyDataType(DataType.AppInt);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(false);
 		attr.setUIIsEnable(false);
 		attr.setDefVal("0");
-		attr.setHisEditType(BP.En.EditType.Readonly);
+		attr.setHisEditType(EditType.Readonly);
 		attr.Insert();
 
 		if (this.getHisFlow().getFlowAppType() == FlowAppType.DocFlow) {
@@ -2764,21 +2764,21 @@ public class Node extends Entity {
 		attr.setFK_MapData(md.getNo());
 		attr.setKeyOfEn("FID");
 		attr.setName("FID");
-		attr.setMyDataType(BP.DA.DataType.AppInt);
+		attr.setMyDataType(DataType.AppInt);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(false);
 		attr.setUIIsEnable(false);
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.setDefVal("0");
 		attr.Insert();
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.setKeyOfEn(WorkAttr.RDT);
 		attr.setName("接受时间"); // "接受时间";
-		attr.setMyDataType(BP.DA.DataType.AppDateTime);
+		attr.setMyDataType(DataType.AppDateTime);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(false);
@@ -2788,7 +2788,7 @@ public class Node extends Entity {
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.setKeyOfEn(WorkAttr.CDT);
 		if (this.getIsStartNode()) {
 			attr.setName("发起时间"); // "发起时间";
@@ -2796,7 +2796,7 @@ public class Node extends Entity {
 			attr.setName("完成时间"); // "完成时间";
 		}
 
-		attr.setMyDataType(BP.DA.DataType.AppDateTime);
+		attr.setMyDataType(DataType.AppDateTime);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(false);
@@ -2807,7 +2807,7 @@ public class Node extends Entity {
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.setKeyOfEn(WorkAttr.Rec);
 		if (this.getIsStartNode() == false) {
 			attr.setName("记录人"); // "记录人";
@@ -2815,7 +2815,7 @@ public class Node extends Entity {
 			attr.setName("发起人"); // "发起人";
 		}
 
-		attr.setMyDataType(BP.DA.DataType.AppString);
+		attr.setMyDataType(DataType.AppString);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(false);
@@ -2827,10 +2827,10 @@ public class Node extends Entity {
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.setKeyOfEn(WorkAttr.Emps);
 		attr.setName("Emps");
-		attr.setMyDataType(BP.DA.DataType.AppString);
+		attr.setMyDataType(DataType.AppString);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		attr.setUIVisible(false);
@@ -2841,10 +2841,10 @@ public class Node extends Entity {
 
 		attr = new MapAttr();
 		attr.setFK_MapData(md.getNo());
-		attr.setHisEditType(BP.En.EditType.UnDel);
+		attr.setHisEditType(EditType.UnDel);
 		attr.setKeyOfEn(StartWorkAttr.FK_Dept);
 		attr.setName("操作员部门"); // "操作员部门";
-		attr.setMyDataType(BP.DA.DataType.AppString);
+		attr.setMyDataType(DataType.AppString);
 		attr.setUIContralType(UIContralType.TB);
 		attr.setLGType(FieldTypeS.Normal);
 		// attr.setUIBindKey("BP.Port.Depts";
@@ -2858,11 +2858,11 @@ public class Node extends Entity {
 			// 开始节点信息.
 			attr = new MapAttr();
 			attr.setFK_MapData(md.getNo());
-			attr.setHisEditType(BP.En.EditType.Edit);
+			attr.setHisEditType(EditType.Edit);
 			// attr.setedit
 			attr.setKeyOfEn("Title");
 			attr.setName("标题"); // "流程标题";
-			attr.setMyDataType(BP.DA.DataType.AppString);
+			attr.setMyDataType(DataType.AppString);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setLGType(FieldTypeS.Normal);
 			attr.setUIVisible(false);
@@ -2879,10 +2879,10 @@ public class Node extends Entity {
 
 			attr = new MapAttr();
 			attr.setFK_MapData(md.getNo());
-			attr.setHisEditType(BP.En.EditType.UnDel);
+			attr.setHisEditType(EditType.UnDel);
 			attr.setKeyOfEn("FK_NY");
 			attr.setName("年月"); // "年月";
-			attr.setMyDataType(BP.DA.DataType.AppString);
+			attr.setMyDataType(DataType.AppString);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setUIVisible(false);
 			attr.setUIIsEnable(false);
@@ -2896,11 +2896,11 @@ public class Node extends Entity {
 
 			attr = new MapAttr();
 			attr.setFK_MapData(md.getNo());
-			attr.setHisEditType(BP.En.EditType.UnDel);
+			attr.setHisEditType(EditType.UnDel);
 			attr.setKeyOfEn("MyNum");
 			attr.setName("个数"); // "个数";
 			attr.setDefVal("1");
-			attr.setMyDataType(BP.DA.DataType.AppInt);
+			attr.setMyDataType(DataType.AppInt);
 			attr.setUIContralType(UIContralType.TB);
 			attr.setUIVisible(false);
 			attr.setUIIsEnable(false);

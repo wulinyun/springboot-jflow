@@ -336,7 +336,7 @@ public class FrmWorkCheck extends Entity
 		try
 		{
 			this.setNodeID(Integer.parseInt(mapdata));
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			return;
 		}

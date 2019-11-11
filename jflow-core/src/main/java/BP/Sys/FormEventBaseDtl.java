@@ -172,7 +172,7 @@ public abstract class FormEventBaseDtl
 	 @param key 字段
 	 @return 如果为Null,或者不存在就抛出异常
 	*/
-	public final java.math.BigDecimal GetValDecimal(String key)
+	public final BigDecimal GetValDecimal(String key)
 	{
 		
 		BigDecimal bd = new BigDecimal(this.GetValStr(key));
@@ -288,7 +288,7 @@ public abstract class FormEventBaseDtl
 			//系统参数.
 			r.put("FK_MapData", en.getClassID() );
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			r.put("FK_MapData" , en.getClassID());
 		}
@@ -302,22 +302,22 @@ public abstract class FormEventBaseDtl
 				{
 					r.put(s, ap.GetValStrByKey(s));
 				}
-				catch (java.lang.Exception e2)
+				catch (Exception e2)
 				{
 					r.put(s, ap.GetValStrByKey(s));
 				}
 			}
 		}
 
-		if (SystemConfig.getIsBSsystem() == true && BP.Sys.Glo.getRequest()!=null)
+		if (SystemConfig.getIsBSsystem() == true && Glo.getRequest()!=null)
 		{
 			
-			Enumeration enu = BP.Sys.Glo.getRequest().getParameterNames();
+			Enumeration enu = Glo.getRequest().getParameterNames();
 			while (enu.hasMoreElements())
 			{
 				// 判断是否有内容，hasNext()
 				String key = (String) enu.nextElement();
-				r.put(key, BP.Sys.Glo.getRequest().getParameter(key));
+				r.put(key, Glo.getRequest().getParameter(key));
 			}
 			
 		}

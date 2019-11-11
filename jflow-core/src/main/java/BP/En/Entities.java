@@ -127,7 +127,7 @@ public abstract class Entities extends ArrayList<Entity>
 			attr = this.getGetNewEntity().getEnMap().GetAttrByKey("Grade");
 			attr = this.getGetNewEntity().getEnMap().GetAttrByKey("IsDtl");
 			return true;
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			return false;
 		}
@@ -219,7 +219,7 @@ public abstract class Entities extends ArrayList<Entity>
 							 * warning en.getRow().SetValByKey(attr.getKey(),
 							 * dr[attr.getKey()]);
 							 */
-						} catch (java.lang.Exception e)
+						} catch (Exception e)
 						{
 						}
 					} else
@@ -646,9 +646,9 @@ public abstract class Entities extends ArrayList<Entity>
 	 * @param key
 	 * @return
 	 */
-	public final java.math.BigDecimal GetSumDecimalByKey(String key)
+	public final BigDecimal GetSumDecimalByKey(String key)
 	{
-		java.math.BigDecimal sum = new java.math.BigDecimal(0);
+		BigDecimal sum = new BigDecimal(0);
 		for (Entity en : convertEntities(this))
 		{
 			sum = sum.add(en.GetValDecimalByKey(key));
@@ -659,10 +659,10 @@ public abstract class Entities extends ArrayList<Entity>
 		return sum;
 	}
 	
-	public final java.math.BigDecimal GetSumDecimalByKey(String key,
+	public final BigDecimal GetSumDecimalByKey(String key,
 			String attrOfGroup, Object valOfGroup)
 	{
-		java.math.BigDecimal sum = new java.math.BigDecimal(0);
+		BigDecimal sum = new BigDecimal(0);
 		for (Entity en : convertEntities(this))
 		{
 			if (valOfGroup.toString().equals(en.GetValStrByKey(attrOfGroup)))
@@ -676,13 +676,13 @@ public abstract class Entities extends ArrayList<Entity>
 		return sum;
 	}
 	
-	public final java.math.BigDecimal GetAvgDecimalByKey(String key)
+	public final BigDecimal GetAvgDecimalByKey(String key)
 	{
 		if (this.size() == 0)
 		{
 			return BigDecimal.ZERO;
 		}
-		java.math.BigDecimal sum = new java.math.BigDecimal(0);
+		BigDecimal sum = new BigDecimal(0);
 		for (Entity en : convertEntities(this))
 		{
 			sum = sum.add(en.GetValDecimalByKey(key));
@@ -690,13 +690,13 @@ public abstract class Entities extends ArrayList<Entity>
 		return sum.divide(new BigDecimal(this.size()));
 	}
 	
-	public final java.math.BigDecimal GetAvgIntByKey(String key)
+	public final BigDecimal GetAvgIntByKey(String key)
 	{
 		if (this.size() == 0)
 		{
 			return BigDecimal.ZERO;
 		}
-		java.math.BigDecimal sum = new java.math.BigDecimal(0);
+		BigDecimal sum = new BigDecimal(0);
 		for (Entity en : convertEntities(this))
 		{
 			sum = sum.add(en.GetValDecimalByKey(key));
@@ -2061,7 +2061,7 @@ public abstract class Entities extends ArrayList<Entity>
 	public final int RetrieveFromCashInSQL(String cashKey, String inSQL) throws Exception
 	{
 		this.clear();
-		BP.En.Entities tempVar = Cash.GetEnsDataExt(cashKey);
+		Entities tempVar = Cash.GetEnsDataExt(cashKey);
 		Entities ens = (Entities) ((tempVar instanceof Entities) ? tempVar
 				: null);
 		if (ens == null)

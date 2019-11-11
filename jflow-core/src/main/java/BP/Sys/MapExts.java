@@ -56,9 +56,9 @@ public class MapExts extends Entities
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<MapExt> Tolist()
+	public final ArrayList<MapExt> Tolist()
 	{
-		java.util.ArrayList<MapExt> list = new java.util.ArrayList<MapExt>();
+		ArrayList<MapExt> list = new ArrayList<MapExt>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((MapExt)this.get(i));

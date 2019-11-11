@@ -91,7 +91,7 @@ public class StudentKeMu extends EntityMM
 		map.AddTBStringPK(StudentKeMuAttr.FK_Student, null, "学生", false, false,
 				1, 20, 1);
 		map.AddDDLEntitiesPK(StudentKeMuAttr.FK_KeMu, null, "科目",
-				new BP.Demo.KeMus(), true);
+				new KeMus(), true);
 		
 		this.set_enMap(map);
 		return this.get_enMap();

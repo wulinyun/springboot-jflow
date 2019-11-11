@@ -145,7 +145,7 @@ public class GroupField extends EntityOID {
 	public final String DoDelAllField() {
 		String sql = "DELETE FROM Sys_MapAttr WHERE FK_MapData='" + this.getFrmID() + "' AND GroupID=" + this.getOID()
 				+ " AND KeyOfEn NOT IN ('OID','RDT','REC','RefPK','FID')";
-		int i = BP.DA.DBAccess.RunSQL(sql);
+		int i = DBAccess.RunSQL(sql);
 		return "删除字段{" + i + "}个，被删除成功";
 	}
 
@@ -162,7 +162,7 @@ public class GroupField extends EntityOID {
 	protected boolean beforeUpdate() throws Exception {
 
 		String sql = "UPDATE Sys_GroupField SET LAB='" + this.getLab() + "' WHERE OID=" + this.getOID();
-		BP.DA.DBAccess.RunSQL(sql);
+		DBAccess.RunSQL(sql);
 		return super.beforeUpdate(); // edited by
 										// liuxc,2017-2-9,修复GroupField不能更新的问题
 	}
@@ -188,7 +188,7 @@ public class GroupField extends EntityOID {
 		try {
 			String sql = "SELECT MAX(IDX) FROM Sys_GroupField WHERE FrmID='" + this.getFrmID() + "'";
 			this.setIdx(DBAccess.RunSQLReturnValInt(sql, 0) + 1);
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			this.setIdx(1);
 		}
 		return super.beforeInsert();

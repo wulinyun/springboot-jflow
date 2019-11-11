@@ -75,9 +75,9 @@ public class FrmRBs extends EntitiesMyPK
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<FrmRB> Tolist()
+	public final ArrayList<FrmRB> Tolist()
 	{
-		java.util.ArrayList<FrmRB> list = new java.util.ArrayList<FrmRB>();
+		ArrayList<FrmRB> list = new ArrayList<FrmRB>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((FrmRB)this.get(i));

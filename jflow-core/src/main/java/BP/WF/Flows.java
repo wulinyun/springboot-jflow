@@ -59,7 +59,7 @@ public class Flows extends EntitiesNoName
 			DataType.WriteFile(pathDef, msg);
 		//	System.Diagnostics.Process.Start(SystemConfig.getPathOfWorkDir() + "\\VisualFlow\\DataUser\\FlowDesc\\");
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 		}
 	}

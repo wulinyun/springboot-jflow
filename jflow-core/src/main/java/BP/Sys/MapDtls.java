@@ -60,9 +60,9 @@ public class MapDtls extends EntitiesNoName
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<MapDtl> Tolist()
+	public final ArrayList<MapDtl> Tolist()
 	{
-		java.util.ArrayList<MapDtl> list = new java.util.ArrayList<MapDtl>();
+		ArrayList<MapDtl> list = new ArrayList<MapDtl>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((MapDtl)this.get(i));

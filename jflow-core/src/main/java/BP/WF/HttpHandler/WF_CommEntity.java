@@ -1196,7 +1196,7 @@ public class WF_CommEntity extends WebContralBase {
         String name = "数据导出";
         if (refPKVal.contains("/") == true)
             refPKVal = refPKVal.replaceAll("/", "_");
-        String filename = refPKVal + "_" + en.toString() +"_"+BP.DA.DataType.getCurrentDataCNOfLong()+ "_" + name  +".xls";
+        String filename = refPKVal + "_" + en.toString() +"_"+DataType.getCurrentDataCNOfLong()+ "_" + name  +".xls";
         String filePath = ExportDGToExcel(dtls.ToDataTableField(), en, name,null);
        
 

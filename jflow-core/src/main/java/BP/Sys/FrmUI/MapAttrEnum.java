@@ -193,7 +193,7 @@ public class MapAttrEnum extends EntityMyPK {
 	@Override
 	protected void afterDelete() throws Exception {
 		// 删除可能存在的数据.
-		BP.DA.DBAccess.RunSQL("DELETE FROM Sys_FrmRB WHERE KeyOfEn='" + this.getKeyOfEn() + "' AND FK_MapData='"
+		DBAccess.RunSQL("DELETE FROM Sys_FrmRB WHERE KeyOfEn='" + this.getKeyOfEn() + "' AND FK_MapData='"
 				+ this.getFK_MapData() + "'");
 		super.afterDelete();
 	}

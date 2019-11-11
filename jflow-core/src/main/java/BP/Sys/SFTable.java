@@ -20,13 +20,13 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 	public final DataTable getGenerHisDataTable() throws Exception {
 		// 创建数据源.
 		SFDBSrc src = new SFDBSrc(this.getFK_SFDBSrc());
-		if (this.getSrcType() == BP.Sys.SrcType.BPClass) {
+		if (this.getSrcType() == SrcType.BPClass) {
 			Entities ens = ClassFactory.GetEns(this.getNo());
 			return ens.RetrieveAllToTable();
 		}
 		// this.SrcType == Sys.SrcType.WebServices，by liuxc
 		// 暂只考虑No,Name结构的数据源，2015.10.04，added by liuxc
-		if (this.getSrcType() == BP.Sys.SrcType.WebServices) {
+		if (this.getSrcType() == SrcType.WebServices) {
 			String[] td = this.getTableDesc().split("[,]", -1); // 接口名称,返回类型
 			String tempVar = this.getSelectStatement();
 			String[] ps = ((tempVar != null) ? tempVar : "").split("[&]", -1);
@@ -57,28 +57,28 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 						pa[1] = pa[1].replace("@WebUser.FK_Dept", BP.Web.WebUser.getFK_Dept());
 					}
 					
-				} catch (java.lang.Exception e) {
+				} catch (Exception e) {
 				}
 
 				if (pa[1].contains("@WorkID")) {
-					pa[1] = pa[1].replace("@WorkID", (BP.Sys.Glo.getRequest().getParameter("WorkID") != null)
-							? BP.Sys.Glo.getRequest().getParameter("WorkID") : "");
+					pa[1] = pa[1].replace("@WorkID", (Glo.getRequest().getParameter("WorkID") != null)
+							? Glo.getRequest().getParameter("WorkID") : "");
 				}
 				if (pa[1].contains("@NodeID")) {
-					pa[1] = pa[1].replace("@NodeID", (BP.Sys.Glo.getRequest().getParameter("NodeID") != null)
-							? BP.Sys.Glo.getRequest().getParameter("NodeID") : "");
+					pa[1] = pa[1].replace("@NodeID", (Glo.getRequest().getParameter("NodeID") != null)
+							? Glo.getRequest().getParameter("NodeID") : "");
 				}
 				if (pa[1].contains("@FK_Node")) {
-					pa[1] = pa[1].replace("@FK_Node", (BP.Sys.Glo.getRequest().getParameter("FK_Node") != null)
-							? BP.Sys.Glo.getRequest().getParameter("FK_Node") : "");
+					pa[1] = pa[1].replace("@FK_Node", (Glo.getRequest().getParameter("FK_Node") != null)
+							? Glo.getRequest().getParameter("FK_Node") : "");
 				}
 				if (pa[1].contains("@FK_Flow")) {
-					pa[1] = pa[1].replace("@FK_Flow", (BP.Sys.Glo.getRequest().getParameter("FK_Flow") != null)
-							? BP.Sys.Glo.getRequest().getParameter("FK_Flow") : "");
+					pa[1] = pa[1].replace("@FK_Flow", (Glo.getRequest().getParameter("FK_Flow") != null)
+							? Glo.getRequest().getParameter("FK_Flow") : "");
 				}
 				if (pa[1].contains("@FID")) {
-					pa[1] = pa[1].replace("@FID", (BP.Sys.Glo.getRequest().getParameter("FID") != null)
-							? BP.Sys.Glo.getRequest().getParameter("FID") : "");
+					pa[1] = pa[1].replace("@FID", (Glo.getRequest().getParameter("FID") != null)
+							? Glo.getRequest().getParameter("FID") : "");
 				}
 
 				args.add(pa[1]);
@@ -142,7 +142,7 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 		/// #endregion
 
 		/// #region SQL查询.外键表/视图，edited by liuxc,2016-12-29
-		if (this.getSrcType() == BP.Sys.SrcType.SQL || this.getSrcType() == BP.Sys.SrcType.TableOrView) {
+		if (this.getSrcType() == SrcType.SQL || this.getSrcType() == SrcType.TableOrView) {
 			String runObj = this.getSelectStatement();
 
 			if (runObj == null) {
@@ -164,9 +164,9 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 
 			/// #warning 这是写的什么？ 不是说了吗 不采用这样的表达式,不好转java. 写的这样长，谁能看懂了？
 			/// 读完这行代码，还能传过来气吗？
-			if (this.getSrcType() == BP.Sys.SrcType.TableOrView) {
+			if (this.getSrcType() == SrcType.TableOrView) {
 				runObj = "SELECT " + this.getColumnValue() + " No, " + this.getColumnText() + " Name"
-						+ (this.getCodeStruct() == BP.Sys.CodeStruct.Tree ? (", " + this.getParentValue() + " ParentNo")
+						+ (this.getCodeStruct() == CodeStruct.Tree ? (", " + this.getParentValue() + " ParentNo")
 								: "")
 						+ " FROM " + this.getSrcTable()
 						+ (StringHelper.isNullOrWhiteSpace(runObj) ? "" : (" WHERE " + runObj));
@@ -174,7 +174,7 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 			return src.RunSQLReturnTable(runObj);
 		}
 		/// #region 自定义表.
-		if (this.getSrcType() == BP.Sys.SrcType.CreateTable) {
+		if (this.getSrcType() == SrcType.CreateTable) {
 			String sql = "SELECT No, Name FROM " + this.getNo();
 			return src.RunSQLReturnTable(sql);
 		}
@@ -349,7 +349,7 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 	 * 是否是树形实体?
 	 */
 	public final boolean getIsTree() {
-		if (this.getCodeStruct() == BP.Sys.CodeStruct.NoName) {
+		if (this.getCodeStruct() == CodeStruct.NoName) {
 			return false;
 		}
 		return true;
@@ -367,8 +367,8 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 			return SrcType.BPClass;
 		} else {
 			SrcType src = SrcType.forValue(this.GetValIntByKey(SFTableAttr.SrcType));
-			if (src == BP.Sys.SrcType.BPClass) {
-				return BP.Sys.SrcType.CreateTable;
+			if (src == SrcType.BPClass) {
+				return SrcType.CreateTable;
 			}
 			return src;
 		}
@@ -382,17 +382,17 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 	 * 数据源类型名称
 	 */
 	public final String getSrcTypeText() {
-		if (BP.Sys.SrcType.TableOrView.equals(getSrcType())) {
+		if (SrcType.TableOrView.equals(getSrcType())) {
 			if (this.getIsClass()) {
 				return "<img src='/WF/Img/Class.png' width='16px' broder='0' />实体类";
 			} else {
 				return "<img src='/WF/Img/Table.gif' width='16px' broder='0' />表/视图";
 			}
-		} else if (BP.Sys.SrcType.TableOrView.equals(getSrcType())) {
+		} else if (SrcType.TableOrView.equals(getSrcType())) {
 
-		} else if (BP.Sys.SrcType.SQL.equals(getSrcType())) {
+		} else if (SrcType.SQL.equals(getSrcType())) {
 			return "<img src='/WF/Img/SQL.png' width='16px' broder='0' />SQL表达式";
-		} else if (BP.Sys.SrcType.WebServices.equals(getSrcType())) {
+		} else if (SrcType.WebServices.equals(getSrcType())) {
 			return "<img src='/WF/Img/WebServices.gif' width='16px' broder='0' />WebServices";
 		} else {
 			return "";
@@ -467,12 +467,12 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 
 	public final EntitiesNoName getHisEns() throws Exception {
 		if (this.getIsClass()) {
-			EntitiesNoName ens = (EntitiesNoName) BP.En.ClassFactory.GetEns(this.getNo());
+			EntitiesNoName ens = (EntitiesNoName) ClassFactory.GetEns(this.getNo());
 			ens.RetrieveAll();
 			return ens;
 		}
 
-		BP.Sys.GENoNames ges = new GENoNames(this.getNo(), this.getName());
+		GENoNames ges = new GENoNames(this.getNo(), this.getName());
 		ges.RetrieveAll();
 		return ges;
 	}
@@ -547,7 +547,7 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 		map.AddTBString(SFTableAttr.DefVal, null, "默认值", true, false, 0, 200, 20);
 
 		// 数据源.
-		map.AddDDLEntities(SFTableAttr.FK_SFDBSrc, "local", "数据源", new BP.Sys.SFDBSrcs(), true);
+		map.AddDDLEntities(SFTableAttr.FK_SFDBSrc, "local", "数据源", new SFDBSrcs(), true);
 
 		map.AddTBString(SFTableAttr.SrcTable, null, "数据源表", false, false, 0, 200, 20);
 		map.AddTBString(SFTableAttr.ColumnValue, null, "显示的值(编号列)", false, false, 0, 200, 20);
@@ -646,18 +646,18 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 		// 利用这个时间串进行排序.
 		this.setRDT(DataType.getCurrentDataTime());
 
-		if (this.getSrcType() == BP.Sys.SrcType.CreateTable) {
+		if (this.getSrcType() == SrcType.CreateTable) {
 
 			String sql = "";
-			if (this.getCodeStruct() == BP.Sys.CodeStruct.NoName
-					|| this.getCodeStruct() == BP.Sys.CodeStruct.GradeNoName) {
+			if (this.getCodeStruct() == CodeStruct.NoName
+					|| this.getCodeStruct() == CodeStruct.GradeNoName) {
 				sql = "CREATE TABLE " + this.getNo() + " (";
 				sql += "No varchar(30) NOT NULL,";
 				sql += "Name varchar(3900) NULL";
 				sql += ")";
 			}
 
-			if (this.getCodeStruct() == BP.Sys.CodeStruct.Tree) {
+			if (this.getCodeStruct() == CodeStruct.Tree) {
 				sql = "CREATE TABLE " + this.getNo() + " (";
 				sql += "No  varchar(30) NOT NULL,";
 				sql += "Name varchar(3900)  NULL,";
@@ -675,21 +675,21 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 
 	@Override
 	protected void afterInsert() throws Exception {
-		if (this.getSrcType() == BP.Sys.SrcType.TableOrView) {
+		if (this.getSrcType() == SrcType.TableOrView) {
 			// 暂时这样处理
 			String sql = "CREATE VIEW " + this.getNo() + " (";
-			if (SystemConfig.getAppCenterDBType() == BP.DA.DBType.Oracle
-					|| SystemConfig.getAppCenterDBType() == BP.DA.DBType.MySQL) {
+			if (SystemConfig.getAppCenterDBType() == DBType.Oracle
+					|| SystemConfig.getAppCenterDBType() == DBType.MySQL) {
 				sql += "No,";
 				sql += "Name";
 			} else {
 				sql += "[No],";
 				sql += "[Name]";
 			}
-			sql += (this.getCodeStruct() == BP.Sys.CodeStruct.Tree ? ",[ParentNo])" : ")");
+			sql += (this.getCodeStruct() == CodeStruct.Tree ? ",[ParentNo])" : ")");
 			sql += " AS ";
 			sql += "SELECT " + this.getColumnValue() + " No," + this.getColumnText() + " Name"
-					+ (this.getCodeStruct() == BP.Sys.CodeStruct.Tree ? ("," + this.getParentValue() + " ParentNo")
+					+ (this.getCodeStruct() == CodeStruct.Tree ? ("," + this.getParentValue() + " ParentNo")
 							: "")
 					+ " FROM " + this.getSrcTable() + (StringHelper.isNullOrWhiteSpace(this.getSelectStatement()) ? ""
 							: (" WHERE " + this.getSelectStatement()));
@@ -707,12 +707,12 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 	 */
 	public final DataTable GenerData_bak() {
 		String sql = "";
-		if (this.getSrcType() == BP.Sys.SrcType.CreateTable) {
+		if (this.getSrcType() == SrcType.CreateTable) {
 			sql = "SELECT * FROM " + this.getSrcTable();
 			return this.RunSQLReturnTable(sql);
 		}
 
-		if (this.getSrcType() == BP.Sys.SrcType.TableOrView) {
+		if (this.getSrcType() == SrcType.TableOrView) {
 			sql = "SELECT * FROM " + this.getSrcTable();
 			return this.RunSQLReturnTable(sql);
 		}
@@ -732,7 +732,7 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 		String sql = "";
 		if (dt.Rows.size() == 0) {
 			// 初始化数据.
-			if (this.getCodeStruct() == BP.Sys.CodeStruct.Tree) {
+			if (this.getCodeStruct() == CodeStruct.Tree) {
 				sql = "INSERT INTO " + this.getSrcTable() + " (No,Name,ParentNo) VALUES('1','" + this.getName()
 						+ "','0') ";
 				this.RunSQL(sql);
@@ -747,7 +747,7 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 				}
 			}
 
-			if (this.getCodeStruct() == BP.Sys.CodeStruct.NoName) {
+			if (this.getCodeStruct() == CodeStruct.NoName) {
 				for (int i = 1; i < 4; i++) {
 					String no = (new Integer(i)).toString();
 					no = StringHelper.padLeft("", 3, '0');
@@ -762,6 +762,6 @@ public class SFTable<CodeCompileUnit> extends EntityNoName {
 	/// </summary>
 	/// <returns></returns>
 	public String GenerDataOfJson() throws Exception {
-		return BP.Tools.Json.ToJson(this.getGenerHisDataTable());
+		return Json.ToJson(this.getGenerHisDataTable());
 	}
 }

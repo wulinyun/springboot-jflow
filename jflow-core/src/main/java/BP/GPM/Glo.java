@@ -56,7 +56,7 @@ public class Glo
 	{
 		java.util.ArrayList al = null;
 		String info = "BP.En.Entity";
-		al = BP.En.ClassFactory.GetObjects(info);
+		al = ClassFactory.GetObjects(info);
 
 
 			///#region 1, 修复表
@@ -92,7 +92,7 @@ public class Glo
 					continue;
 				}
 			}
-			catch (java.lang.Exception e)
+			catch (Exception e)
 			{
 				continue;
 			}
@@ -132,7 +132,7 @@ public class Glo
 		xmls.RetrieveAll();
 		for (BP.Sys.XML.EnumInfoXml xml : xmls.ToJavaList())
 		{
-			BP.Sys.SysEnums ses = new BP.Sys.SysEnums();
+			SysEnums ses = new SysEnums();
 			ses.RegIt(xml.getKey(), xml.getVals());
 		}
 
@@ -141,14 +141,14 @@ public class Glo
 		///#region 3, 执行基本的 sql
 		String sqlscript = SystemConfig.getPathOfWebApp() + "\\GPM\\SQLScript\\Port_Inc_CH_BPM.sql";
 		//孙战平将RunSQLScript改为RunSQLScriptGo
-		BP.DA.DBAccess.RunSQLScript(sqlscript);
+		DBAccess.RunSQLScript(sqlscript);
 		///#endregion 修复
 
 
 		///#region 5, 初始化数据。
 
 		sqlscript = SystemConfig.getPathOfWebApp() + "\\GPM\\SQLScript\\InitPublicData.sql";
-		BP.DA.DBAccess.RunSQLScript(sqlscript);
+		DBAccess.RunSQLScript(sqlscript);
 
 
 
@@ -164,7 +164,7 @@ public class Glo
 		{
 			sqlscript = SystemConfig.getPathOfWebApp() + "\\GPM\\SQLScript\\Oracle_GPM_VIEW.sql";
 		}
-		BP.DA.DBAccess.RunSQLScriptGo(sqlscript);
+		DBAccess.RunSQLScriptGo(sqlscript);
 
 			///#region 7, 初始化系统访问权限
 		//查询出来系统
@@ -179,7 +179,7 @@ public class Glo
 		menus.RetrieveAllFromDBSource();
 
 		//删除数据.
-		BP.DA.DBAccess.RunSQL("DELETE FROM GPM_EmpApp");
+		DBAccess.RunSQL("DELETE FROM GPM_EmpApp");
 
 
 		for (Emp emp : emps.ToJavaList())
@@ -237,7 +237,7 @@ public class Glo
 	 @param cw 方式
 	 @return 是否可以执行
 	*/
-	public static boolean IsCanDoIt(String ctrlObj, BP.GPM.CtrlWay cw, String empID)
+	public static boolean IsCanDoIt(String ctrlObj, CtrlWay cw, String empID)
 	{
 		int n = 0;
 		String sql = "";
@@ -247,15 +247,15 @@ public class Glo
 				return true;
 			case ByStation:
 				sql = "SELECT count(*) FROM GPM_ByStation WHERE RefObj='" + ctrlObj + "'  AND FK_Station IN (select FK_Station from  Port_DeptEmpStation WHERE FK_Emp='" + empID + "')";
-				n = BP.DA.DBAccess.RunSQLReturnValInt(sql, 0);
+				n = DBAccess.RunSQLReturnValInt(sql, 0);
 				break;
 			case ByDept:
 				sql = "SELECT count(*) FROM GPM_ByDept WHERE RefObj='" + ctrlObj + "'  AND FK_Dept IN (SELECT FK_Dept FROM Port_Emp WHERE No='" + empID + "')";
-				n = BP.DA.DBAccess.RunSQLReturnValInt(sql, 0);
+				n = DBAccess.RunSQLReturnValInt(sql, 0);
 				break;
 			case ByEmp:
 				sql = "SELECT count(*) FROM GPM_ByEmp WHERE RefObj='" + ctrlObj + "'  AND  FK_Emp='" + empID + "'";
-				n = BP.DA.DBAccess.RunSQLReturnValInt(sql, 0);
+				n = DBAccess.RunSQLReturnValInt(sql, 0);
 				break;
 			default:
 				break;

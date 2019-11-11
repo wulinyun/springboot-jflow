@@ -55,9 +55,9 @@ public class FrmLines extends EntitiesMyPK
 	 转化成list
 	 @return List
 	*/
-	public final java.util.ArrayList<FrmLine> Tolist()
+	public final ArrayList<FrmLine> Tolist()
 	{
-		java.util.ArrayList<FrmLine> list = new java.util.ArrayList<FrmLine>();
+		ArrayList<FrmLine> list = new ArrayList<FrmLine>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((FrmLine)this.get(i));

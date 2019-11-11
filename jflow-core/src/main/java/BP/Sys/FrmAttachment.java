@@ -107,7 +107,7 @@ public class FrmAttachment extends EntityMyPK
 	
 	public final AthSaveWay getAthSaveWay()
 	{
-		return BP.Sys.AthSaveWay.forValue(this.GetValIntByKey(FrmAttachmentAttr.AthSaveWay));
+		return AthSaveWay.forValue(this.GetValIntByKey(FrmAttachmentAttr.AthSaveWay));
 	}
 	public final void setAthSaveWay(AthSaveWay value)
 	{

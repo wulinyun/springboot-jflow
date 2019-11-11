@@ -229,7 +229,7 @@ public abstract class FrmEventBase
 			//系统参数.
 			this.getRow().put("FK_MapData", en.getClassID());
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			this.getRow().put("FK_MapData",en.getClassID());
 		}
@@ -243,37 +243,37 @@ public abstract class FrmEventBase
 				{
 					this.getRow().put(s, ap.GetValStrByKey(s));
 				}
-				catch (java.lang.Exception e2)
+				catch (Exception e2)
 				{
 					this.getRow().put(s, ap.GetValStrByKey(s));
 				}
 			}
 		}
 
-		if (SystemConfig.getIsBSsystem() == true&&BP.Sys.Glo.getRequest()!=null)
+		if (SystemConfig.getIsBSsystem() == true&&Glo.getRequest()!=null)
 		{
-			while (BP.Sys.Glo.getRequest().getParameterNames().hasMoreElements())
+			while (Glo.getRequest().getParameterNames().hasMoreElements())
 			{
-				String key = (String) BP.Sys.Glo.getRequest().getParameterNames().nextElement();
-				String val = BP.Sys.Glo.getRequest().getParameter(key);
+				String key = (String) Glo.getRequest().getParameterNames().nextElement();
+				String val = Glo.getRequest().getParameter(key);
 				try
 				{
 					r.put(key, val);
-				} catch (java.lang.Exception e4)
+				} catch (Exception e4)
 				{
 					r.put(key, val);
 				}
 			}
 			//如果是bs系统, 就加入外部url的变量.
-			while( BP.Sys.Glo.getRequest().getAttributeNames().hasMoreElements())
+			while( Glo.getRequest().getAttributeNames().hasMoreElements())
 			{
-				String key = (String) BP.Sys.Glo.getRequest().getParameterNames().nextElement();
-				String val = BP.Sys.Glo.getRequest().getParameter(key);
+				String key = (String) Glo.getRequest().getParameterNames().nextElement();
+				String val = Glo.getRequest().getParameter(key);
 				try
 				{
 					this.getRow().put(key, val);
 				}
-				catch (java.lang.Exception e3)
+				catch (Exception e3)
 				{
 					this.getRow().put(key, val);
 				}

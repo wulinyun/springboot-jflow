@@ -148,17 +148,17 @@ public class CCFormAPI extends Dev2Interface {
 
 	public static String ParseStringToPinyinField(String name, boolean isQuanPin) {
 
-		if (BP.DA.DataType.IsNullOrEmpty(name) == true)
+		if (DataType.IsNullOrEmpty(name) == true)
 			return "";
 
 		String s = "";
 		try {
 			if (isQuanPin == true) {
-				s = BP.DA.DataType.ParseStringToPinyin(name);
+				s = DataType.ParseStringToPinyin(name);
 				if (s.length() > 15)
-					s = BP.DA.DataType.ParseStringToPinyinWordFirst(name);
+					s = DataType.ParseStringToPinyinWordFirst(name);
 			} else {
-				s = BP.DA.DataType.ParseStringToPinyinJianXie(name);
+				s = DataType.ParseStringToPinyinJianXie(name);
 			}
 
 			s = s.trim().replace(" ", "");
@@ -398,8 +398,8 @@ public class CCFormAPI extends Dev2Interface {
 		attr.setFK_MapData(fk_mapdata);
 		attr.setKeyOfEn(fieldName);
 		attr.setName(fieldDesc);
-		attr.setMyDataType(BP.DA.DataType.AppString);
-		attr.setUIContralType(BP.En.UIContralType.DDL);
+		attr.setMyDataType(DataType.AppString);
+		attr.setUIContralType(UIContralType.DDL);
 		attr.setUIBindKey(fk_SFTable); // 绑定信息.
 		attr.setX(x);
 		attr.setY(y);
@@ -423,10 +423,10 @@ public class CCFormAPI extends Dev2Interface {
 			attrH.Copy(attr);
 			attrH.setKeyOfEn(attr.getKeyOfEn() + "Text");
 			attrH.setName(attr.getName());
-			attrH.setUIContralType(BP.En.UIContralType.TB);
+			attrH.setUIContralType(UIContralType.TB);
 			attrH.setMinLen(0);
 			attrH.setMaxLen(500);
-			attrH.setMyDataType(BP.DA.DataType.AppString);
+			attrH.setMyDataType(DataType.AppString);
 			attrH.setUIVisible(false);
 			attrH.setUIIsEnable(false);
 			attrH.setMyPK(attrH.getFK_MapData() + "_" + attrH.getKeyOfEn());
@@ -455,7 +455,7 @@ public class CCFormAPI extends Dev2Interface {
 		}
 
 		// 删除可能存在的数据.
-		BP.DA.DBAccess.RunSQL("DELETE FROM Sys_FrmRB WHERE KeyOfEn='" + ma.getKeyOfEn() + "' AND FK_MapData='"
+		DBAccess.RunSQL("DELETE FROM Sys_FrmRB WHERE KeyOfEn='" + ma.getKeyOfEn() + "' AND FK_MapData='"
 				+ ma.getFK_MapData() + "'");
 
 		SysEnums ses = new SysEnums(ma.getUIBindKey());
@@ -613,37 +613,37 @@ public class CCFormAPI extends Dev2Interface {
 		MapExts mes = null;
 		// 增加表单字段描述.
 		String sql = "SELECT * FROM Sys_MapData WHERE No='" + frmID + "' ";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Sys_MapData";
 		myds.Tables.add(dt);
 		// 增加表单字段描述.
 		sql = "SELECT * FROM Sys_MapAttr WHERE FK_MapData='" + frmID + "' ";
-		dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Sys_MapAttr";
 		myds.Tables.add(dt);
 
 		// 主表的配置信息.
 		sql = "SELECT * FROM Sys_MapExt WHERE FK_MapData='" + frmID + "'";
-		dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Sys_MapExt";
 		myds.Tables.add(dt);
 
 		for (MapDtl item : md.getMapDtls().ToJavaList()) {
 			// 明细表的主表描述
 			sql = "SELECT * FROM Sys_MapDtl WHERE No='" + item.getNo() + "'";
-			dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			dt = DBAccess.RunSQLReturnTable(sql);
 			dt.TableName = "Sys_MapDtl_For_" + item.getNo();
 			myds.Tables.add(dt);
 
 			// 明细表的表单描述
 			sql = "SELECT * FROM Sys_MapAttr WHERE FK_MapData='" + item.getNo() + "'";
-			dtMapAttr = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			dtMapAttr = DBAccess.RunSQLReturnTable(sql);
 			dtMapAttr.TableName = "Sys_MapAttr_For_" + item.getNo();
 			myds.Tables.add(dtMapAttr);
 
 			// 明细表的配置信息.
 			sql = "SELECT * FROM Sys_MapExt WHERE FK_MapData='" + item.getNo() + "'";
-			dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			dt = DBAccess.RunSQLReturnTable(sql);
 			dt.TableName = "Sys_MapExt_For_" + item.getNo();
 			myds.Tables.add(dt);
 
@@ -688,7 +688,7 @@ public class CCFormAPI extends Dev2Interface {
 					Object tempVar2 = me.getDoc();
 					String fullSQL = (String) ((tempVar2 instanceof String) ? tempVar2 : null);
 					fullSQL = fullSQL.replace("~", ",");
-					fullSQL = BP.WF.Glo.DealExp(fullSQL, wk, null);
+					fullSQL = Glo.DealExp(fullSQL, wk, null);
 					dt = DBAccess.RunSQLReturnTable(fullSQL);
 
 					dt.TableName = mypk;
@@ -701,9 +701,9 @@ public class CCFormAPI extends Dev2Interface {
 						continue;
 					}
 
-					myds.Tables.add(BP.Sys.PubClass.GetDataTableByUIBineKey(uiBindKey));
+					myds.Tables.add(PubClass.GetDataTableByUIBineKey(uiBindKey));
 				}
-				if (BP.Sys.SystemConfig.getIsBSsystem() == true) {
+				if (SystemConfig.getIsBSsystem() == true) {
 					// // 处理传递过来的参数。
 					// for (String k :
 					// System.Web.HttpContext.Current.Request.QueryString.AllKeys)
@@ -733,7 +733,7 @@ public class CCFormAPI extends Dev2Interface {
 					// 执行通用的装载方法.
 					MapAttrs attrs = new MapAttrs(frmID);
 					MapDtls dtls = new MapDtls(frmID);
-					Entity tempVar3 = BP.WF.Glo.DealPageLoadFull(wk, me, attrs, dtls);
+					Entity tempVar3 = Glo.DealPageLoadFull(wk, me, attrs, dtls);
 					wk = (GEEntity) ((tempVar3 instanceof GEEntity) ? tempVar3 : null);
 				}
 
@@ -759,7 +759,7 @@ public class CCFormAPI extends Dev2Interface {
 							qo.AddWhere(GEDtlAttr.FID, pkval);
 							break;
 						}
-					} catch (java.lang.Exception e) {
+					} catch (Exception e) {
 						dtls.getGetNewEntity().CheckPhysicsTable();
 					}
 
@@ -827,14 +827,14 @@ public class CCFormAPI extends Dev2Interface {
 						Object tempVar5 = me.getDoc();
 						String fullSQL = (String) ((tempVar5 instanceof String) ? tempVar5 : null);
 						fullSQL = fullSQL.replace("~", ",");
-						fullSQL = BP.WF.Glo.DealExp(fullSQL, wk, null);
+						fullSQL = Glo.DealExp(fullSQL, wk, null);
 						dt = DBAccess.RunSQLReturnTable(fullSQL);
 						dt.TableName = myPK; // 可能存在隐患，如果多个字段，绑定同一个表，就存在这样的问题.
 						myds.Tables.add(dt);
 						continue;
 					}
 
-					dt = BP.Sys.PubClass.GetDataTableByUIBineKey(uiBindKey1);
+					dt = PubClass.GetDataTableByUIBineKey(uiBindKey1);
 					dt.TableName = uiBindKey1;
 					myds.Tables.add(dt);
 				}
@@ -939,7 +939,7 @@ public class CCFormAPI extends Dev2Interface {
 			{
 				String fullSQL = (String) me.getDoc();
 				fullSQL = fullSQL.replace("~", ",");
-				fullSQL = BP.WF.Glo.DealExp(fullSQL, wk, null);
+				fullSQL = Glo.DealExp(fullSQL, wk, null);
 
 				DataTable dt = DBAccess.RunSQLReturnTable(fullSQL);
 
@@ -958,7 +958,7 @@ public class CCFormAPI extends Dev2Interface {
 				continue;
 
 			// 获得数据.
-			DataTable mydt = BP.Sys.PubClass.GetDataTableByUIBineKey(uiBindKey);
+			DataTable mydt = PubClass.GetDataTableByUIBineKey(uiBindKey);
 
 			if (mydt == null) {
 				DataRow ddldr = ddlTable.NewRow();
@@ -975,7 +975,7 @@ public class CCFormAPI extends Dev2Interface {
 		// #endregion 加载从表表单模版信息.
 
 		// #region 把主表数据放入.
-		if (BP.Sys.SystemConfig.getIsBSsystem()) {
+		if (SystemConfig.getIsBSsystem()) {
 			// 处理传递过来的参数。
 			Enumeration enu = ContextHolderUtils.getRequest().getParameterNames();
 			while (enu.hasMoreElements()) {
@@ -1045,7 +1045,7 @@ public class CCFormAPI extends Dev2Interface {
 		for (MapAttr attr : dtlAttrs.ToJavaList()) {
 			// MapAttr attr=(MapAttr)attr11;
 			// #region 修改区分大小写.
-			if (BP.DA.DBType.Oracle.equals(SystemConfig.getAppCenterDBType())) {
+			if (DBType.Oracle.equals(SystemConfig.getAppCenterDBType())) {
 				for (DataColumn dr : dtDtl.Columns) {
 					String a = attr.getKeyOfEn();
 					String b = dr.ColumnName;
@@ -1064,8 +1064,8 @@ public class CCFormAPI extends Dev2Interface {
 
 				for (DataRow dr : dtDtl.Rows) {
 					// 本身是大写的不进行修改
-					if (DataType.IsNullOrEmpty(dr.get(attr.getKeyOfEn()) + "")) {
-						dr.setValue(attr.getKeyOfEn(), dr.get(attr.getKeyOfEn().toUpperCase()));
+					if (DataType.IsNullOrEmpty(dr.getValue(attr.getKeyOfEn()) + "")) {
+						dr.setValue(attr.getKeyOfEn(), dr.getValue(attr.getKeyOfEn().toUpperCase()));
 
 						dr.setValue2017(attr.getKeyOfEn().toUpperCase(), null);
 					}
@@ -1082,7 +1082,7 @@ public class CCFormAPI extends Dev2Interface {
 
 					// 为Text赋值
 					for (DataRow dr : dtDtl.Rows) {
-						drs = dtsftable.Select("No='" + dr.get(attr.getKeyOfEn()) + "'");
+						drs = dtsftable.Select("No='" + dr.getValue(attr.getKeyOfEn()) + "'");
 						if (drs.length == 0)
 							continue;
 

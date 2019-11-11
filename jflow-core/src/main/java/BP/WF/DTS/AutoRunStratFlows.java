@@ -126,18 +126,18 @@ public class AutoRunStratFlows extends Method {
 				break;
 			}
 		}
-		if (BP.Web.WebUser.getNo() != "admin") {
+		if (WebUser.getNo() != "admin") {
 			BP.Port.Emp empadmin = new BP.Port.Emp("admin");
-			BP.Web.WebUser.SignInOfGener(empadmin);
+			WebUser.SignInOfGener(empadmin);
 		}
 		// #endregion 发送消息
 
 		return "调度完成..";
 	}
 
-	public void DTS_Flow(BP.WF.Flow fl) throws Exception {
+	public void DTS_Flow(Flow fl) throws Exception {
 		// #region 读取数据.
-		BP.Sys.MapExt me = new MapExt();
+		MapExt me = new MapExt();
 		me.setMyPK("ND" + Integer.parseInt(fl.getNo()) + "01" + "_" + MapExtXmlList.StartFlow);
 		int i = me.RetrieveFromDBSources();
 		if (i == 0) {
@@ -158,7 +158,7 @@ public class AutoRunStratFlows extends Method {
 
 			String[] tempStrs = sql.split("=");
 			String dtlName = tempStrs[0];
-			DataTable dtlTable = BP.DA.DBAccess.RunSQLReturnTable(sql.replace(dtlName + "=", ""));
+			DataTable dtlTable = DBAccess.RunSQLReturnTable(sql.replace(dtlName + "=", ""));
 			dtlTable.TableName = dtlName;
 			ds.Tables.add(dtlTable);
 		}
@@ -167,7 +167,7 @@ public class AutoRunStratFlows extends Method {
 		// #region 检查数据源是否正确.
 		String errMsg = "";
 		// 获取主表数据.
-		DataTable dtMain = BP.DA.DBAccess.RunSQLReturnTable(me.getTag());
+		DataTable dtMain = DBAccess.RunSQLReturnTable(me.getTag());
 		if (dtMain.Rows.size() == 0) {
 			BP.DA.Log.DefaultLogWriteLineError("流程(" + fl.getName() + ")此时无任务.");
 			return;
@@ -199,7 +199,7 @@ public class AutoRunStratFlows extends Method {
 
 			String starter = dr.getValue("Starter").toString();
 			if (WebUser.getNo() != starter) {
-				BP.Web.WebUser.Exit();
+				WebUser.Exit();
 				BP.Port.Emp emp = new BP.Port.Emp();
 				emp.setNo(starter);
 				if (emp.RetrieveFromDBSources() == 0) {

@@ -81,11 +81,11 @@ import java.util.Date;
 
             //默认都设置为本周
             String sql = "UPDATE WF_GenerWorkFlow SET TSpan=" + TSpan.ThisWeek;
-            BP.DA.DBAccess.RunSQL(sql);
+            DBAccess.RunSQL(sql);
 
             //设置为上周.
             sql = "UPDATE WF_GenerWorkFlow SET TSpan=" + TSpan.NextWeek + " WHERE RDT >= '" + dateFormat.format(dtBegin) + " 00:00' AND RDT <= '" + dateFormat.format(dtEnd) + " 00:00'";
-            BP.DA.DBAccess.RunSQL(sql);
+            DBAccess.RunSQL(sql);
 
             calendar.setTime(dtBegin);
             calendar.add(Calendar.DAY_OF_MONTH, -7);
@@ -96,11 +96,11 @@ import java.util.Date;
             dtEnd = calendar.getTime();
             //把上周的，设置为两个周以前.
             sql = "UPDATE WF_GenerWorkFlow SET TSpan=" + TSpan.TowWeekAgo + " WHERE RDT >= '" + dateFormat.format(dtBegin) + " 00:00' AND RDT <= '" + dateFormat.format(dtEnd) + " 00:00' ";
-            BP.DA.DBAccess.RunSQL(sql);
+            DBAccess.RunSQL(sql);
 
             //把上周的，设置为更早.
             sql = "UPDATE WF_GenerWorkFlow SET TSpan=" + TSpan.More + " WHERE RDT <= '" + dateFormat.format(dtBegin) + " 00:00' ";
-            BP.DA.DBAccess.RunSQL(sql);
+            DBAccess.RunSQL(sql);
 
             return "执行成功...";
         }

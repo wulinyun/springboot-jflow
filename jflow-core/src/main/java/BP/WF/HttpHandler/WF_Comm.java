@@ -369,7 +369,7 @@ public class WF_Comm extends WebContralBase {
 		EntityTree enenTree = (EntityTree) enTrees.getGetNewEntity();
 		Entities ens = ClassFactory.GetEns(this.getEnsName());
 		Entity en = ens.getGetNewEntity();
-		java.util.Hashtable ht = new java.util.Hashtable();
+		Hashtable ht = new Hashtable();
 		ht.put("TreeEnsDesc", enenTree.getEnDesc());
 		ht.put("EnsDesc", en.getEnDesc());
 		ht.put("EnPK", en.getPK());
@@ -464,7 +464,7 @@ public class WF_Comm extends WebContralBase {
 
 	public String Method_Done() {
 		String ensName = this.GetRequestVal("M");
-		Method rm = BP.En.ClassFactory.GetMethod(ensName);
+		Method rm = ClassFactory.GetMethod(ensName);
 		int mynum = 0;
 		for (Attr attr : rm.getHisAttrs()) {
 			if (attr.getMyFieldType() == FieldType.RefText)
@@ -481,13 +481,13 @@ public class WF_Comm extends WebContralBase {
 				switch (attr.getUIContralType()) {
 				case TB:
 					switch (attr.getMyDataType()) {
-					case BP.DA.DataType.AppString:
-					case BP.DA.DataType.AppDate:
-					case BP.DA.DataType.AppDateTime:
+					case DataType.AppString:
+					case DataType.AppDate:
+					case DataType.AppDateTime:
 						String str1 = this.GetValFromFrmByKey(attr.getKey());
 						rm.SetValByKey(attr.getKey(), str1);
 						break;
-					case BP.DA.DataType.AppInt:
+					case DataType.AppInt:
 						int myInt = this.GetValIntFromFrmByKey(attr.getKey()); // int.Parse(this.UCEn1.GetTBByID("TB_"
 																				// +
 																				// attr.Key).Text);
@@ -497,20 +497,20 @@ public class WF_Comm extends WebContralBase {
 						rm.getRow().SetValByKey(String.valueOf(idx), Integer.valueOf(myInt));
 						rm.SetValByKey(attr.getKey(), myInt);
 						break;
-					case BP.DA.DataType.AppFloat:
+					case DataType.AppFloat:
 						float myFloat = this.GetValFloatFromFrmByKey(attr.getKey()); // float.Parse(this.UCEn1.GetTBByID("TB_"
 																						// +
 																						// attr.Key).Text);
 						rm.SetValByKey(attr.getKey(), myFloat);
 						break;
-					case BP.DA.DataType.AppDouble:
-					case BP.DA.DataType.AppMoney:
+					case DataType.AppDouble:
+					case DataType.AppMoney:
 						BigDecimal myDoub = this.GetValDecimalFromFrmByKey(attr.getKey()); // decimal.Parse(this.UCEn1.GetTBByID("TB_"
 																							// +
 																							// attr.Key).Text);
 						rm.SetValByKey(attr.getKey(), myDoub);
 						break;
-					case BP.DA.DataType.AppBoolean:
+					case DataType.AppBoolean:
 						boolean myBool = this.GetValBoolenFromFrmByKey(attr.getKey()); // decimal.Parse(this.UCEn1.GetTBByID("TB_"
 																						// +
 																						// attr.Key).Text);
@@ -564,7 +564,7 @@ public class WF_Comm extends WebContralBase {
 			if (pkval == null || pkval.equals("0") || pkval.equals("") || pkval.equals("undefined")) {
 				Map map = en.getEnMap();
 
-				for (BP.En.Attr attr : en.getEnMap().getAttrs())
+				for (Attr attr : en.getEnMap().getAttrs())
 					en.SetValByKey(attr.getKey(), attr.getDefaultVal());
 
 				// 设置默认的数据.
@@ -814,7 +814,7 @@ public class WF_Comm extends WebContralBase {
 
 	public final String Entity_DoMethodReturnString() throws Exception {
 		// 创建类实体.
-		BP.En.Entity en = ClassFactory.GetEn(this.getEnName()); // Activator.CreateInstance(System.Type.GetType("BP.En.Entity"))
+		Entity en = ClassFactory.GetEn(this.getEnName()); // Activator.CreateInstance(System.Type.GetType("BP.En.Entity"))
 																// as
 																// BP.En.Entity;
 		en.setPKVal(this.getPKVal());
@@ -822,7 +822,7 @@ public class WF_Comm extends WebContralBase {
 
 		String methodName = this.GetRequestVal("MethodName");
 
-		java.lang.Class tp = en.getClass();
+		Class tp = en.getClass();
 		java.lang.reflect.Method mp = null;
 		for (java.lang.reflect.Method m : tp.getMethods()) {
 			if (m.getName().equals(methodName)==true) {
@@ -987,13 +987,13 @@ public class WF_Comm extends WebContralBase {
 	 */
 	public final String Method_Init() {
 		String ensName = this.GetRequestVal("M");
-		Method rm = BP.En.ClassFactory.GetMethod(ensName);
+		Method rm = ClassFactory.GetMethod(ensName);
 		if (rm == null) {
 			return "err@方法名错误或者该方法已经不存在" + ensName;
 		}
 
 		if (rm.getHisAttrs().size() == 0) {
-			java.util.Hashtable ht = new java.util.Hashtable();
+			Hashtable ht = new Hashtable();
 			ht.put("No", ensName);
 			ht.put("Title", rm.Title);
 			ht.put("Help", rm.Help);
@@ -1005,12 +1005,12 @@ public class WF_Comm extends WebContralBase {
 	}
 
 	public final String MethodLink_Init() throws Exception {
-		ArrayList al = BP.En.ClassFactory.GetObjects("BP.En.Method");
+		ArrayList al = ClassFactory.GetObjects("BP.En.Method");
 		String html = "";
 		Iterator it1 = al.iterator();
 		while (it1.hasNext()) {
 
-			BP.En.Method en = (Method) it1.next();
+			Method en = (Method) it1.next();
 			if (en.getIsCanDo() == false || en.IsVisable == false) {
 				continue;
 			}
@@ -1042,7 +1042,7 @@ public class WF_Comm extends WebContralBase {
 		Entity en = ens.getGetNewEntity();
 		Map map = ens.getGetNewEntity().getEnMapInTime();
 
-		java.util.Hashtable ht = new java.util.Hashtable();
+		Hashtable ht = new Hashtable();
 
 		// 把权限信息放入.
 		UAC uac = en.getHisUAC();
@@ -1133,7 +1133,7 @@ public class WF_Comm extends WebContralBase {
 			if (attr.getUIDDLShowType() == DDLShowType.BindSQL) {
 				// 获取SQl
 				String sql = attr.getUIBindKey();
-				sql = BP.WF.Glo.DealExp(sql, null, null);
+				sql = Glo.DealExp(sql, null, null);
 				DataTable dtSQl = DBAccess.RunSQLReturnTable(sql);
 				for (DataColumn col : dtSQl.Columns) {
 					String colName = col.ColumnName.toLowerCase();
@@ -1216,7 +1216,7 @@ public class WF_Comm extends WebContralBase {
 		ds.Tables.add(md.ToDataTableField("Sys_MapData"));
 
 		// 取出来查询条件.
-		BP.Sys.UserRegedit ur = new UserRegedit();
+		UserRegedit ur = new UserRegedit();
 		ur.setMyPK(WebUser.getNo() + "_" + this.getEnsName() + "_SearchAttrs");
 		ur.RetrieveFromDBSources();
 
@@ -1392,7 +1392,7 @@ public class WF_Comm extends WebContralBase {
 						SimpleDateFormat sdf = new SimpleDateFormat(DataType.getSysDataFormat());
 						date = sdf.format(dBefore);
 					}
-				} catch (java.lang.Exception e) {
+				} catch (Exception e) {
 				}
 
 				qo.AddWhere(attr.getRefAttrKey(), opkey, date);
@@ -1507,7 +1507,7 @@ public class WF_Comm extends WebContralBase {
 		Map map = en.getEnMapInTime();
 
 		// 取出来查询条件.
-		BP.Sys.UserRegedit ur = new UserRegedit();
+		UserRegedit ur = new UserRegedit();
 		ur.setMyPK(WebUser.getNo() + "_" + this.getEnsName() + "_SearchAttrs");
 		ur.RetrieveFromDBSources();
 
@@ -1675,7 +1675,7 @@ public class WF_Comm extends WebContralBase {
 						SimpleDateFormat sdf = new SimpleDateFormat(DataType.getSysDataFormat());
 						date = sdf.format(dBefore);
 					}
-				} catch (java.lang.Exception e) {
+				} catch (Exception e) {
 				}
 
 				qo.AddWhere(attr.getRefAttrKey(), opkey, date);
@@ -1722,14 +1722,14 @@ public class WF_Comm extends WebContralBase {
 		}
 
 		String name = "数据导出";
-		String filename = name + "_" + BP.DA.DataType.getCurrentDataCNOfLong() + "_" + WebUser.getName() + ".xls";
+		String filename = name + "_" + DataType.getCurrentDataCNOfLong() + "_" + WebUser.getName() + ".xls";
 		String filePath = ExportDGToExcel(Search_Data(ens, en), en, name, attrs);
 
 		return filePath;
 	}
 
 	public final String Search_GenerPageIdx() throws Exception {
-		BP.Sys.UserRegedit ur = new UserRegedit();
+		UserRegedit ur = new UserRegedit();
 		ur.setMyPK(WebUser.getNo() + "_" + this.getEnsName() + "_SearchAttrs");
 		ur.RetrieveFromDBSources();
 
@@ -1828,9 +1828,9 @@ public class WF_Comm extends WebContralBase {
 	public final String Refmethod_Init() throws Exception {
 		String ensName = this.getEnsName();
 		int index = this.getIndex();
-		Entities ens = BP.En.ClassFactory.GetEns(ensName);
+		Entities ens = ClassFactory.GetEns(ensName);
 		Entity en = ens.getGetNewEntity();
-		BP.En.RefMethod rm = en.getEnMap().getHisRefMethods().get(index);
+		RefMethod rm = en.getEnMap().getHisRefMethods().get(index);
 
 		/// #region 处理无参数的方法.
 		if (rm.getHisAttrs() == null || rm.getHisAttrs().size() == 0) {
@@ -1911,15 +1911,15 @@ public class WF_Comm extends WebContralBase {
 				mydrMain.setValue(item.getKeyOfEn(), item.getDefValReal());
 			else {
 				if (v.equals("@WebUser.No"))
-					mydrMain.setValue(item.getKeyOfEn(), BP.Web.WebUser.getNo());
+					mydrMain.setValue(item.getKeyOfEn(), WebUser.getNo());
 				else if (v.equals("@WebUser.Name"))
-					mydrMain.setValue(item.getKeyOfEn(), BP.Web.WebUser.getName());
+					mydrMain.setValue(item.getKeyOfEn(), WebUser.getName());
 				else if (v.equals("@WebUser.FK_Dept"))
-					mydrMain.setValue(item.getKeyOfEn(), BP.Web.WebUser.getFK_Dept());
+					mydrMain.setValue(item.getKeyOfEn(), WebUser.getFK_Dept());
 				else if (v.equals("@WebUser.FK_DeptName"))
-					mydrMain.setValue(item.getKeyOfEn(), BP.Web.WebUser.getFK_DeptName());
+					mydrMain.setValue(item.getKeyOfEn(), WebUser.getFK_DeptName());
 				else if (v.equals("@WebUser.FK_DeptNameOfFull") || v.equals("@WebUser.FK_DeptFullName"))
-					mydrMain.setValue(item.getKeyOfEn(), BP.Web.WebUser.getFK_DeptNameOfFull());
+					mydrMain.setValue(item.getKeyOfEn(), WebUser.getFK_DeptNameOfFull());
 				else if (v.equals("@RDT")) {
 					en.ResetDefaultVal();
 					if (item.getMyDataType() == DataType.AppDate)
@@ -1978,7 +1978,7 @@ public class WF_Comm extends WebContralBase {
 			if (attr.getUIBindKey().contains("SELECT") == true || attr.getUIBindKey().contains("select") == true) {
 				/* 是一个sql */
 				String sqlBindKey = attr.getUIBindKey();
-				sqlBindKey = BP.WF.Glo.DealExp(sqlBindKey, en, null);
+				sqlBindKey = Glo.DealExp(sqlBindKey, en, null);
 
 				DataTable dt1 = DBAccess.RunSQLReturnTable(sqlBindKey);
 				dt1.TableName = attr.getKey();
@@ -2044,7 +2044,7 @@ public class WF_Comm extends WebContralBase {
 	}
 
 	public final String Refmethod_Done() throws Exception {
-		Entities ens = BP.En.ClassFactory.GetEns(this.getEnsName());
+		Entities ens = ClassFactory.GetEns(this.getEnsName());
 		Entity en = ens.getGetNewEntity();
 		String msg = "";
 
@@ -2083,7 +2083,7 @@ public class WF_Comm extends WebContralBase {
 	}
 
 	public final String DoOneEntity(Entity en, int rmIdx) {
-		BP.En.RefMethod rm = en.getEnMap().getHisRefMethods().get(rmIdx);
+		RefMethod rm = en.getEnMap().getHisRefMethods().get(rmIdx);
 		rm.HisEn = en;
 		int mynum = 0;
 		for (Attr attr : rm.getHisAttrs()) {
@@ -2104,30 +2104,30 @@ public class WF_Comm extends WebContralBase {
 			switch (attr.getUIContralType()) {
 			case TB:
 				switch (attr.getMyDataType()) {
-				case BP.DA.DataType.AppString:
-				case BP.DA.DataType.AppDate:
-				case BP.DA.DataType.AppDateTime:
+				case DataType.AppString:
+				case DataType.AppDate:
+				case DataType.AppDateTime:
 					String str1 = this.GetValFromFrmByKey(attr.getKey());
 					objs[idx] = str1;
 					// attr.DefaultVal=str1;
 					break;
-				case BP.DA.DataType.AppInt:
+				case DataType.AppInt:
 					int myInt = this.GetValIntFromFrmByKey(attr.getKey());
 					objs[idx] = myInt;
 					// attr.DefaultVal=myInt;
 					break;
-				case BP.DA.DataType.AppFloat:
+				case DataType.AppFloat:
 					float myFloat = this.GetValFloatFromFrmByKey(attr.getKey());
 					objs[idx] = myFloat;
 					// attr.DefaultVal=myFloat;
 					break;
-				case BP.DA.DataType.AppDouble:
-				case BP.DA.DataType.AppMoney:
-					java.math.BigDecimal myDoub = this.GetValDecimalFromFrmByKey(attr.getKey());
+				case DataType.AppDouble:
+				case DataType.AppMoney:
+					BigDecimal myDoub = this.GetValDecimalFromFrmByKey(attr.getKey());
 					objs[idx] = myDoub;
 					// attr.DefaultVal=myDoub;
 					break;
-				case BP.DA.DataType.AppBoolean:
+				case DataType.AppBoolean:
 					objs[idx] = this.GetValBoolenFromFrmByKey(attr.getKey());
 					attr.setDefaultVal(false);
 					break;
@@ -2138,7 +2138,7 @@ public class WF_Comm extends WebContralBase {
 				break;
 			case DDL:
 				try {
-					if (attr.getMyDataType() == BP.DA.DataType.AppString) {
+					if (attr.getMyDataType() == DataType.AppString) {
 						String str = this.GetValFromFrmByKey(attr.getKey());
 						objs[idx] = str;
 						attr.setDefaultVal(str);
@@ -2148,7 +2148,7 @@ public class WF_Comm extends WebContralBase {
 						attr.setDefaultVal(enumVal);
 					}
 
-				} catch (java.lang.Exception e) {
+				} catch (Exception e) {
 					objs[idx] = null;
 				}
 				break;
@@ -2221,7 +2221,7 @@ public class WF_Comm extends WebContralBase {
 			// 创建类实体.
 			Object tempVar = null;
 			try {
-				tempVar = java.lang.Class.forName("BP.WF.HttpHandler.DirectoryPageBase").newInstance();
+				tempVar = Class.forName("BP.WF.HttpHandler.DirectoryPageBase").newInstance();
 			} catch (InstantiationException e) {
 				String parasStr = "";
 				while (getRequest().getParameterNames().hasMoreElements()) {
@@ -2273,12 +2273,12 @@ public class WF_Comm extends WebContralBase {
 		/// #region 执行entity类的方法.
 		try {
 			// 创建类实体.
-			Object tempVar2 = java.lang.Class.forName("BP.En.Entity").newInstance();
-			BP.En.Entity en = (BP.En.Entity) ((tempVar2 instanceof BP.En.Entity) ? tempVar2 : null);
+			Object tempVar2 = Class.forName("BP.En.Entity").newInstance();
+			Entity en = (Entity) ((tempVar2 instanceof Entity) ? tempVar2 : null);
 			en.setPKVal(this.getPKVal());
 			en.RetrieveFromDBSources();
 
-			java.lang.Class tp = en.getClass();
+			Class tp = en.getClass();
 			java.lang.reflect.Method mp = tp.getMethod(methodName);
 			if (mp == null) {
 				return "err@没有找到类[" + clsName + "]方法[" + methodName + "].";
@@ -2386,7 +2386,7 @@ public class WF_Comm extends WebContralBase {
 		try {
 			Object tempVar = null;
 			try {
-				tempVar = java.lang.Class.forName(httpHandlerName).newInstance();
+				tempVar = Class.forName(httpHandlerName).newInstance();
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 				return "err@执行方法" + methodName + "错误:" + e.getMessage();
@@ -2473,8 +2473,8 @@ public class WF_Comm extends WebContralBase {
 			ht.put("FK_DeptName", "");
 			ht.put("FK_DeptNameOfFull", "");
 
-			ht.put("CustomerNo", BP.Sys.SystemConfig.getCustomerNo());
-			ht.put("CustomerName", BP.Sys.SystemConfig.getCustomerName());
+			ht.put("CustomerNo", SystemConfig.getCustomerNo());
+			ht.put("CustomerName", SystemConfig.getCustomerName());
 			ht.put("IsAuthorize", "0");			 
 			return BP.Tools.Json.ToJson(ht);
 		}
@@ -2485,8 +2485,8 @@ public class WF_Comm extends WebContralBase {
 		ht.put("FK_DeptName", WebUser.getFK_DeptName());
 		ht.put("FK_DeptNameOfFull", WebUser.getFK_DeptNameOfFull());
 
-		ht.put("CustomerNo", BP.Sys.SystemConfig.getCustomerNo());
-		ht.put("CustomerName", BP.Sys.SystemConfig.getCustomerName());
+		ht.put("CustomerNo", SystemConfig.getCustomerNo());
+		ht.put("CustomerName", SystemConfig.getCustomerName());
 
 		ht.put("GroupNo", "0");
 		ht.put("Token", WebUser.getToken() == null ? "" : WebUser.getToken());
@@ -2601,7 +2601,7 @@ public class WF_Comm extends WebContralBase {
 
 			/* 保存到fpt服务器上. */
 
-			FtpUtil ftpUtil = BP.WF.Glo.getFtpUtil();
+			FtpUtil ftpUtil = Glo.getFtpUtil();
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM");
 			String ny = sdf.format(new Date());
@@ -2623,7 +2623,7 @@ public class WF_Comm extends WebContralBase {
 
 		} else {
 
-			String savePath = BP.Sys.SystemConfig.getPathOfDataUser() + className;
+			String savePath = SystemConfig.getPathOfDataUser() + className;
 
 			if (new File(savePath).isDirectory() == false)
 				new File(savePath).mkdirs();
@@ -3121,7 +3121,7 @@ public class WF_Comm extends WebContralBase {
 		String url = "";
 		Paras myps = new Paras();
 		// 获取查询的注册表
-		BP.Sys.UserRegedit searchUr = new UserRegedit();
+		UserRegedit searchUr = new UserRegedit();
 		searchUr.setMyPK(WebUser.getNo() + "_" + this.getEnsName() + "_SearchAttrs");
 		searchUr.RetrieveFromDBSources();
 
@@ -3560,7 +3560,7 @@ public class WF_Comm extends WebContralBase {
 	public final String Entities_Save() throws Exception {
 		try {
 			/// #region 查询出来s实体数据.
-			Entities dtls = BP.En.ClassFactory.GetEns(this.getEnsName());
+			Entities dtls = ClassFactory.GetEns(this.getEnsName());
 			Entity en = dtls.getGetNewEntity();
 			QueryObject qo = new QueryObject(dtls);
 			qo.DoQuery();
@@ -3781,7 +3781,7 @@ public class WF_Comm extends WebContralBase {
 	 */
 	private String readTxt() {
 		try {
-			String path = BP.Sys.SystemConfig.getPathOfDataUser() + "Fastenter\\" + getFK_MapData() + "\\"
+			String path = SystemConfig.getPathOfDataUser() + "Fastenter\\" + getFK_MapData() + "\\"
 					+ GetRequestVal("AttrKey");
 			File folder = new File(path);
 			if (folder.exists() == false)
@@ -3811,7 +3811,7 @@ public class WF_Comm extends WebContralBase {
 			int index = iPageSize * (iPageNumber - 1);
 			for (File file : folderArray) {
 				if (count >= index && count < iPageSize * iPageNumber) {
-					dt.Rows.get(count).setValue("MyPk", BP.DA.DBAccess.GenerGUID());
+					dt.Rows.get(count).setValue("MyPk", DBAccess.GenerGUID());
 
 					fileName = file.getName().replace("\"", "").replace("'", "");
 

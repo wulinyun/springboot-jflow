@@ -75,7 +75,7 @@ public class RepariDB extends Method
 			String nodeid = md.getNo().replace("ND","");
 			try
 			{
-				BP.WF.Node nd = new Node(Integer.parseInt(nodeid));
+				Node nd = new Node(Integer.parseInt(nodeid));
 				nd.RepareMap();
 				continue;
 			}

@@ -163,7 +163,7 @@ public class SecurityDES {
    * @param arrBTmp  
    *            构成该字符串的字节数组  
    * @return 生成的密钥  
-   * @throws java.lang.Exception  
+   * @throws Exception
    */
   private Key getKey(byte[] arrBTmp) {
     // 创建一个空的8位字节数组（默认值为0）   

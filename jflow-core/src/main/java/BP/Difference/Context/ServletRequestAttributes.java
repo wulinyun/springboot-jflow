@@ -45,7 +45,7 @@ import BP.Tools.StringUtils;
  * @author Juergen Hoeller
  * @since 2.0
  * @see javax.servlet.ServletRequest#getAttribute
- * @see javax.servlet.http.HttpSession#getAttribute
+ * @see HttpSession#getAttribute
  */
 public class ServletRequestAttributes extends AbstractRequestAttributes {
 

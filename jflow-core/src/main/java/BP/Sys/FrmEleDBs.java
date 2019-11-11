@@ -73,9 +73,9 @@ public class FrmEleDBs extends EntitiesMyPK
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<FrmEleDB> Tolist()
+	public final ArrayList<FrmEleDB> Tolist()
 	{
-		java.util.ArrayList<FrmEleDB> list = new java.util.ArrayList<FrmEleDB>();
+		ArrayList<FrmEleDB> list = new ArrayList<FrmEleDB>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((FrmEleDB)this.get(i));

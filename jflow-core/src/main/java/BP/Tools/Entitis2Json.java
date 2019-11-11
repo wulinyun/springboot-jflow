@@ -197,7 +197,7 @@ public class Entitis2Json
 	 *            隐藏字段
 	 * @return
 	 */
-	public final String TranslateEntitiesToListJson(BP.En.Entities ens,
+	public final String TranslateEntitiesToListJson(Entities ens,
 			String hidenKeys)
 	{
 		Attrs attrs = ens.getGetNewEntity().getEnMap().getAttrs();
@@ -242,7 +242,7 @@ public class Entitis2Json
 	 * @param hidenKeys
 	 * @return
 	 */
-	public final String TranslateEntitiesToGridJsonOnlyData(BP.En.Entities ens,
+	public final String TranslateEntitiesToGridJsonOnlyData(Entities ens,
 			int totalRows, String hidenKeys)
 	{
 		Attrs attrs = ens.getGetNewEntity().getEnMap().getAttrs();

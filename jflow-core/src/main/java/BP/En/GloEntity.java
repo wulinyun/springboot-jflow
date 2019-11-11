@@ -19,7 +19,7 @@ public class GloEntity
 		{
 			return GetTextByValue(ens, no);
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			return isNullAsVal;
 		}

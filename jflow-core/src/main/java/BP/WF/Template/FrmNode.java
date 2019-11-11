@@ -51,11 +51,11 @@ public class FrmNode extends EntityMyPK {
 	 * 表单类型
 	 * 
 	 */
-	public final BP.Sys.FrmType getHisFrmType() {
-		return BP.Sys.FrmType.forValue(this.GetValIntByKey(FrmNodeAttr.FrmType));
+	public final FrmType getHisFrmType() {
+		return FrmType.forValue(this.GetValIntByKey(FrmNodeAttr.FrmType));
 	}
 
-	public final void setHisFrmType(BP.Sys.FrmType value) {
+	public final void setHisFrmType(FrmType value) {
 		this.SetValByKey(FrmNodeAttr.FrmType, value.getValue());
 	}
 

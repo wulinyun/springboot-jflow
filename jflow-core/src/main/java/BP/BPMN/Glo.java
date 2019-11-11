@@ -15,7 +15,7 @@ public class Glo {
 	*/
 	public static String NewFlow(String flowSort, String flowName, DataStoreModel dsm, String ptable, String flowMark, String flowVer) throws Exception {
 		//执行保存.
-		BP.WF.Flow fl = new BP.WF.Flow();
+		Flow fl = new Flow();
 		
 		//修改类型为CCBPMN
 		fl.setDType(StringHelper.isNullOrEmpty(flowVer) ? 1 : Integer.parseInt(flowVer));
@@ -47,8 +47,8 @@ public class Glo {
 	 * @throws Exception 
 	*/
 	public static int NewNode(String flowNo, int x, int y) throws Exception {
-		BP.WF.Flow fl = new Flow(flowNo);
-		BP.WF.Node nd = fl.DoNewNode(x, y);
+		Flow fl = new Flow(flowNo);
+		Node nd = fl.DoNewNode(x, y);
 		return nd.getNodeID();
 	}
 	/** 
@@ -58,7 +58,7 @@ public class Glo {
 	 * @throws Exception 
 	*/
 	public static void DeleteNode(int nodeid) throws Exception {
-		BP.WF.Node nd = new Node(nodeid);
+		Node nd = new Node(nodeid);
 		nd.Delete();
 	}
 	

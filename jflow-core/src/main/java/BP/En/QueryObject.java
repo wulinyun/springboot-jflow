@@ -154,8 +154,8 @@ public class QueryObject {
 		this.HisDBUrlType = en.getEnMap().getEnDBUrl().getDBUrlType();
 	}
 
-	public BP.DA.DBType HisDBType = DBType.MSSQL;
-	public BP.DA.DBUrlType HisDBUrlType = DBUrlType.AppCenterDSN;
+	public DBType HisDBType = DBType.MSSQL;
+	public DBUrlType HisDBUrlType = DBUrlType.AppCenterDSN;
 
 	public final String getHisVarStr() {
 		switch (this.HisDBType) {
@@ -181,8 +181,8 @@ public class QueryObject {
 	 * @param len
 	 *            长度
 	 */
-	public final void AddWhereLen(String attr, String exp, int len, BP.DA.DBType dbtype) {
-		this.setSQL("( " + BP.Sys.SystemConfig.getAppCenterDBLengthStr() + "( " + attr2Field(attr) + " ) " + exp + " '"
+	public final void AddWhereLen(String attr, String exp, int len, DBType dbtype) {
+		this.setSQL("( " + SystemConfig.getAppCenterDBLengthStr() + "( " + attr2Field(attr) + " ) " + exp + " '"
 				+ (new Integer(len)).toString() + "')");
 	}
 
@@ -1210,7 +1210,7 @@ public class QueryObject {
 				} else {
 					this._en.CheckPhysicsTable();
 				}
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 			}
 			throw ex;
 		}

@@ -51,7 +51,7 @@ public class Glo
 	}
 
 	  ///#region 与 表单 事件实体相关.
-			private static java.util.Hashtable Htable_FormFEE = null;
+			private static Hashtable Htable_FormFEE = null;
 	 /** 
 	 获得节点事件实体
 	 
@@ -62,9 +62,9 @@ public class Glo
 	{
 		if (Htable_FormFEE == null)
 		{
-			Htable_FormFEE = new java.util.Hashtable();
+			Htable_FormFEE = new Hashtable();
 
-			java.util.ArrayList al = BP.En.ClassFactory.GetObjects("BP.Sys.FormEventBase");
+			ArrayList al = BP.En.ClassFactory.GetObjects("BP.Sys.FormEventBase");
 			Htable_FormFEE.clear();
 
 			for (Object en : al)
@@ -85,7 +85,7 @@ public class Glo
 		return null;
 	
 	}
-	private static java.util.Hashtable Htable_FormFEEDtl = null;
+	private static Hashtable Htable_FormFEEDtl = null;
 	/** 
 	 获得节点事件实体
 	 
@@ -96,8 +96,8 @@ public class Glo
 	{
 		if (Htable_FormFEEDtl == null || Htable_FormFEEDtl.isEmpty())
 		{
-			Htable_FormFEEDtl = new java.util.Hashtable();
-			java.util.ArrayList al = BP.En.ClassFactory.GetObjects("BP.Sys.FormEventBaseDtl");
+			Htable_FormFEEDtl = new Hashtable();
+			ArrayList al = BP.En.ClassFactory.GetObjects("BP.Sys.FormEventBaseDtl");
 			Htable_FormFEEDtl.clear();
 			for (Object en : al)
 			{
@@ -203,11 +203,11 @@ public class Glo
 		ul.setRDT(DataType.getCurrentDataTime());
 		try
 		{
-			if (BP.Sys.SystemConfig.getIsBSsystem() && BP.Sys.Glo.getRequest()!=null)
+			if (SystemConfig.getIsBSsystem() && Glo.getRequest()!=null)
 			{
-				ul.setIP(BP.Sys.Glo.getRequest().getRemoteHost());
+				ul.setIP(Glo.getRequest().getRemoteHost());
 			}
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 		}
 		ul.Insert();
@@ -292,7 +292,7 @@ public class Glo
 		sql += dbStr + "SendUserID)";
 		ps.SQL = sql;
 
-		long messgeID = BP.DA.DBAccess.GenerOID("RecordMsgUser");
+		long messgeID = DBAccess.GenerOID("RecordMsgUser");
 
 		ps.Add("OID", messgeID);
 		ps.Add("MsgDateTime", now);
@@ -305,7 +305,7 @@ public class Glo
 		ps.Add("InfoClass", 15);
 		ps.Add("GroupID", -1);
 		ps.Add("SendUserID", fromEmpNo);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 
 		//保存消息发送对象,这个是消息的接收人表.
 		ps = new Paras();
@@ -317,7 +317,7 @@ public class Glo
 		ps.Add("OID", messgeID);
 		ps.Add("MsgId", messgeID);
 		ps.Add("ReceiveID", sendToEmpNo);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 	}
 //}
 	
@@ -337,7 +337,7 @@ public class Glo
 			if (attr.getKey() == WorkAttr.MD5)
 			{
 				
-			} else if (attr.getKey() == BP.WF.WorkAttr.RDT)
+			} else if (attr.getKey() == WorkAttr.RDT)
 			{
 				
 			} else if (attr.getKey() == WorkAttr.CDT)

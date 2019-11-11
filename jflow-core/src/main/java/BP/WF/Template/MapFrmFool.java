@@ -170,7 +170,7 @@ public class MapFrmFool extends EntityNoName
 		map.AddTBInt(MapDataAttr.TableHeight, 900, "傻瓜表单高度", true, false);
 
 			//数据源.
-		map.AddDDLEntities(MapDataAttr.DBSrc, "local", "数据源", new BP.Sys.SFDBSrcs(), true);
+		map.AddDDLEntities(MapDataAttr.DBSrc, "local", "数据源", new SFDBSrcs(), true);
 		map.AddDDLEntities(MapDataAttr.FK_FormTree, "01", "表单类别", new SysFormTrees(), true);
 			//表单的运行类型.
 		map.AddDDLSysEnum(MapDataAttr.FrmType, 0, "表单类型", true, true, MapDataAttr.FrmType);
@@ -243,7 +243,7 @@ public class MapFrmFool extends EntityNoName
 
 		rm = new RefMethod();
 		rm.Title = "手机端表单";
-		rm.Icon = BP.WF.Glo.getCCFlowAppPath() + "WF/Admin/CCFormDesigner/Img/telephone.png";
+		rm.Icon = Glo.getCCFlowAppPath() + "WF/Admin/CCFormDesigner/Img/telephone.png";
 		rm.ClassMethodName = this.toString() + ".DoSortingMapAttrs";
 		rm.refMethodType = RefMethodType.RightFrameOpen;
 		map.AddRefMethod(rm);
@@ -649,7 +649,7 @@ public class MapFrmFool extends EntityNoName
 	*/
 	public final String DoDFrom() throws Exception
 	{
-		String url = Glo.getCCFlowAppPath() + "WF/Admin/FoolFormDesigner/CCForm/Frm.jsp?FK_MapData=" + this.getNo() + "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType=" + BP.DA.DBAccess.getAppCenterDBType() + "&CustomerNo=" + BP.Sys.SystemConfig.getCustomerNo();
+		String url = Glo.getCCFlowAppPath() + "WF/Admin/FoolFormDesigner/CCForm/Frm.jsp?FK_MapData=" + this.getNo() + "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType=" + DBAccess.getAppCenterDBType() + "&CustomerNo=" + SystemConfig.getCustomerNo();
 		try {
 			PubClass.WinOpen(ContextHolderUtils.getResponse(), url, 800, 650);
 		} catch (IOException e) {
@@ -665,7 +665,7 @@ public class MapFrmFool extends EntityNoName
 	*/
 	public final String DoDFromCol4() throws Exception
 	{
-		String url = Glo.getCCFlowAppPath() + "WF/Admin/FoolFormDesigner/Designer.htm?FK_MapData=" + this.getNo() + "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType=" + BP.DA.DBAccess.getAppCenterDBType() + "&IsFirst=1&CustomerNo=" + BP.Sys.SystemConfig.getCustomerNo();
+		String url = Glo.getCCFlowAppPath() + "WF/Admin/FoolFormDesigner/Designer.htm?FK_MapData=" + this.getNo() + "&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID() + "&AppCenterDBType=" + DBAccess.getAppCenterDBType() + "&IsFirst=1&CustomerNo=" + SystemConfig.getCustomerNo();
 		try {
 			PubClass.WinOpen(ContextHolderUtils.getResponse(), url, 800, 650);
 		} catch (IOException e) {

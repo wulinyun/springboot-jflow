@@ -70,7 +70,7 @@ public class WF_RptDfine extends WebContralBase{
 	{
 		DataSet ds = new DataSet();
 		String sql = "SELECT No,Name,ParentNo FROM WF_FlowSort ORDER BY ParentNo, Idx";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Sort";
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle)
 		{
@@ -81,7 +81,7 @@ public class WF_RptDfine extends WebContralBase{
 		ds.Tables.add(dt);
 
 		sql = "SELECT No,Name,FK_FlowSort FROM WF_Flow ORDER BY FK_FlowSort, Idx";
-		dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		dt = DBAccess.RunSQLReturnTable(sql);
 		dt.TableName = "Flows";
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle)
 		{
@@ -113,9 +113,9 @@ public class WF_RptDfine extends WebContralBase{
 			//如果仅仅部门领导可以查看: 检查当前人是否是部门领导人.
 			if (DBAccess.IsExitsTableCol("Port_Dept", "Leader") == true)
 			{
-				String sql = "SELECT Leader FROM Port_Dept WHERE No='" + BP.Web.WebUser.getFK_Dept() + "'";
+				String sql = "SELECT Leader FROM Port_Dept WHERE No='" + WebUser.getFK_Dept() + "'";
 				String strs = DBAccess.RunSQLReturnStringIsNull(sql, null);
-				if (strs != null && strs.contains(BP.Web.WebUser.getNo()) == true)
+				if (strs != null && strs.contains(WebUser.getNo()) == true)
 				{
 					ht.put("MyDept", "我本部门发起的流程");
 				}
@@ -135,7 +135,7 @@ public class WF_RptDfine extends WebContralBase{
 		}
 		///#endregion 增加本部门发起流程的查询.
 
-		if (BP.Web.WebUser.getIsAdmin())
+		if (WebUser.getIsAdmin())
 		{
 			ht.put("Adminer", "高级查询");
 		}
@@ -165,7 +165,7 @@ public class WF_RptDfine extends WebContralBase{
 		if (md.RetrieveFromDBSources() == 0)
 		{
 			//如果没有找到，就让其重置一下.
-			BP.WF.Rpt.RptDfine rd = new RptDfine(this.getFK_Flow());
+			RptDfine rd = new RptDfine(this.getFK_Flow());
 
 			if (this.getSearchType().equals("My"))
 			{
@@ -946,7 +946,7 @@ public class WF_RptDfine extends WebContralBase{
 		if (md.RetrieveFromDBSources() == 0)
 		{
 			//如果没有找到，就让其重置一下.
-			BP.WF.Rpt.RptDfine rd = new RptDfine(this.getFK_Flow());
+			RptDfine rd = new RptDfine(this.getFK_Flow());
 
 			if (this.getGroupType().equals("My"))
 			{
@@ -1443,7 +1443,7 @@ public class WF_RptDfine extends WebContralBase{
 
 		// 如果包含累计数据，那它一定需要一个月份字段。业务逻辑错误。
 		groupKey = groupKey.substring(0, groupKey.length() - 1);
-		BP.DA.Paras ps = new Paras();
+		Paras ps = new Paras();
 		// 生成 sql.
 		String selectSQL = "SELECT ";
 		String groupBy = " GROUP BY ";
@@ -1584,7 +1584,7 @@ public class WF_RptDfine extends WebContralBase{
 						 dt.Columns.Add(attr.getKey() + "Amount", Integer.class);
 						 break;
 					 default:
-						 dt.Columns.Add(attr.getKey() + "Amount", java.math.BigDecimal.class);
+						 dt.Columns.Add(attr.getKey() + "Amount", BigDecimal.class);
 						 break;
 				 }
 			 }
@@ -1679,7 +1679,7 @@ public class WF_RptDfine extends WebContralBase{
 					 {
 						 val = Integer.parseInt(dr.get(attr.getKey()).toString());
 					 }
-					 catch (java.lang.Exception e)
+					 catch (Exception e)
 					 {
 						 dr.setValue(attr.getKey() + "T"," ");
 						 continue;
@@ -1705,7 +1705,7 @@ public class WF_RptDfine extends WebContralBase{
 					 myen.Retrieve();
 					 dr.setValue(attr.getKey() + "T", myen.GetValStrByKey(attr.getUIRefKeyText())) ;
 				 }
-				 catch (java.lang.Exception e2)
+				 catch (Exception e2)
 				 {
 					 if (val == null || val.length() <= 1)
 					 {
@@ -1718,7 +1718,7 @@ public class WF_RptDfine extends WebContralBase{
 							 BP.Port.Dept Dept = new BP.Port.Dept(val);
 							 dr.setValue(attr.getKey() + "T", Dept.getName());
 						 }
-						 catch (java.lang.Exception e3)
+						 catch (Exception e3)
 						 {
 							 dr.setValue(attr.getKey() + "T",val);
 						 }

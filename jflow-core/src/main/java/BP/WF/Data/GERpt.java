@@ -314,7 +314,7 @@ public class GERpt extends BP.En.EntityOID
 			{
 				this.SetValByKey(attr.getKey(), dr.getValue(attr.getKey()));
 			}
-			catch (java.lang.Exception e)
+			catch (Exception e)
 			{
 			}
 		}

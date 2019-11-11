@@ -36,7 +36,7 @@ public class AddEmpLeng extends DataIOEn2
 				{
 					continue;
 				}
-			} catch (java.lang.Exception e)
+			} catch (Exception e)
 			{
 			}
 			

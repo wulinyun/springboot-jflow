@@ -78,11 +78,11 @@ public class WF_Admin_AttrNode extends WebContralBase {
 		if (this.getFK_Node() != 0)
 			return "Node";
 
-		if (this.getFK_Node() == 0 && BP.DA.DataType.IsNullOrEmpty(this.getFK_Flow()) == false
+		if (this.getFK_Node() == 0 && DataType.IsNullOrEmpty(this.getFK_Flow()) == false
 				&& this.getFK_Flow().length() >= 3)
 			return "Flow";
 
-		if (this.getFK_Node() == 0 && BP.DA.DataType.IsNullOrEmpty(this.getFK_MapData()) == false)
+		if (this.getFK_Node() == 0 && DataType.IsNullOrEmpty(this.getFK_MapData()) == false)
 			return "Frm";
 
 		return "Node";
@@ -98,7 +98,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
 
 		// 事件实体.
 		FrmEvents ndevs = new FrmEvents();
-		if (BP.DA.DataType.IsNullOrEmpty(this.getFK_MapData()) == false)
+		if (DataType.IsNullOrEmpty(this.getFK_MapData()) == false)
 			ndevs.Retrieve(FrmEventAttr.FK_MapData, this.getFK_MapData());
 
 		// 把事件类型列表放入里面.（发送前，发送成功时.）
@@ -183,7 +183,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	public final String NodeFromWorkModel_Save() throws Exception {
 		Node nd = new Node(this.getFK_Node());
 
-		BP.Sys.MapData md = new BP.Sys.MapData("ND" + this.getFK_Node());
+		MapData md = new MapData("ND" + this.getFK_Node());
 
 		// 用户选择的表单类型.
 		String selectFModel = this.GetValFromFrmByKey("FrmS");
@@ -462,7 +462,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
             if(DataType.IsNullOrEmpty(this.getFK_Flow())==false){
 
 	            nodes = new Nodes();
-	            nodes.Retrieve(BP.WF.Template.NodeAttr.FK_Flow, getFK_Flow(), BP.WF.Template.NodeAttr.Step);
+	            nodes.Retrieve(NodeAttr.FK_Flow, getFK_Flow(), NodeAttr.Step);
 	
 	            if (nodes.size() == 0)
 	            {
@@ -473,7 +473,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	                {
 	                    flowno = nodeid.substring(0, nodeid.length() - 2);
 	                    flowno = DealString.padLeft(flowno,3,'0');
-	                    nodes.Retrieve(BP.WF.Template.NodeAttr.FK_Flow, flowno, BP.WF.Template.NodeAttr.Step);
+	                    nodes.Retrieve(NodeAttr.FK_Flow, flowno, NodeAttr.Step);
 	                }
 	            }
 	            DataTable dtNodes = nodes.ToDataTableField("dtNodes");
@@ -973,9 +973,9 @@ public class WF_Admin_AttrNode extends WebContralBase {
 			int maxGrpIdx = 0; // 当前最大分组排序号
 			int maxAttrIdx = 0; // 当前最大字段排序号
 			int maxDtlIdx = 0; // 当前最大明细表排序号
-			java.util.ArrayList<String> idxGrps = new java.util.ArrayList<String>(); // 复制过的分组名称集合
-			java.util.ArrayList<String> idxAttrs = new java.util.ArrayList<String>(); // 复制过的字段编号集合
-			java.util.ArrayList<String> idxDtls = new java.util.ArrayList<String>(); // 复制过的明细表编号集合
+			ArrayList<String> idxGrps = new ArrayList<String>(); // 复制过的分组名称集合
+			ArrayList<String> idxAttrs = new ArrayList<String>(); // 复制过的字段编号集合
+			ArrayList<String> idxDtls = new ArrayList<String>(); // 复制过的明细表编号集合
 
 			for (String nodeid : nodeids) {
 				tmd = "ND" + nodeid;
@@ -1191,7 +1191,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
 
 					/// #region 4.明细表字段分组排序
 					maxGrpIdx = 0;
-					idxGrps = new java.util.ArrayList<String>();
+					idxGrps = new ArrayList<String>();
 
 					for (GroupField grp : ogroups.ToJavaList()) {
 						// 通过分组名称来确定是同一个组，同一个组在不同的节点分组编号是不一样的
@@ -1221,7 +1221,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
 
 					/// #region 5.明细表字段排序
 					maxAttrIdx = 0;
-					idxAttrs = new java.util.ArrayList<String>();
+					idxAttrs = new ArrayList<String>();
 
 					for (MapAttr attr : oattrs.ToJavaList()) {
 						Object tempVar8 = tarattrs.GetEntityByKey(MapAttrAttr.KeyOfEn, attr.getKeyOfEn());
@@ -1339,7 +1339,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	public final String SortingMapAttrs_Save() throws Exception {
 		Node nd = new Node(this.getFK_Node());
 
-		BP.Sys.MapData md = new BP.Sys.MapData("ND" + this.getFK_Node());
+		MapData md = new MapData("ND" + this.getFK_Node());
 
 		// 用户选择的表单类型.
 		String selectFModel = this.GetValFromFrmByKey("FrmS");
@@ -1470,7 +1470,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	 * @throws Exception
 	 */
 	public String TodolistModel_Init() throws Exception {
-		BP.WF.Node nd = new BP.WF.Node(this.getFK_Node());
+		Node nd = new Node(this.getFK_Node());
 		return nd.ToJson();
 	}
 
@@ -1481,7 +1481,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	 * @throws Exception
 	 */
 	public String TodolistModel_Save() throws Exception {
-		BP.WF.Node nd = new BP.WF.Node();
+		Node nd = new Node();
 		nd.setNodeID(this.getFK_Node());
 		nd.RetrieveFromDBSources();
 
@@ -1563,8 +1563,8 @@ public class WF_Admin_AttrNode extends WebContralBase {
 			dr.setValue("HisCCRoleText", node.getHisCCRoleText());
 
 			// 消息&事件Count
-			BP.Sys.FrmEvents fes = new BP.Sys.FrmEvents();
-			dr.setValue("HisFrmEventsCount", fes.Retrieve(BP.Sys.FrmEventAttr.FK_MapData, "ND" + node.getNodeID()));
+			FrmEvents fes = new FrmEvents();
+			dr.setValue("HisFrmEventsCount", fes.Retrieve(FrmEventAttr.FK_MapData, "ND" + node.getNodeID()));
 
 			// 流程完成条件Count
 			BP.WF.Template.Conds conds = new BP.WF.Template.Conds(BP.WF.Template.CondType.Flow, node.getNodeID());
@@ -1583,7 +1583,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	 */
 	public String TurnToDeal_Init() throws Exception {
 
-		BP.WF.Node nd = new BP.WF.Node();
+		Node nd = new Node();
 		nd.setNodeID(this.getFK_Node());
 		nd.RetrieveFromDBSources();
 
@@ -1602,8 +1602,8 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	public String TurnToDeal_Save() {
 		try {
 			int nodeID = Integer.parseInt(String.valueOf(this.getFK_Node()));
-			BP.Sys.MapAttrs attrs = new BP.Sys.MapAttrs("ND" + nodeID);
-			BP.WF.Node nd = new BP.WF.Node(nodeID);
+			MapAttrs attrs = new MapAttrs("ND" + nodeID);
+			Node nd = new Node(nodeID);
 
 			int val = this.GetRequestValInt("TurnToDeal");
 
@@ -1669,10 +1669,10 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	public String BatchStartFields_Init() throws Exception {
 
 		int nodeID = Integer.parseInt(String.valueOf(this.getFK_Node()));
-		BP.Sys.MapAttrs attrs = new BP.Sys.MapAttrs("ND" + nodeID);
-		BP.WF.Node nd = new BP.WF.Node(nodeID);
+		MapAttrs attrs = new MapAttrs("ND" + nodeID);
+		Node nd = new Node(nodeID);
 
-		BP.Sys.SysEnums ses = new BP.Sys.SysEnums(BP.WF.Template.NodeAttr.BatchRole);
+		BP.Sys.SysEnums ses = new BP.Sys.SysEnums(NodeAttr.BatchRole);
 		//获取当前节点设置的批处理规则
         String srole = "";
         if (nd.getHisBatchRole() == BatchRole.None)
@@ -1694,21 +1694,21 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	public String BatchStartFields_Save() throws Exception {
 
 		int nodeID = Integer.parseInt(String.valueOf(this.getFK_Node()));
-		BP.Sys.MapAttrs attrs = new BP.Sys.MapAttrs("ND" + nodeID);
-		BP.WF.Node nd = new BP.WF.Node(nodeID);
+		MapAttrs attrs = new MapAttrs("ND" + nodeID);
+		Node nd = new Node(nodeID);
 
 		// 给变量赋值.
 		// 批处理的类型
 		int selectval = Integer.parseInt(this.GetRequestVal("DDL_BRole"));
 		switch (selectval) {
 		case 0:
-			nd.setHisBatchRole(BP.WF.BatchRole.None);
+			nd.setHisBatchRole(BatchRole.None);
 			break;
 		case 1:
-			nd.setHisBatchRole(BP.WF.BatchRole.Ordinary);
+			nd.setHisBatchRole(BatchRole.Ordinary);
 			break;
 		default:
-			nd.setHisBatchRole(BP.WF.BatchRole.Group);
+			nd.setHisBatchRole(BatchRole.Group);
 			break;
 		}
 		// 批处理的数量
@@ -1727,7 +1727,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	// 发送阻塞模式
 	public String BlockModel_Init() throws Exception {
 
-		BP.WF.Node nd = new BP.WF.Node();
+		Node nd = new Node();
 		nd.setNodeID(this.getFK_Node());
 		nd.RetrieveFromDBSources();
 
@@ -1735,10 +1735,10 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	}
 
 	public String BlockModel_Save() throws Exception {
-		BP.WF.Node nd = new BP.WF.Node(this.getFK_Node());
+		Node nd = new Node(this.getFK_Node());
 		nd.setBlockAlert(this.GetRequestVal("TB_Alert")); // 提示信息.
 		int val = this.GetRequestValInt("RB_BlockModel");
-		nd.SetValByKey(BP.WF.Template.NodeAttr.BlockModel, val);
+		nd.SetValByKey(NodeAttr.BlockModel, val);
 		if (nd.getBlockModel() == BP.WF.BlockModel.None)
 			nd.setBlockModel(BP.WF.BlockModel.None);
 		if (nd.getBlockModel() == BP.WF.BlockModel.CurrNodeAll) {
@@ -1763,15 +1763,15 @@ public class WF_Admin_AttrNode extends WebContralBase {
 
 	public String CanCancelNodes_Init() throws Exception {
 
-		BP.WF.Node mynd = new BP.WF.Node();
+		Node mynd = new Node();
 		mynd.setNodeID(this.getFK_Node());
 		mynd.RetrieveFromDBSources();
 
 		BP.WF.Template.NodeCancels rnds = new BP.WF.Template.NodeCancels();
 		rnds.Retrieve(NodeCancelAttr.FK_Node, this.getFK_Node());
 
-		BP.WF.Nodes nds = new Nodes();
-		nds.Retrieve(BP.WF.Template.NodeAttr.FK_Flow, this.getFK_Flow());
+		Nodes nds = new Nodes();
+		nds.Retrieve(NodeAttr.FK_Flow, this.getFK_Flow());
 
 		return "{\"mynd\":" + mynd.ToJson() + ",\"rnds\":" + rnds.ToJson() + ",\"nds\":" + nds.ToJson() + "}";
 	}
@@ -1779,13 +1779,13 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	// 可以撤销的节点
 	public String CanCancelNodes_Save() throws Exception {
 		BP.WF.Template.NodeCancels rnds = new BP.WF.Template.NodeCancels();
-		rnds.Delete(BP.WF.Template.NodeCancelAttr.FK_Node, this.getFK_Node());
+		rnds.Delete(NodeCancelAttr.FK_Node, this.getFK_Node());
 
-		BP.WF.Nodes nds = new Nodes();
-		nds.Retrieve(BP.WF.Template.NodeAttr.FK_Flow, this.getFK_Flow());
+		Nodes nds = new Nodes();
+		nds.Retrieve(NodeAttr.FK_Flow, this.getFK_Flow());
 
 		int i = 0;
-		for (BP.WF.Node nd : nds.ToJavaList()) {
+		for (Node nd : nds.ToJavaList()) {
 			String cb = this.GetRequestVal("CB_" + nd.getNodeID());
 			if (cb == null || "".equals(cb))
 				continue;
@@ -1805,28 +1805,28 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	// 可以退回的节点
 	public String CanReturnNodes_Init() throws Exception {
 
-		BP.WF.Node mynd = new BP.WF.Node();
+		Node mynd = new Node();
 		mynd.setNodeID(this.getFK_Node());
 		mynd.RetrieveFromDBSources();
 
 		BP.WF.Template.NodeReturns rnds = new BP.WF.Template.NodeReturns();
 		rnds.Retrieve(NodeReturnAttr.FK_Node, this.getFK_Node());
 
-		BP.WF.Nodes nds = new Nodes();
-		nds.Retrieve(BP.WF.Template.NodeAttr.FK_Flow, this.getFK_Flow());
+		Nodes nds = new Nodes();
+		nds.Retrieve(NodeAttr.FK_Flow, this.getFK_Flow());
 
 		return "{\"mynd\":" + mynd.ToJson() + ",\"rnds\":" + rnds.ToJson() + ",\"nds\":" + nds.ToJson() + "}";
 	}
 
 	public String CanReturnNodes_Save() throws Exception {
 		BP.WF.Template.NodeReturns rnds = new BP.WF.Template.NodeReturns();
-		rnds.Delete(BP.WF.Template.NodeReturnAttr.FK_Node, this.getFK_Node());
+		rnds.Delete(NodeReturnAttr.FK_Node, this.getFK_Node());
 
-		BP.WF.Nodes nds = new Nodes();
-		nds.Retrieve(BP.WF.Template.NodeAttr.FK_Flow, this.getFK_Flow());
+		Nodes nds = new Nodes();
+		nds.Retrieve(NodeAttr.FK_Flow, this.getFK_Flow());
 
 		int i = 0;
-		for (BP.WF.Node nd : nds.ToJavaList()) {
+		for (Node nd : nds.ToJavaList()) {
 			String cb = this.GetRequestVal("CB_" + nd.getNodeID());
 			if (cb == null || "".equals(cb))
 				continue;
@@ -1859,7 +1859,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
 	}
 
 	public String PushMessage_ShowHidden() {
-		BP.WF.XML.EventLists xmls = new BP.WF.XML.EventLists();
+		EventLists xmls = new EventLists();
 		xmls.RetrieveAll();
 		for (BP.WF.XML.EventList item : xmls.ToJavaList()) {
 			if (item.getIsHaveMsg() == false)
@@ -1994,14 +1994,14 @@ public class WF_Admin_AttrNode extends WebContralBase {
 		// select * from Sys_MapAttr where FK_MapData='ND102' and LGType = 0 AND
 		// MyDataType =1
 
-		BP.Sys.MapAttrs attrs = new BP.Sys.MapAttrs();
-		attrs.Retrieve(BP.Sys.MapAttrAttr.FK_MapData, "ND" + this.getFK_Node(), "LGType", 0, "MyDataType", 1);
+		MapAttrs attrs = new MapAttrs();
+		attrs.Retrieve(MapAttrAttr.FK_MapData, "ND" + this.getFK_Node(), "LGType", 0, "MyDataType", 1);
 		ds.Tables.add(attrs.ToDataTableField("FrmFields"));
 
 		// 节点
 		// TODO 数据太多优化一下
-		BP.WF.Node nd = new BP.WF.Node(this.getFK_Node());
-		BP.WF.Nodes nds = new BP.WF.Nodes(nd.getFK_Flow());
+		Node nd = new Node(this.getFK_Node());
+		Nodes nds = new Nodes(nd.getFK_Flow());
 		ds.Tables.add(nds.ToDataTableField("Nodes"));
 
 		// mypk
@@ -2021,13 +2021,13 @@ public class WF_Admin_AttrNode extends WebContralBase {
 		msg.setFK_Event(this.getFK_Event());
 		msg.setFK_Node(this.getFK_Node());
 
-		BP.WF.Node nd = new BP.WF.Node(this.getFK_Node());
+		Node nd = new Node(this.getFK_Node());
 		msg.setFK_Flow(nd.getFK_Flow());
-		BP.WF.Nodes nds = new BP.WF.Nodes(nd.getFK_Flow());
+		Nodes nds = new Nodes(nd.getFK_Flow());
 
 		String nodesOfSMS = "";
 		String nodesOfEmail = "";
-		for (BP.WF.Node mynd : nds.ToJavaList()) {
+		for (Node mynd : nds.ToJavaList()) {
 			@SuppressWarnings("unchecked")
 			Enumeration<String> enums = getRequest().getParameterNames();
 			while (enums.hasMoreElements()) {
@@ -2071,7 +2071,7 @@ public class WF_Admin_AttrNode extends WebContralBase {
 
 		// 保存.
 		if (DotNetToJavaStringHelper.isNullOrEmpty(msg.getMyPK()) == true) {
-			msg.setMyPK(BP.DA.DBAccess.GenerGUID());
+			msg.setMyPK(DBAccess.GenerGUID());
 			msg.Insert();
 		} else {
 			msg.Update();

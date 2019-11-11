@@ -215,15 +215,15 @@ public class WebUser {
 
 
 		//登录模式？
-		BP.Web.WebUser.setUserWorkDev(UserWorkDev.PC);
+		WebUser.setUserWorkDev(UserWorkDev.PC);
 
 		///#region 解决部门的问题.
-		if (BP.Sys.SystemConfig.getOSDBSrc() == OSDBSrc.Database)
+		if (SystemConfig.getOSDBSrc() == OSDBSrc.Database)
 		{
 			if (DotNetToJavaStringHelper.isNullOrEmpty(em.getFK_Dept()) == true)
 			{
 				String sql = "";
-				if (BP.Sys.SystemConfig.getOSModel()== OSModel.OneOne)
+				if (SystemConfig.getOSModel()== OSModel.OneOne)
 				{
 					sql = "SELECT FK_Dept FROM Port_Emp WHERE No='" + em.getNo() + "'";
 				}
@@ -232,7 +232,7 @@ public class WebUser {
 					sql = "SELECT FK_Dept FROM Port_DeptEmp WHERE FK_Emp='" + em.getNo() + "'";
 				}
 
-				String deptNo = BP.DA.DBAccess.RunSQLReturnString(sql);
+				String deptNo = DBAccess.RunSQLReturnString(sql);
 				if (DotNetToJavaStringHelper.isNullOrEmpty(deptNo) == true)
 				{
 					throw new RuntimeException("@登录人员(" + em.getNo() + "," + em.getName() + ")没有维护部门...");
@@ -252,7 +252,7 @@ public class WebUser {
 			}
 		}
 
-		if (BP.Sys.SystemConfig.getOSDBSrc() == OSDBSrc.WebServices)
+		if (SystemConfig.getOSDBSrc() == OSDBSrc.WebServices)
 		{
 			/*Object ws = DataType.GetPortalInterfaceSoapClientInstance();
 			DataTable dt = ws.GetEmpHisDepts(em.getNo());
@@ -282,7 +282,7 @@ public class WebUser {
 		if (IsRecSID)
 		{
 			//判断是否视图，如果为视图则不进行修改 @于庆海 需要翻译
-			if (BP.DA.DBAccess.IsView("Port_Emp") == false){
+			if (DBAccess.IsView("Port_Emp") == false){
 			//如果记录sid
 			SimpleDateFormat formatter = new SimpleDateFormat ("MMddHHmmss");
 			String sid1 = formatter.format(new Date());
@@ -292,7 +292,7 @@ public class WebUser {
 		}
 
 		WebUser.setSysLang(lang);
-		if (BP.Sys.SystemConfig.getIsBSsystem())
+		if (SystemConfig.getIsBSsystem())
 		{
 			//System.Web.HttpContext.Current.Response.Cookies.Clear();
 
@@ -345,7 +345,7 @@ public class WebUser {
 	private static void ChangeMainDept(String no, String deptNo) {
 		//这里要考虑集成的模式下，更新会出现是.
 
-		String sql = BP.Sys.SystemConfig.GetValByKey("UpdataMainDeptSQL", "");
+		String sql = SystemConfig.GetValByKey("UpdataMainDeptSQL", "");
 		if (sql.equals(""))
 		{
 			//如果没有配置, 就取默认的配置.
@@ -358,9 +358,9 @@ public class WebUser {
 		try
 		{
 			if (sql.contains("UPDATE Port_Emp SET FK_Dept=") == true)
-				if (BP.DA.DBAccess.IsView("Port_Emp") == true)
+				if (DBAccess.IsView("Port_Emp") == true)
                     return;
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 		}
 		catch (RuntimeException ex)
 		{
@@ -398,7 +398,7 @@ public class WebUser {
 				ContextHolderUtils.addCookie("Auth", expiry, null);
 			}
 //			WebUser.setToken(token);
-		} catch (java.lang.Exception e2) {}
+		} catch (Exception e2) {}
 	}
 
 	/**
@@ -511,7 +511,7 @@ public class WebUser {
 				}
 				return v;
 			}
-		} catch (java.lang.Exception e) {}
+		} catch (Exception e) {}
 	
 		try {
 			String val = null;
@@ -528,7 +528,7 @@ public class WebUser {
 				return isNullAsVal;
 			}
 			return val;
-		} catch (java.lang.Exception e2) {
+		} catch (Exception e2) {
 			e2.printStackTrace();
 			return isNullAsVal;
 		}
@@ -574,7 +574,7 @@ public class WebUser {
 			throw new RuntimeException("@err-001 DeptParentNo, FK_Dept 登录信息丢失。");
 			
 			   BP.Port.Dept dept = new BP.Port.Dept( WebUser.getFK_Dept());
-               BP.Web.WebUser.setDeptParentNo(  dept.getParentNo());
+               WebUser.setDeptParentNo(  dept.getParentNo());
                return dept.getParentNo();
 		}
 		return val;
@@ -625,7 +625,7 @@ public class WebUser {
 	 */
     public static boolean getIsAdmin() throws Exception
     {
-            if ("admin".equals(BP.Web.WebUser.getNo()))
+            if ("admin".equals(WebUser.getNo()))
                 return true;
             try
             {
@@ -666,7 +666,7 @@ public class WebUser {
 					return val;
 				}else{
 					// 登录WF平台，这里需要保存SID方便第三方系统获取。
-					BP.Port.Emp emp = new BP.Port.Emp(userNo);
+					Emp emp = new Emp(userNo);
 					WebUser.SignInOfGener(emp, "CH", null, true, true);
 				}
 			}else{
@@ -775,7 +775,7 @@ public class WebUser {
 			//String val = GetValFromCookie("FK_DeptName", null, true);
 			String val = GetSessionByKey("FK_DeptName", "");
 			return val;
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return "无";
 		}
 	}
@@ -793,7 +793,7 @@ public class WebUser {
 			try {
 				val = DBAccess.RunSQLReturnStringIsNull("SELECT NameOfPath FROM Port_Dept WHERE No='" + WebUser.getFK_Dept() + "'", "");
 				return val;
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 				val = WebUser.getFK_DeptName();
 			}
 
@@ -846,13 +846,13 @@ public class WebUser {
 	public static void SetSID(String sid) throws Exception
 	{
 		//判断是否视图，如果为视图则不进行修改 @于庆海 需要翻译
-		if (BP.DA.DBAccess.IsView("Port_Emp") == false)
+		if (DBAccess.IsView("Port_Emp") == false)
 		{
 			Paras ps = new Paras();
 			ps.SQL = "UPDATE Port_Emp SET SID=" + SystemConfig.getAppCenterDBVarStr() + "SID WHERE No=" + SystemConfig.getAppCenterDBVarStr() + "No";
 			ps.Add("SID", sid);
 			ps.Add("No", WebUser.getNo());
-			BP.DA.DBAccess.RunSQL(ps);
+			DBAccess.RunSQL(ps);
 		}
 		WebUser.setSID(sid);
 	}
@@ -883,12 +883,12 @@ public class WebUser {
 	 * 用户工作方式.
 	 */
 	public static UserWorkDev getUserWorkDev() {
-		if (BP.Sys.SystemConfig.getIsBSsystem() == false) {
+		if (SystemConfig.getIsBSsystem() == false) {
 			return getUserWorkDev().PC;
 		}
 
 		int s = (Integer) GetSessionByKey("UserWorkDev", 0);
-		BP.Web.UserWorkDev wd = UserWorkDev.forValue(s);
+		UserWorkDev wd = UserWorkDev.forValue(s);
 		return wd;
 	}
 
@@ -955,7 +955,7 @@ public class WebUser {
 	public static String getHisStationsStr() throws Exception {
 		String val = GetValFromCookie("HisStationsStr", null, true);
 		if (val == null) {
-			Object tempVar = BP.DA.DBAccess.RunSQLReturnVal("SELECT Stas FROM WF_Emp WHERE No='" + WebUser.getNo() + "'");
+			Object tempVar = DBAccess.RunSQLReturnVal("SELECT Stas FROM WF_Emp WHERE No='" + WebUser.getNo() + "'");
 			val = (String) ((tempVar instanceof String) ? tempVar : null);
 
 			if (val == null) {
@@ -978,7 +978,7 @@ public class WebUser {
 	public static String getHisDeptsStr() throws Exception {
 		String val = GetValFromCookie("HisDeptsStr", "", true);
 		if (val == null) {
-			Object tempVar = BP.DA.DBAccess.RunSQLReturnVal("SELECT Depts FROM WF_Emp WHERE No='" + WebUser.getNo() + "'");
+			Object tempVar = DBAccess.RunSQLReturnVal("SELECT Depts FROM WF_Emp WHERE No='" + WebUser.getNo() + "'");
 			val = (String) ((tempVar instanceof String) ? tempVar : null);
 			if (val == null) {
 				val = "";
@@ -1054,16 +1054,16 @@ public class WebUser {
 
 
 		//登录模式？
-		BP.Web.WebUser.setUserWorkDev(UserWorkDev.PC);
+		WebUser.setUserWorkDev(UserWorkDev.PC);
 
 
 		///#region 解决部门的问题.
-		if (BP.Sys.SystemConfig.getOSDBSrc() == OSDBSrc.Database)
+		if (SystemConfig.getOSDBSrc() == OSDBSrc.Database)
 		{
 			if (StringHelper.isNullOrEmpty(deptNo) == true)
 			{
 				String sql = "";
-				if (BP.Sys.SystemConfig.getOSModel() == OSModel.OneOne)
+				if (SystemConfig.getOSModel() == OSModel.OneOne)
 				{
 					sql = "SELECT FK_Dept FROM Port_EmpDept WHERE FK_Emp='" + userNo + "'";
 				}
@@ -1072,7 +1072,7 @@ public class WebUser {
 					sql = "SELECT FK_Dept FROM Port_DeptEmp WHERE FK_Emp='" + userNo + "'";
 				}
 
-				deptNo = BP.DA.DBAccess.RunSQLReturnString(sql);
+				deptNo = DBAccess.RunSQLReturnString(sql);
 				if (StringHelper.isNullOrEmpty(deptNo) == true)
 				{
 					throw new RuntimeException("@登录人员(" + userNo + "," + userName + ")没有维护部门...");
@@ -1094,7 +1094,7 @@ public class WebUser {
 		WebUser.setHisDeptsStr(null);
 		WebUser.setHisStationsStr(null);
 
-		if (BP.Sys.SystemConfig.getIsBSsystem())
+		if (SystemConfig.getIsBSsystem())
 		{
 			//System.Web.HttpContext.Current.Response.Cookies.Clear();
 			//HttpCookie hc = Glo.getRequest.Cookies["CCS"];

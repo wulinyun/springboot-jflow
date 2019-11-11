@@ -730,7 +730,7 @@ public class Attrs extends ArrayList<Attr>
 					this.AddDDLSysEnum(ap.GetValStrByKey("Key"), ap.GetValStrByKey("Key"), ap.GetValIntByKey("DefVal"), ap.GetValStrByKey("Name"), true, true, ap.GetValStrByKey("Key"), "@"+ap.GetValStrByKey("BindKey").replace(",","@"));
 					break;
 				case FK:
-					EntitiesNoName ens = (EntitiesNoName)BP.En.ClassFactory.GetEns(ap.GetValStrByKey("BindKey"));
+					EntitiesNoName ens = (EntitiesNoName)ClassFactory.GetEns(ap.GetValStrByKey("BindKey"));
 					this.AddDDLEntities(ap.GetValStrByKey("Key"), ap.GetValStrByKey("DefVal"), ap.GetValStrByKey("Name"), ens,true);
 					break;
 				default:

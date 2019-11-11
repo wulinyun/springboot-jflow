@@ -61,7 +61,7 @@ public class CCMobile extends WebContralBase
 		String userNo = this.GetRequestVal("TB_No");
         String pass = this.GetRequestVal("TB_PW");
 
-        BP.Port.Emp emp = new Emp();
+        Emp emp = new Emp();
         emp.setNo(userNo);
         if (emp.RetrieveFromDBSources() == 0)
         {
@@ -91,7 +91,7 @@ public class CCMobile extends WebContralBase
             return "err@用户名或者密码错误.";
 
         //调用登录方法.
-        BP.WF.Dev2Interface.Port_Login(emp.getNo(), emp.getName(), emp.getFK_Dept(), emp.getFK_DeptText(),null,null);
+        Dev2Interface.Port_Login(emp.getNo(), emp.getName(), emp.getFK_Dept(), emp.getFK_DeptText(),null,null);
 
         return "登录成功.";
 	}
@@ -117,22 +117,22 @@ public class CCMobile extends WebContralBase
 	{
 
 		java.util.Hashtable ht = new java.util.Hashtable();
-		ht.put("UserNo", BP.Web.WebUser.getNo());
-		ht.put("UserName", BP.Web.WebUser.getName());
+		ht.put("UserNo", WebUser.getNo());
+		ht.put("UserName", WebUser.getName());
 
 		//系统名称.
-		ht.put("SysName", BP.Sys.SystemConfig.getSysName());
-		ht.put("CustomerName", BP.Sys.SystemConfig.getCustomerName());
+		ht.put("SysName", SystemConfig.getSysName());
+		ht.put("CustomerName", SystemConfig.getCustomerName());
 
-		ht.put("Todolist_EmpWorks", BP.WF.Dev2Interface.getTodolist_EmpWorks());
-		ht.put("Todolist_Runing", BP.WF.Dev2Interface.getTodolist_Runing());
-		ht.put("Todolist_Complete", BP.WF.Dev2Interface.getTodolist_Complete());
+		ht.put("Todolist_EmpWorks", Dev2Interface.getTodolist_EmpWorks());
+		ht.put("Todolist_Runing", Dev2Interface.getTodolist_Runing());
+		ht.put("Todolist_Complete", Dev2Interface.getTodolist_Complete());
 //		ht.put("Todolist_Sharing", BP.WF.Dev2Interface.getTodolist_Sharing());
-		ht.put("Todolist_CCWorks", BP.WF.Dev2Interface.getTodolist_CCWorks());
+		ht.put("Todolist_CCWorks", Dev2Interface.getTodolist_CCWorks());
 //		ht.put("Todolist_Apply", BP.WF.Dev2Interface.getTodolist_Apply()); //申请下来的任务个数.
 //		ht.put("Todolist_Draft", BP.WF.Dev2Interface.getTodolist_Draft()); //草稿数量.
 
-		ht.put("Todolist_HuiQian", BP.WF.Dev2Interface.getTodolist_HuiQian()); //会签数量.
+		ht.put("Todolist_HuiQian", Dev2Interface.getTodolist_HuiQian()); //会签数量.
 
 		return BP.Tools.Json.ToJsonEntityModel(ht);
 	}
@@ -146,7 +146,7 @@ public class CCMobile extends WebContralBase
 	{
 		String sql = "SELECT  TSpan as No, '' as Name, COUNT(WorkID) as Num, FROM WF_GenerWorkFlow WHERE Emps LIKE '%" + WebUser.getNo() + "%' GROUP BY TSpan";
 		DataSet ds = new DataSet();
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		ds.Tables.add(dt);
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle)
 		{
@@ -155,7 +155,7 @@ public class CCMobile extends WebContralBase
 		}
 
 		sql = "SELECT IntKey as No, Lab as Name FROM Sys_Enum WHERE EnumKey='TSpan'";
-		DataTable dt1 = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt1 = DBAccess.RunSQLReturnTable(sql);
 		for (DataRow dr : dt.Rows)
 		{
 			for (DataRow mydr : dt1.Rows)
@@ -168,12 +168,12 @@ public class CCMobile extends WebContralBase
 	}
 	 public String MyFlow_Init() throws Exception
      {
-         BP.WF.HttpHandler.WF_MyFlow wfPage = new WF_MyFlow(this.context);
+         WF_MyFlow wfPage = new WF_MyFlow(this.context);
          return wfPage.MyFlow_Init();
      }
 	public final String Runing_Init() throws Exception
 	{
-		BP.WF.HttpHandler.WF wfPage = new WF();
+		WF wfPage = new WF();
 	  return wfPage.Runing_Init();
 	}
 	/** 
@@ -183,7 +183,7 @@ public class CCMobile extends WebContralBase
 	*/
 	public final String Todolist_Init111()
 	{
-		BP.WF.HttpHandler.WF wfPage = new WF();
+		WF wfPage = new WF();
 		return wfPage.Todolist_Init();
 	}
 	/** 
@@ -195,7 +195,7 @@ public class CCMobile extends WebContralBase
 	public final String Todolist_Init() throws Exception
 	{
 		String fk_node = this.GetRequestVal("FK_Node");
-		DataTable dt = BP.WF.Dev2Interface.DB_Todolist(WebUser.getNo(), this.getFK_Node());
+		DataTable dt = Dev2Interface.DB_Todolist(WebUser.getNo(), this.getFK_Node());
 		return BP.Tools.Json.ToJson(dt);
 	}
 
@@ -207,7 +207,7 @@ public class CCMobile extends WebContralBase
 	public final String Complete_Init() throws Exception
 	{
 		DataTable dt=null;
-		dt=BP.WF.Dev2Interface.DB_FlowComplete();
+		dt=Dev2Interface.DB_FlowComplete();
 		return  BP.Tools.Json.ToJson(dt);
 	}
 	public final String DB_GenerReturnWorks() throws Exception
@@ -218,7 +218,7 @@ public class CCMobile extends WebContralBase
 
 	public final String Start_Init() throws Exception
 	{
-		BP.WF.HttpHandler.WF wfPage = new WF();
+		WF wfPage = new WF();
 		return wfPage.Start_Init();
 	}
 
@@ -246,7 +246,7 @@ public class CCMobile extends WebContralBase
 			return "err@提示:此工作已经被别人处理或者此流程已删除。";
 		}
 
-		BP.Port.Emp empOF = new BP.Port.Emp(wl.getFK_Emp());
+		Emp empOF = new Emp(wl.getFK_Emp());
 		WebUser.SignInOfGener(empOF);
 		return "MyFlow.htm?FK_Flow=" + wl.getFK_Flow() + "&WorkID=" + wl.getWorkID() + "&FK_Node=" + wl.getFK_Node() + "&FID=" + wl.getFID();
 	}
@@ -258,7 +258,7 @@ public class CCMobile extends WebContralBase
 	*/
 	public final String FrmView_Init() throws Exception
 	{
-		BP.WF.HttpHandler.WF wf = new WF(this.context);
+		WF wf = new WF(this.context);
 		return wf.FrmView_Init();
 	}
 
@@ -290,7 +290,7 @@ public class CCMobile extends WebContralBase
 			*/
 			public final String SearchKey_OpenFrm() throws Exception
 			{
-				BP.WF.HttpHandler.WF_RptSearch search = new WF_RptSearch();
+				WF_RptSearch search = new WF_RptSearch();
 				return search.KeySearch_OpenFrm();
 			}
 			/** 
@@ -301,7 +301,7 @@ public class CCMobile extends WebContralBase
 			*/
 			public final String SearchKey_Query() throws Exception
 			{
-				BP.WF.HttpHandler.WF_RptSearch search = new WF_RptSearch();
+				WF_RptSearch search = new WF_RptSearch();
 				return search.KeySearch_Query();
 			}
 			///#endregion 关键字查询.
@@ -332,14 +332,14 @@ public class CCMobile extends WebContralBase
 
 				if (this.getFK_Flow() == null)
 				{
-					sql = "SELECT  TSpan as No, COUNT(WorkID) as Num FROM WF_GenerWorkFlow WHERE (Emps LIKE '%" + WebUser.getNo() + "%' OR TodoEmps LIKE '%"+BP.Web.WebUser.getNo()+",%' OR Starter='" + WebUser.getNo() + "') AND WFState > 1 AND FID = 0 GROUP BY TSpan";
+					sql = "SELECT  TSpan as No, COUNT(WorkID) as Num FROM WF_GenerWorkFlow WHERE (Emps LIKE '%" + WebUser.getNo() + "%' OR TodoEmps LIKE '%"+WebUser.getNo()+",%' OR Starter='" + WebUser.getNo() + "') AND WFState > 1 AND FID = 0 GROUP BY TSpan";
 				}
 				else
 				{
-					sql = "SELECT  TSpan as No, COUNT(WorkID) as Num FROM WF_GenerWorkFlow WHERE FK_Flow='" + this.getFK_Flow() + "' AND WFState > 1 AND FID = 0 AND (Emps LIKE '%" + WebUser.getNo() + "%' OR TodoEmps LIKE '%"+BP.Web.WebUser.getNo()+",%' OR Starter='" + WebUser.getNo() + "')  GROUP BY TSpan";
+					sql = "SELECT  TSpan as No, COUNT(WorkID) as Num FROM WF_GenerWorkFlow WHERE FK_Flow='" + this.getFK_Flow() + "' AND WFState > 1 AND FID = 0 AND (Emps LIKE '%" + WebUser.getNo() + "%' OR TodoEmps LIKE '%"+WebUser.getNo()+",%' OR Starter='" + WebUser.getNo() + "')  GROUP BY TSpan";
 				}
 
-				DataTable dtTSpanNum = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				DataTable dtTSpanNum = DBAccess.RunSQLReturnTable(sql);
 				for (DataRow drEnum : dtTSpan.Rows)
 				{
 					String no = drEnum.getValue("IntKey").toString();
@@ -357,12 +357,12 @@ public class CCMobile extends WebContralBase
 				///#region 2、处理流程类别列表.
 				
 				if (tSpan == null || tSpan.equals("-1"))
-	                sql = "SELECT  FK_Flow as No, FlowName as Name, COUNT(WorkID) as Num FROM WF_GenerWorkFlow WHERE (Emps LIKE '%" + WebUser.getNo() + "%' OR TodoEmps LIKE '%" + BP.Web.WebUser.getNo() + ",%' OR Starter='" + WebUser.getNo() + "')  AND WFState > 1 AND FID = 0 GROUP BY FK_Flow, FlowName";
+	                sql = "SELECT  FK_Flow as No, FlowName as Name, COUNT(WorkID) as Num FROM WF_GenerWorkFlow WHERE (Emps LIKE '%" + WebUser.getNo() + "%' OR TodoEmps LIKE '%" + WebUser.getNo() + ",%' OR Starter='" + WebUser.getNo() + "')  AND WFState > 1 AND FID = 0 GROUP BY FK_Flow, FlowName";
 				else 
-	                sql = "SELECT  FK_Flow as No, FlowName as Name, COUNT(WorkID) as Num FROM WF_GenerWorkFlow WHERE TSpan=" + tSpan + " AND (Emps LIKE '%" + WebUser.getNo() + "%' OR TodoEmps LIKE '%"+BP.Web.WebUser.getNo()+",%' OR Starter='" + WebUser.getNo() + "')  AND WFState > 1 AND FID = 0 GROUP BY FK_Flow, FlowName";
+	                sql = "SELECT  FK_Flow as No, FlowName as Name, COUNT(WorkID) as Num FROM WF_GenerWorkFlow WHERE TSpan=" + tSpan + " AND (Emps LIKE '%" + WebUser.getNo() + "%' OR TodoEmps LIKE '%"+WebUser.getNo()+",%' OR Starter='" + WebUser.getNo() + "')  AND WFState > 1 AND FID = 0 GROUP BY FK_Flow, FlowName";
 
 
-				DataTable dtFlows = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				DataTable dtFlows = DBAccess.RunSQLReturnTable(sql);
 				if (SystemConfig.getAppCenterDBType() == DBType.Oracle)
 				{
 					dtFlows.Columns.get(0).ColumnName = "No";
@@ -376,14 +376,14 @@ public class CCMobile extends WebContralBase
 				///#region 3、处理流程实例列表.
 
 				GenerWorkFlows gwfs = new GenerWorkFlows();
-				BP.En.QueryObject qo = new QueryObject(gwfs);
+				QueryObject qo = new QueryObject(gwfs);
 				
 				qo.addLeftBracket();
-				qo.AddWhere(GenerWorkFlowAttr.Emps, " LIKE ", "%" + BP.Web.WebUser.getNo() + "%");
+				qo.AddWhere(GenerWorkFlowAttr.Emps, " LIKE ", "%" + WebUser.getNo() + "%");
 				qo.addOr();
-		        qo.AddWhere(GenerWorkFlowAttr.Starter, BP.Web.WebUser.getNo());
+		        qo.AddWhere(GenerWorkFlowAttr.Starter, WebUser.getNo());
 		        qo.addOr();
-		        qo.AddWhere(GenerWorkFlowAttr.TodoEmps," LIKE ","%" + BP.Web.WebUser.getNo()+ ",%");
+		        qo.AddWhere(GenerWorkFlowAttr.TodoEmps," LIKE ","%" + WebUser.getNo()+ ",%");
 		        qo.addRightBracket();
 		        
 				if (tSpan.equals("-1") == false)
@@ -434,7 +434,7 @@ public class CCMobile extends WebContralBase
 
 				GenerWorkFlows gwfs = new GenerWorkFlows();
 				QueryObject qo = new QueryObject(gwfs);
-				qo.AddWhere(GenerWorkFlowAttr.Emps, " LIKE ", "%" + BP.Web.WebUser.getNo() + "%");
+				qo.AddWhere(GenerWorkFlowAttr.Emps, " LIKE ", "%" + WebUser.getNo() + "%");
 				if (!DotNetToJavaStringHelper.isNullOrEmpty(TSpan))
 				{
 					qo.addAnd();
@@ -465,7 +465,7 @@ public class CCMobile extends WebContralBase
 	        /// <returns></returns>
 	        public String FrmView_UnSend() throws Exception
 	        {
-	            BP.WF.HttpHandler.WF_WorkOpt_OneWork en = new WF_WorkOpt_OneWork(this.context);
+	            WF_WorkOpt_OneWork en = new WF_WorkOpt_OneWork(this.context);
 	            return en.OP_UnSend();
 	        }
 }

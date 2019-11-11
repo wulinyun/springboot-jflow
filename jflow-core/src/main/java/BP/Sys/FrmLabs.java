@@ -58,9 +58,9 @@ public class FrmLabs extends EntitiesMyPK
 	 转化成list
 	 @return List
 	*/
-	public final java.util.ArrayList<FrmLab> Tolist()
+	public final ArrayList<FrmLab> Tolist()
 	{
-		java.util.ArrayList<FrmLab> list = new java.util.ArrayList<FrmLab>();
+		ArrayList<FrmLab> list = new ArrayList<FrmLab>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((FrmLab)this.get(i));

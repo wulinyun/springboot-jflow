@@ -96,7 +96,7 @@ public class Dev2InterfaceGuest
 		}
 
 
-		Emp empStarter = new Emp(BP.Web.WebUser.getNo());
+		Emp empStarter = new Emp(WebUser.getNo());
 		Work wk = fl.NewWork(empStarter, htPara);
 		long workID = wk.getOID();
 
@@ -163,7 +163,7 @@ public class Dev2InterfaceGuest
 			ps.SQL = "UPDATE " + fl.getPTable() + " SET WFState=" + dbstr + "WFState,FK_Dept=" + dbstr + "FK_Dept,Title=" + dbstr + "Title WHERE OID=" + dbstr + "OID";
 			ps.Add(GERptAttr.WFState, WFState.Blank.getValue());
 			ps.Add(GERptAttr.FK_Dept, empStarter.getFK_Dept());
-			ps.Add(GERptAttr.Title, BP.WF.WorkFlowBuessRole.GenerTitle(fl, wk));
+			ps.Add(GERptAttr.Title, WorkFlowBuessRole.GenerTitle(fl, wk));
 			ps.Add(GERptAttr.OID, wk.getOID());
 			DBAccess.RunSQL(ps);
 		}
@@ -184,7 +184,7 @@ public class Dev2InterfaceGuest
 		// 设置流程信息
 		if (parentWorkID != 0)
 		{
-			BP.WF.Dev2Interface.SetParentInfo(flowNo, workID, parentFlowNo, parentWorkID, parentNodeID, parentEmp);
+			Dev2Interface.SetParentInfo(flowNo, workID, parentFlowNo, parentWorkID, parentNodeID, parentEmp);
 		}
 
 
@@ -206,7 +206,7 @@ public class Dev2InterfaceGuest
 		gwf.setWFState(WFState.Runing);
 		if (StringHelper.isNullOrEmpty(title))
 		{
-			gwf.setTitle(BP.WF.WorkFlowBuessRole.GenerTitle(fl, wk));
+			gwf.setTitle(WorkFlowBuessRole.GenerTitle(fl, wk));
 		}
 		else
 		{
@@ -308,7 +308,7 @@ public class Dev2InterfaceGuest
 	*/
 	public static DataTable DB_GenerCanStartFlowsOfDataTable()
 	{
-		return BP.DA.DBAccess.RunSQLReturnTable("SELECT FK_Flow as No, FlowName AS Name  FROM WF_Node  WHERE IsGuestNode=1 AND NodePosType=0");
+		return DBAccess.RunSQLReturnTable("SELECT FK_Flow as No, FlowName AS Name  FROM WF_Node  WHERE IsGuestNode=1 AND NodePosType=0");
 	}
 	/** 
 	 获取Guest的待办
@@ -325,7 +325,7 @@ public class Dev2InterfaceGuest
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
 
 		Paras ps = new Paras();
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String sql;
 
 		//不是授权状态
@@ -340,7 +340,7 @@ public class Dev2InterfaceGuest
 			ps.Add("FK_Flow", fk_flow);
 			ps.Add("GuestNo", guestNo);
 		}
-		return BP.DA.DBAccess.RunSQLReturnTable(ps);
+		return DBAccess.RunSQLReturnTable(ps);
 	}
 	/** 
 	 获取未完成的流程(也称为在途流程:我参与的但是此流程未完成)
@@ -372,7 +372,7 @@ public class Dev2InterfaceGuest
 			sql = "SELECT a.* FROM WF_GenerWorkFlow A, WF_GenerWorkerlist B WHERE A.FK_Flow='" + fk_flow + "'  AND A.WorkID=B.WorkID AND B.FK_Emp='" + WebUser.getNo() + "' AND B.IsEnable=1 AND B.IsPass=1  AND A.GuestNo='" + guestNo + "'";
 		}
 
-		return BP.DA.DBAccess.RunSQLReturnTable(sql);
+		return DBAccess.RunSQLReturnTable(sql);
 
 		//GenerWorkFlows gwfs = new GenerWorkFlows();
 		//gwfs.RetrieveInSQL(GenerWorkFlowAttr.WorkID, "(" + sql + ")");
@@ -394,13 +394,13 @@ public class Dev2InterfaceGuest
 	*/
 	public static void SetGuestInfo(String flowNo, long workID, String guestNo, String guestName) throws Exception
 	{
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "UPDATE WF_GenerWorkFlow SET GuestNo=" + dbstr + "GuestNo, GuestName=" + dbstr + "GuestName WHERE WorkID=" + dbstr + "WorkID";
 		ps.Add("GuestNo", guestNo);
 		ps.Add("GuestName", guestName);
 		ps.Add("WorkID", workID);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 
 		Flow fl = new Flow(flowNo);
 		ps = new Paras();
@@ -408,7 +408,7 @@ public class Dev2InterfaceGuest
 		ps.Add("GuestNo", guestNo);
 		ps.Add("GuestName", guestName);
 		ps.Add("OID", workID);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 	}
 	/** 
 	 设置当前用户的待办
@@ -428,13 +428,13 @@ public class Dev2InterfaceGuest
 			throw new RuntimeException("@设置外部用户待办信息失败:参数workID不能为0.");
 		}
 
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "UPDATE WF_GenerWorkerList SET GuestNo=" + dbstr + "GuestNo, GuestName=" + dbstr + "GuestName WHERE WorkID=" + dbstr + "WorkID AND IsPass=0";
 		ps.Add("GuestNo", guestNo);
 		ps.Add("GuestName", guestName);
 		ps.Add("WorkID", workID);
-		int i = BP.DA.DBAccess.RunSQL(ps);
+		int i = DBAccess.RunSQL(ps);
 		if (i == 0)
 		{
 			throw new RuntimeException("@设置外部用户待办信息失败:参数workID不能为空.");
@@ -445,7 +445,7 @@ public class Dev2InterfaceGuest
 		ps.Add("GuestNo", guestNo);
 		ps.Add("GuestName", guestName);
 		ps.Add("WorkID", workID);
-		i = BP.DA.DBAccess.RunSQL(ps);
+		i = DBAccess.RunSQL(ps);
 		if (i == 0)
 		{
 			throw new RuntimeException("@WF_GenerWorkFlow - 设置外部用户待办信息失败:参数WorkID不能为空.");

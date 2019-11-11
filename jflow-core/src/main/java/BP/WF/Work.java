@@ -165,7 +165,7 @@ public abstract class Work extends Entity
 		{
 			return DataType.dateToStr(DataType.ParseSysDate2DateTime(this.getRDT()),DataType.getSysDataFormat());
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			return DataType.getCurrentDate();
 		}
@@ -176,7 +176,7 @@ public abstract class Work extends Entity
 		{
 			return DataType.ParseSysDate2DateTime(this.getRDT_Date());
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			return new java.util.Date();
 		}
@@ -221,7 +221,7 @@ public abstract class Work extends Entity
 		{
 			return this.getHisRec().getName();
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			return this.getRec();
 		}
@@ -436,7 +436,7 @@ public abstract class Work extends Entity
 				java.math.BigDecimal d = new java.math.BigDecimal(objval);
 				this.SetValByKey(attr.getKey(), objval);
 			}
-			catch (java.lang.Exception e)
+			catch (Exception e)
 			{
 			}
 		}
@@ -527,7 +527,7 @@ public abstract class Work extends Entity
 			{
 				this.SetValByKey(attr.getKey(), dr.getValue(attr.getKey()));
 			}
-			catch (java.lang.Exception e)
+			catch (Exception e)
 			{
 			}
 		}

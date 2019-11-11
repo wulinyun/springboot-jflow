@@ -499,7 +499,7 @@ public abstract class FlowEventBase
 			//系统参数.
 			r.put("FK_MapData", en.getClassID());
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			r.put("FK_MapData", en.getClassID());
 		}
@@ -512,7 +512,7 @@ public abstract class FlowEventBase
 				try
 				{
 					r.put(s, ap.GetValStrByKey(s));
-				} catch (java.lang.Exception e2)
+				} catch (Exception e2)
 				{
 					// r[s] = ap.GetValStrByKey(s);
 					r.put(s, ap.GetValStrByKey(s));

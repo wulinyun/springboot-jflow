@@ -220,7 +220,7 @@ public class GPMEmp extends EntityNoName
 		map.AddSearchAttr(EmpAttr.SignType);
 
 			//节点绑定部门. 节点绑定部门.
-		map.getAttrsOfOneVSM().AddBranches(new EmpMenus(), new BP.GPM.Menus(), BP.GPM.EmpMenuAttr.FK_Emp, BP.GPM.EmpMenuAttr.FK_Menu, "人员菜单", EmpAttr.Name, EmpAttr.No, "0");
+		map.getAttrsOfOneVSM().AddBranches(new EmpMenus(), new Menus(), EmpMenuAttr.FK_Emp, EmpMenuAttr.FK_Menu, "人员菜单", EmpAttr.Name, EmpAttr.No, "0");
 
 		RefMethod rm = new RefMethod();
 		rm.Title = "设置图片签名";
@@ -235,7 +235,7 @@ public class GPMEmp extends EntityNoName
 		map.AddRefMethod(rm);
 
 			//节点绑定部门. 节点绑定部门.
-		map.getAttrsOfOneVSM().AddBranches(new DeptEmps(), new BP.GPM.Depts(), BP.GPM.DeptEmpAttr.FK_Emp, BP.GPM.DeptEmpAttr.FK_Dept, "部门维护", EmpAttr.Name, EmpAttr.No, "@WebUser.FK_Dept");
+		map.getAttrsOfOneVSM().AddBranches(new DeptEmps(), new Depts(), DeptEmpAttr.FK_Emp, DeptEmpAttr.FK_Dept, "部门维护", EmpAttr.Name, EmpAttr.No, "@WebUser.FK_Dept");
 
 
 		this.set_enMap(map);
@@ -255,8 +255,8 @@ public class GPMEmp extends EntityNoName
 	public static GPMEmp GenerData(GPMEmp en) throws Exception
 	{
 		//增加拼音，以方便查找.
-		String pinyinQP = BP.DA.DataType.ParseStringToPinyin(en.getName()).toLowerCase();
-		String pinyinJX = BP.DA.DataType.ParseStringToPinyinJianXie(en.getName()).toLowerCase();
+		String pinyinQP = DataType.ParseStringToPinyin(en.getName()).toLowerCase();
+		String pinyinJX = DataType.ParseStringToPinyinJianXie(en.getName()).toLowerCase();
 		en.setPinYin("," + pinyinQP + "," + pinyinJX + ",");
 
 		//处理岗位信息.
@@ -268,7 +268,7 @@ public class GPMEmp extends EntityNoName
 
 		for (DeptEmpStation item : des.ToJavaList())
 		{
-			BP.GPM.Dept dept = new BP.GPM.Dept();
+			Dept dept = new Dept();
 			dept.setNo(item.getFK_Dept());
 			if (dept.RetrieveFromDBSources() == 0)
 			{
@@ -277,7 +277,7 @@ public class GPMEmp extends EntityNoName
 			}
 
 			//给拼音重新定义值,让其加上部门的信息.
-			en.setPinYin(en.getPinYin() + pinyinJX + "/" + BP.DA.DataType.ParseStringToPinyinJianXie(dept.getName()).toLowerCase() + ",");
+			en.setPinYin(en.getPinYin() + pinyinJX + "/" + DataType.ParseStringToPinyinJianXie(dept.getName()).toLowerCase() + ",");
 
 			BP.Port.Station sta = new BP.Port.Station();
 			sta.setNo(item.getFK_Station());
@@ -301,7 +301,7 @@ public class GPMEmp extends EntityNoName
 	protected boolean beforeUpdateInsertAction() throws Exception
 	{
 		//处理其他的数据.
-		BP.GPM.GPMEmp.GenerData(this);
+		GPMEmp.GenerData(this);
 		return super.beforeUpdateInsertAction();
 	}
 	/** 

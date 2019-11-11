@@ -420,12 +420,12 @@ public class FrmAttachmentDB extends EntityMyPK
 		
 	 
 			// @于庆海需要翻译.
-			if (ath.getAthSaveWay()==BP.Sys.AthSaveWay.WebServer)
+			if (ath.getAthSaveWay()==AthSaveWay.WebServer)
 			{
 				new File(this.getFileFullName()).delete();
 			}
 
-			if (ath.getAthSaveWay() == BP.Sys.AthSaveWay.FTPServer)
+			if (ath.getAthSaveWay() == AthSaveWay.FTPServer)
 			{
 				
 				//特殊处理宝旺达的项目，由这个标记，就不要删除ftp文件.
@@ -453,13 +453,13 @@ public class FrmAttachmentDB extends EntityMyPK
 	}
 	public String GenerTempFile(AthSaveWay saveWay)
     {
-        if (saveWay == BP.Sys.AthSaveWay.WebServer)
+        if (saveWay == AthSaveWay.WebServer)
             return this.getFileFullName();
 
-        if (saveWay == BP.Sys.AthSaveWay.FTPServer)
+        if (saveWay == AthSaveWay.FTPServer)
             return this.MakeFullFileFromFtp();
 
-        if (saveWay == BP.Sys.AthSaveWay.DB)
+        if (saveWay == AthSaveWay.DB)
 			try {
 				throw new Exception("@尚未处理存储到db里面的文件.");
 			} catch (Exception e) {

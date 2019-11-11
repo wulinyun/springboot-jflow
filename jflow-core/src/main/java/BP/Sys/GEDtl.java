@@ -174,9 +174,9 @@ public class GEDtl extends EntityOID
 			throw new RuntimeException("没有给" + this.FK_MapDtl + "值，您不能获取它的Map。");
 		}
 		
-		BP.Sys.MapDtl md;
+		MapDtl md;
 		try {
-			md = new BP.Sys.MapDtl(this.FK_MapDtl);
+			md = new MapDtl(this.FK_MapDtl);
 			this.set_enMap(md.GenerMap());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

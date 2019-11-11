@@ -40,8 +40,8 @@ public class Bars extends EntitiesNoName {
 	 * 
 	 * @return List
 	 */
-	public final java.util.ArrayList<Bar> Tolist() {
-		java.util.ArrayList<Bar> list = new java.util.ArrayList<Bar>();
+	public final ArrayList<Bar> Tolist() {
+		ArrayList<Bar> list = new ArrayList<Bar>();
 		for (int i = 0; i < this.size(); i++) {
 			list.add((Bar) this.get(i));
 		}

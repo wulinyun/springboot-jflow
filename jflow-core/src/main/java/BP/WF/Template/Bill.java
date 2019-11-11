@@ -339,7 +339,7 @@ public class Bill extends EntityMyPK
 	*/
 	public final String DoOpen() throws IOException
 	{
-		String url = BP.WF.Glo.getCCFlowAppPath();
+		String url = Glo.getCCFlowAppPath();
 		url = url.substring(0, url.length() - 1);
 		String path = url + this.getUrl();
 		PubClass.OpenWordDocV2(path,
@@ -353,7 +353,7 @@ public class Bill extends EntityMyPK
 	*/
 	public final String DoOpenPDF() throws IOException
 	{
-		String url = BP.WF.Glo.getCCFlowAppPath();
+		String url = Glo.getCCFlowAppPath();
 		url = url.substring(0, url.length() - 1);
 		String path = url + this.getUrl();
 		PubClass.OpenWordDocV2(path,

@@ -25,7 +25,7 @@ public class Paras extends ArrayList<Para>
 	
 	public final String getDBStr()
 	{
-		return BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		return SystemConfig.getAppCenterDBVarStr();
 	}
 	
 	public Paras(String p, Object v)
@@ -120,9 +120,9 @@ public class Paras extends ArrayList<Para>
 			return;
 		}
 		
-		if (clazzType == java.math.BigDecimal.class)
+		if (clazzType == BigDecimal.class)
 		{
-			this.Add(_name, (java.math.BigDecimal) obj);
+			this.Add(_name, (BigDecimal) obj);
 			return;
 		}
 		
@@ -134,7 +134,7 @@ public class Paras extends ArrayList<Para>
 		
 		if (clazzType == Date.class)
 		{
-			this.Add(_name, (java.util.Date) obj);
+			this.Add(_name, (Date) obj);
 			return;
 		}
 		
@@ -190,7 +190,7 @@ public class Paras extends ArrayList<Para>
 	 * _name; this.Add(en); }
 	 */
 	
-	private void Add(String _name, java.math.BigDecimal _val)
+	private void Add(String _name, BigDecimal _val)
 	{
 		Para en = new Para();
 		en.DAType = BigDecimal.class;

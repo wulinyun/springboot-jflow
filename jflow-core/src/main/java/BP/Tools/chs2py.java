@@ -20,7 +20,7 @@ public class chs2py
         {
             for (int i = 0; i < str.length(); i++)
             {
-                _code = BP.Tools.chs2py.convert(String.valueOf(str));
+                _code = chs2py.convert(String.valueOf(str));
 
                 if (StringHelper.isAllWhitespace(_code))
                     continue;
@@ -50,7 +50,7 @@ public class chs2py
 		try
 		{
 			return convert(chrstr);
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			return isNullAsVal;
 		}

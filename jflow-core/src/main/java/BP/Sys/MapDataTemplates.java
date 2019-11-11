@@ -48,9 +48,9 @@ public class MapDataTemplates extends EntitiesNoName
 	 s
 	 @return List
 	*/
-	public final java.util.ArrayList<MapDataTemplate> Tolist()
+	public final ArrayList<MapDataTemplate> Tolist()
 	{
-		java.util.ArrayList<MapDataTemplate> list = new java.util.ArrayList<MapDataTemplate>();
+		ArrayList<MapDataTemplate> list = new ArrayList<MapDataTemplate>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((MapDataTemplate)this.get(i));

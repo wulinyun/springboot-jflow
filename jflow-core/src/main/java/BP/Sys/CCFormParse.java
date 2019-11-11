@@ -238,13 +238,13 @@ public class CCFormParse
 		}
 		else if (shape.equals("DropDownListEnum")) //枚举类型.
 		{
-				attr.setMyDataType(BP.DA.DataType.AppInt);
+				attr.setMyDataType(DataType.AppInt);
 				attr.setLGType(FieldTypeS.Enum);
 				attr.setUIContralType(UIContralType.DDL);
 		}
 		else if (shape.equals("DropDownListTable")) //外键类型.
 		{
-				attr.setMyDataType(BP.DA.DataType.AppString);
+				attr.setMyDataType(DataType.AppString);
 				//@改变了外部数据源的类型
 				//attr.setLGType(FieldTypeS.FK);
 				attr.setUIContralType(UIContralType.DDL);

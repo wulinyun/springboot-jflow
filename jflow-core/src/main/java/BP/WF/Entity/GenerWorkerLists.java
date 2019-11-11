@@ -142,7 +142,7 @@ public class GenerWorkerLists extends Entities
 			try
 			{
 				mywl.Insert();
-			} catch (java.lang.Exception e)
+			} catch (Exception e)
 			{
 				mywl.Update();
 				continue;

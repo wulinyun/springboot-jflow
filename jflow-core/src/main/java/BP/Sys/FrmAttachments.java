@@ -56,9 +56,9 @@ public class FrmAttachments extends EntitiesMyPK
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<FrmAttachment> Tolist()
+	public final ArrayList<FrmAttachment> Tolist()
 	{
-		java.util.ArrayList<FrmAttachment> list = new java.util.ArrayList<FrmAttachment>();
+		ArrayList<FrmAttachment> list = new ArrayList<FrmAttachment>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((FrmAttachment)this.get(i));

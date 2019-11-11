@@ -97,7 +97,7 @@ public class FlowSort extends EntityTree
 				DBAccess.RunSQL("DELETE FROM GPM_Menu WHERE Flag='FlowSort" + this.getNo() + "' AND FK_App='" + SystemConfig.getSysNo() + "'");
 			}
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 		}
 		return super.beforeDelete();
@@ -134,7 +134,7 @@ public class FlowSort extends EntityTree
 			flowSorts.RetrieveByAttr(FlowSortAttr.ParentNo, this.getNo());
 			return flowSorts;
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 		}
 		return null;
@@ -149,10 +149,10 @@ public class FlowSort extends EntityTree
 		try
 		{
 			Flows flows = new Flows();
-			flows.RetrieveByAttr(BP.WF.Template.FlowAttr.FK_FlowSort, this.getNo());
+			flows.RetrieveByAttr(FlowAttr.FK_FlowSort, this.getNo());
 			return flows;
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 		}
 		return null;

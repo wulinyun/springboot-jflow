@@ -62,7 +62,7 @@ public class CCMobile_RptSearch extends WebContralBase
 			sql = "SELECT  TSpan as No, COUNT(WorkID) as Num FROM WF_GenerWorkFlow WHERE FK_Flow='" + this.getFK_Flow() + "' AND Emps LIKE '%" + WebUser.getNo() + "%' GROUP BY TSpan";
 		}
 
-		DataTable dtTSpanNum = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dtTSpanNum = DBAccess.RunSQLReturnTable(sql);
 		for (DataRow drEnum : dtTSpan.Rows)
 		{
 			String no = drEnum.getValue("IntKey").toString();
@@ -91,7 +91,7 @@ public class CCMobile_RptSearch extends WebContralBase
 		}
 
 
-		DataTable dtFlows = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dtFlows = DBAccess.RunSQLReturnTable(sql);
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle)
 		{
 			dtFlows.Columns.get(0).ColumnName = "No";
@@ -107,8 +107,8 @@ public class CCMobile_RptSearch extends WebContralBase
 			///#region 3、处理流程实例列表.
 
 		GenerWorkFlows gwfs = new GenerWorkFlows();
-		BP.En.QueryObject qo = new QueryObject(gwfs);
-		qo.AddWhere(GenerWorkFlowAttr.Emps, " LIKE ", "%" + BP.Web.WebUser.getNo() + "%");
+		QueryObject qo = new QueryObject(gwfs);
+		qo.AddWhere(GenerWorkFlowAttr.Emps, " LIKE ", "%" + WebUser.getNo() + "%");
 
 		if (tSpan != null)
 		{
@@ -163,7 +163,7 @@ public class CCMobile_RptSearch extends WebContralBase
 
 		GenerWorkFlows gwfs = new GenerWorkFlows();
 		QueryObject qo = new QueryObject(gwfs);
-		qo.AddWhere(GenerWorkFlowAttr.Emps, " LIKE ", "%" + BP.Web.WebUser.getNo() + "%");
+		qo.AddWhere(GenerWorkFlowAttr.Emps, " LIKE ", "%" + WebUser.getNo() + "%");
 		if (!DotNetToJavaStringHelper.isNullOrEmpty(TSpan))
 		{
 			qo.addAnd();

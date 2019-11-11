@@ -88,7 +88,7 @@ public class MapAttr extends EntityMyPK {
 	 */
 	public final EntitiesNoName getHisEntitiesNoName() throws Exception {
 		if (this.getUIBindKey().contains(".")) {
-			EntitiesNoName ens = (EntitiesNoName) BP.En.ClassFactory.GetEns(this.getUIBindKey());
+			EntitiesNoName ens = (EntitiesNoName) ClassFactory.GetEns(this.getUIBindKey());
 			if (ens == null) {
 				return null;
 			}
@@ -301,10 +301,10 @@ public class MapAttr extends EntityMyPK {
 
 	public final boolean getIsNum() {
 		switch (this.getMyDataType()) {
-		case BP.DA.DataType.AppString:
-		case BP.DA.DataType.AppDate:
-		case BP.DA.DataType.AppDateTime:
-		case BP.DA.DataType.AppBoolean:
+		case DataType.AppString:
+		case DataType.AppDate:
+		case DataType.AppDateTime:
+		case DataType.AppBoolean:
 			return false;
 		default:
 			return true;
@@ -389,13 +389,13 @@ public class MapAttr extends EntityMyPK {
 		}
 
 		switch (this.getMyDataType()) {
-		case BP.DA.DataType.AppDate:
+		case DataType.AppDate:
 			if (this.getTag().equals("1") || s.equals("@RDT")) {
 				return DataType.getCurrentDate();
 			} else {
 				return "          ";
 			}
-		case BP.DA.DataType.AppDateTime:
+		case DataType.AppDateTime:
 			if (this.getTag().equals("1") || s.equals("@RDT")) {
 				return DataType.getCurrentDataTime();
 			} else {
@@ -1114,7 +1114,7 @@ public class MapAttr extends EntityMyPK {
 		// 规整groupID.
 		GroupField gf = new GroupField();
 		gf.Retrieve(GroupFieldAttr.EnName, this.getFK_MapData());
-		BP.DA.DBAccess.RunSQL(
+		DBAccess.RunSQL(
 				"UPDATE Sys_MapAttr SET GroupID=" + gf.getOID() + " WHERE FK_MapData='" + this.getFK_MapData() + "'");
 
 		this.DoOrderUp(MapAttrAttr.FK_MapData, this.getFK_MapData(), MapAttrAttr.UIVisible, "1", MapAttrAttr.Idx);
@@ -1136,7 +1136,7 @@ public class MapAttr extends EntityMyPK {
 		// 规整groupID.
 		GroupField gf = new GroupField();
 		gf.Retrieve(GroupFieldAttr.EnName, this.getFK_MapData());
-		BP.DA.DBAccess.RunSQL(
+		DBAccess.RunSQL(
 				"UPDATE Sys_MapAttr SET GroupID=" + gf.getOID() + " WHERE FK_MapData='" + this.getFK_MapData() + "'");
 
 		this.DoOrderDown(MapAttrAttr.FK_MapData, this.getFK_MapData(), MapAttrAttr.UIVisible, "1", MapAttrAttr.Idx);
@@ -1154,7 +1154,7 @@ public class MapAttr extends EntityMyPK {
 			String sql = "UPDATE Sys_MapAttr SET GroupID=( SELECT OID FROM Sys_GroupField WHERE FrmID='"
 					+ this.getFK_MapData() + "') WHERE FK_MapData='" + this.getFK_MapData() + "'";
 			DBAccess.RunSQL(sql);
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 		}
 
 		this.DoDown();
@@ -1167,7 +1167,7 @@ public class MapAttr extends EntityMyPK {
 			String sql = "UPDATE Sys_MapAttr SET GroupID=( SELECT OID FROM Sys_GroupField WHERE FrmID='"
 					+ this.getFK_MapData() + "') WHERE FK_MapData='" + this.getFK_MapData() + "'";
 			DBAccess.RunSQL(sql);
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 		}
 		this.DoUp();
 		
@@ -1278,9 +1278,9 @@ public class MapAttr extends EntityMyPK {
 
 		if (this.getKeyOfEn() == null || this.getKeyOfEn().trim().equals("")) {
 			try {
-				this.setKeyOfEn(BP.DA.DataType.ParseStringToPinyin(this.getName()));
+				this.setKeyOfEn(DataType.ParseStringToPinyin(this.getName()));
 				if (this.getKeyOfEn().length() > 20) {
-					this.setKeyOfEn(BP.DA.DataType.ParseStringToPinyinWordFirst(this.getName()));
+					this.setKeyOfEn(DataType.ParseStringToPinyinWordFirst(this.getName()));
 				}
 
 				if (this.getKeyOfEn() == null || this.getKeyOfEn().trim().equals("")) {
@@ -1330,7 +1330,7 @@ public class MapAttr extends EntityMyPK {
 		sqls += "@DELETE FROM Sys_FrmSln WHERE KeyOfEn='" + this.getKeyOfEn() + "' AND FK_MapData='"
 				+ this.getFK_MapData() + "'";
 
-		BP.DA.DBAccess.RunSQLs(sqls);
+		DBAccess.RunSQLs(sqls);
 		return super.beforeDelete();
 	}
 	

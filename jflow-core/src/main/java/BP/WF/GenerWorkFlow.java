@@ -436,11 +436,11 @@ public class GenerWorkFlow extends Entity
 	}
 	public final void setWFState(WFState value)
 	{
-		if (value == BP.WF.WFState.Complete)
+		if (value == WFState.Complete)
 		{
 			SetValByKey(GenerWorkFlowAttr.WFSta, getWFSta().Complete.getValue());
 		}
-		else if (value == BP.WF.WFState.Delete)
+		else if (value == WFState.Delete)
 		{
 			SetValByKey(GenerWorkFlowAttr.WFSta, getWFSta().Etc.getValue());
 		}
@@ -467,7 +467,7 @@ public class GenerWorkFlow extends Entity
 	*/
 	public final String getWFStateText()
 	{
-		BP.WF.WFState ws = (WFState)this.getWFState();
+		WFState ws = (WFState)this.getWFState();
 		switch(ws)
 		{
 			case Complete:

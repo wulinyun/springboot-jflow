@@ -53,7 +53,7 @@ public class FrmNodeExt extends EntityMyPK{
     /// 重写基类方法
     /// </summary>
     @Override
-    public BP.En.Map getEnMap() {
+    public Map getEnMap() {
     {
             if (this.get_enMap() != null)
                 return this.get_enMap();

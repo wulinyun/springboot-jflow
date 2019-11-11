@@ -212,7 +212,7 @@ public class WF_Comm_RefFunc extends WebContralBase {
         //提交内容过长时，采用分段式提交
         if (StringHelper.isNullOrEmpty(partno))
         {
-            ndepts.Delete(BP.WF.Template.NodeDeptAttr.FK_Node, nid);
+            ndepts.Delete(NodeDeptAttr.FK_Node, nid);
         }
         else
         {
@@ -227,19 +227,19 @@ public class WF_Comm_RefFunc extends WebContralBase {
             deptNos = data.split("\\|");
 
             if (partidx == 1)
-                ndepts.Delete(BP.WF.Template.NodeDeptAttr.FK_Node, nid);
+                ndepts.Delete(NodeDeptAttr.FK_Node, nid);
 
             lastpart = partidx == partcount;
         }
 
         DataTable dtDepts = DBAccess.RunSQLReturnTable("SELECT No FROM Port_Dept");
-        BP.WF.Template.NodeDept nemp = null;
+        NodeDept nemp = null;
 
         for(String deptNo : deptNos)
         {
             if (dtDepts.selectx("No="+deptNo).size() + dtDepts.selectx("NO="+deptNo).size() == 0)
                 continue;
-            nemp = new BP.WF.Template.NodeDept();
+            nemp = new NodeDept();
             nemp.setFK_Node(nid);
             nemp.setFK_Dept(deptNo);
             nemp.Insert();

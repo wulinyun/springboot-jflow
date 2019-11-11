@@ -19,7 +19,7 @@ public class AppClass {
 	 */
 	public static String JobSchedule(long workid) throws Exception {
 
-		DataSet ds = BP.WF.Dev2Interface.DB_JobSchedule(workid);
+		DataSet ds = Dev2Interface.DB_JobSchedule(workid);
 
 		DataTable gwf = ds.GetTableByName("WF_GenerWorkFlow"); //工作记录.
 		DataTable nodes = ds.GetTableByName("WF_Node"); //节点.
@@ -274,7 +274,7 @@ public class AppClass {
 
 			// 加载接口.
 			DataSet ds = new DataSet();
-			ds = BP.WF.CCFlowAPI.GenerWorkNode(gwf.getFK_Flow(), gwf.getFK_Node(), gwf.getWorkID(), gwf.getFID(),
+			ds = CCFlowAPI.GenerWorkNode(gwf.getFK_Flow(), gwf.getFK_Node(), gwf.getWorkID(), gwf.getFID(),
 					BP.Web.WebUser.getNo(), "");
 
 			// 要保留的tables.
@@ -312,7 +312,7 @@ public class AppClass {
 			String sql = "SELECT C.Name AS DeptName, A.* FROM ND" + Integer.parseInt(gwf.getFK_Flow())
 					+ "Track A, Port_Emp B, Port_Dept C WHERE A.WorkID=" + workid
 					+ " AND (A.ActionType=22) AND (A.EmpFrom=B.No) AND (B.FK_Dept=C.No) ORDER BY A.RDT DESC";
-			DataTable dtTrack = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			DataTable dtTrack = DBAccess.RunSQLReturnTable(sql);
 			dtTrack.TableName = "Track";
 			ds.Tables.add(dtTrack);
 

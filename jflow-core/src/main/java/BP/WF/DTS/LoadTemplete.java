@@ -250,9 +250,9 @@ public class LoadTemplete extends Method
 			}
 		}
 			///#endregion 处理流程.
-		BP.DA.Log.DefaultLogWriteLineInfo(msg);
+		Log.DefaultLogWriteLineInfo(msg);
 		//删除多余的空格.
-		BP.WF.DTS.DeleteBlankGroupField dts = new DeleteBlankGroupField();
+		DeleteBlankGroupField dts = new DeleteBlankGroupField();
 		dts.Do();
 
 		return msg;

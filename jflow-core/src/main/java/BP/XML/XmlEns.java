@@ -99,7 +99,7 @@ public abstract class XmlEns extends ArrayList<XmlEn>
 	private DataTable GetTableTxts(List<File> fis)
 	{
 		
-		Object tempVar = BP.DA.Cash.GetObj(this.getTname(),
+		Object tempVar = Cash.GetObj(this.getTname(),
 				Depositary.Application);
 		DataTable cdt = (DataTable) ((tempVar instanceof DataTable) ? tempVar
 				: null);
@@ -114,14 +114,14 @@ public abstract class XmlEns extends ArrayList<XmlEn>
 			dt = GetTableTxt(dt, fi);
 		}
 		
-		BP.DA.Cash.AddObj(this.getTname(), Depositary.Application, dt);
+		Cash.AddObj(this.getTname(), Depositary.Application, dt);
 		return dt;
 	}
 	
 	private DataTable GetTableTxt()
 	{
 		
-		Object tempVar = BP.DA.Cash.GetObj(this.getTname(),
+		Object tempVar = Cash.GetObj(this.getTname(),
 				Depositary.Application);
 		DataTable cdt = (DataTable) ((tempVar instanceof DataTable) ? tempVar
 				: null);
@@ -137,7 +137,7 @@ public abstract class XmlEns extends ArrayList<XmlEn>
 		File fi = new File(this.getFile());
 		dt = GetTableTxt(dt, fi);
 		
-		BP.DA.Cash.AddObj(this.getTname(), Depositary.Application, dt);
+		Cash.AddObj(this.getTname(), Depositary.Application, dt);
 		return dt;
 	}
 	
@@ -237,7 +237,7 @@ public abstract class XmlEns extends ArrayList<XmlEn>
 	
 	public final DataTable GetTable()
 	{
-		Object tempVar = BP.DA.Cash.GetObj(this.getTname(),
+		Object tempVar = Cash.GetObj(this.getTname(),
 				Depositary.Application);
 		DataTable cdt = (DataTable) ((tempVar instanceof DataTable) ? tempVar
 				: null);
@@ -264,7 +264,7 @@ public abstract class XmlEns extends ArrayList<XmlEn>
 				mdt = new DataTable();
 			}
 			
-			BP.DA.Cash.AddObj(this.getTname(), Depositary.Application, mdt);
+			Cash.AddObj(this.getTname(), Depositary.Application, mdt);
 			
 			return ds1.hashTables.get(this.getTableName());
 			/*
@@ -396,13 +396,13 @@ public abstract class XmlEns extends ArrayList<XmlEn>
 						+ ex.getMessage());
 			}
 		}
-		BP.DA.Cash.AddObj(this.getTname(), Depositary.Application, dt);
+		Cash.AddObj(this.getTname(), Depositary.Application, dt);
 		return dt;
 	}
 	
 	public int RetrieveAllFromDBSource()
 	{
-		BP.DA.Cash.RemoveObj(this.getTname());
+		Cash.RemoveObj(this.getTname());
 		return this.RetrieveAll();
 	}
 	
@@ -411,9 +411,9 @@ public abstract class XmlEns extends ArrayList<XmlEn>
 	 */
 	public int RetrieveAll()
 	{
-		BP.DA.Log.DebugWriteInfo("开始读取:"+this.toString());
+		Log.DebugWriteInfo("开始读取:"+this.toString());
 		this.clear(); // 清所有的信息。
-		Object tempVar = BP.DA.Cash.GetObj(this.toString(),
+		Object tempVar = Cash.GetObj(this.toString(),
 				Depositary.Application);
 		XmlEns ens = (XmlEns) ((tempVar instanceof XmlEns) ? tempVar : null);
 		if (ens != null)
@@ -435,8 +435,8 @@ public abstract class XmlEns extends ArrayList<XmlEn>
 			this.Add(en);
 		}
 		
-		BP.DA.Cash.AddObj(this.toString(), Depositary.Application, this);
-		BP.DA.Log.DebugWriteInfo("读取结束"+this.toString());
+		Cash.AddObj(this.toString(), Depositary.Application, this);
+		Log.DebugWriteInfo("读取结束"+this.toString());
 		return dt.Rows.size();
 	}
 	

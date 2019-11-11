@@ -82,7 +82,7 @@ public class CCFlowAPI {
 		// 让其登录. 
 		if (userNo.equals(WebUser.getNo()) == false) {
 			Emp emp = new Emp(userNo);
-			BP.Web.WebUser.SignInOfGener(emp);
+			WebUser.SignInOfGener(emp);
 		}
 
 		// 节点.
@@ -90,7 +90,7 @@ public class CCFlowAPI {
 			fk_node = Integer.parseInt(fk_flow + "01");
 
 		if (workID == 0)
-			workID = BP.WF.Dev2Interface.Node_CreateBlankWork(fk_flow, null, null, userNo, null, 0, 0, null, 0, null, 0,
+			workID = Dev2Interface.Node_CreateBlankWork(fk_flow, null, null, userNo, null, 0, 0, null, 0, null, 0,
 					null);
 
 		Node nd = new Node(fk_node);
@@ -181,7 +181,7 @@ public class CCFlowAPI {
 				/* 说明这是引用到了其他节点的表单，就需要把一些位置元素修改掉. */
 				int refNodeID = Integer.parseInt(nd.getNodeFrmID().replace("ND", ""));
 
-				BP.WF.Template.FrmNodeComponent refFnc = new FrmNodeComponent(refNodeID);
+				FrmNodeComponent refFnc = new FrmNodeComponent(refNodeID);
 
 				fnc.SetValByKey(FrmWorkCheckAttr.FWC_H, refFnc.GetValFloatByKey(FrmWorkCheckAttr.FWC_H));
 				fnc.SetValByKey(FrmWorkCheckAttr.FWC_W, refFnc.GetValFloatByKey(FrmWorkCheckAttr.FWC_W));
@@ -288,17 +288,17 @@ public class CCFlowAPI {
 
 				// 按照时间的顺序查找出来 ids .
 				String sqlOrder = "SELECT OID FROM  Sys_GroupField WHERE   FrmID IN (" + myFrmIDs + ")";
-				if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.Oracle) {
+				if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 					myFrmIDs = myFrmIDs.replace("'", "");
 					sqlOrder += " ORDER BY INSTR('" + myFrmIDs + "', FrmID) , Idx";
 				}
 
-				if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.MSSQL) {
+				if (SystemConfig.getAppCenterDBType() == DBType.MSSQL) {
 					myFrmIDs = myFrmIDs.replace("'", "");
 					sqlOrder += " ORDER BY CHARINDEX(FrmID, '" + myFrmIDs + "'), Idx";
 				}
 
-				if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.MySQL) {
+				if (SystemConfig.getAppCenterDBType() == DBType.MySQL) {
 					myFrmIDs = myFrmIDs.replace("'", "");
 					sqlOrder += " ORDER BY INSTR('" + myFrmIDs + "',FrmID), Idx";
 				}
@@ -468,7 +468,7 @@ public class CCFlowAPI {
 
 				// 把扩展放入里面去.
 				myFrmIDs = wk.HisPassedFrmIDs + ",'ND" + fk_node + "'";
-				BP.Sys.MapExts exts = new MapExts();
+				MapExts exts = new MapExts();
 				qo = new QueryObject(exts);
 				qo.AddWhere(MapExtAttr.FK_MapData, " IN ", "(" + myFrmIDs + ")");
 				qo.DoQuery();
@@ -484,7 +484,7 @@ public class CCFlowAPI {
  
                 //把从表放里面
                 myFrmIDs = wk.HisPassedFrmIDs + ",'ND" + fk_node + "'";
-                BP.Sys.MapDtls dtls = new MapDtls();
+                MapDtls dtls = new MapDtls();
                 qo = new QueryObject(dtls);
                 qo.AddWhere(MapDtlAttr.FK_MapData, " IN ", "(" + myFrmIDs + ")");
                 qo.addAnd();
@@ -502,7 +502,7 @@ public class CCFlowAPI {
 
                 //把附件放里面
                 myFrmIDs = wk.HisPassedFrmIDs + ",'ND" + fk_node + "'";
-                BP.Sys.FrmAttachment frmAtchs = new FrmAttachment();
+                FrmAttachment frmAtchs = new FrmAttachment();
                 qo = new QueryObject(frmAtchs);
                 qo.AddWhere(FrmAttachmentAttr.FK_MapData, " IN ", "(" + myFrmIDs + ")");
                 qo.addAnd();
@@ -517,11 +517,11 @@ public class CCFlowAPI {
 			}
 
 			// #region 流程设置信息.
-			BP.WF.Dev2Interface.Node_SetWorkRead(fk_node, workID);
+			Dev2Interface.Node_SetWorkRead(fk_node, workID);
 			if(nd.getIsStartNode() == false){
-				if (gwf.getTodoEmps().contains(BP.Web.WebUser.getName() + ";") == false)
+				if (gwf.getTodoEmps().contains(WebUser.getName() + ";") == false)
                 {
-                    gwf.setTodoEmps(gwf.getTodoEmps() +BP.Web.WebUser.getNo() + "," + BP.Web.WebUser.getName());
+                    gwf.setTodoEmps(gwf.getTodoEmps() +WebUser.getNo() + "," + WebUser.getName());
                     gwf.Update();
                 }
 			}
@@ -627,7 +627,7 @@ public class CCFlowAPI {
 				// 执行通用的装载方法.
 				MapAttrs attrs = new MapAttrs("ND" + fk_node);
 				MapDtls dtls = new MapDtls("ND" + fk_node);
-				Entity tempVar = BP.WF.Glo.DealPageLoadFull(wk, me, attrs, dtls);
+				Entity tempVar = Glo.DealPageLoadFull(wk, me, attrs, dtls);
 				wk = (Work) ((tempVar instanceof Work) ? tempVar : null);
 			}
 
@@ -759,7 +759,7 @@ public class CCFlowAPI {
 					Object tempVar3 = me.getDoc();
 					String fullSQL = (String) ((tempVar3 instanceof String) ? tempVar3 : null);
 					fullSQL = fullSQL.replace("~", ",");
-					fullSQL = BP.WF.Glo.DealExp(fullSQL, wk, null);
+					fullSQL = Glo.DealExp(fullSQL, wk, null);
 					DataTable dt = DBAccess.RunSQLReturnTable(fullSQL);
 					dt.TableName = keyOfEn; // 可能存在隐患，如果多个字段，绑定同一个表，就存在这样的问题.
 					myds.Tables.add(dt);
@@ -798,7 +798,7 @@ public class CCFlowAPI {
 			case AskForReplay: // 返回加签的信息.
 				String mysql = "SELECT * FROM ND" + Integer.parseInt(fk_flow) + "Track WHERE WorkID=" + workID + " AND "
 						+ TrackAttr.ActionType + "=" + ActionType.ForwardAskfor.getValue();
-				DataTable mydt = BP.DA.DBAccess.RunSQLReturnTable(mysql);
+				DataTable mydt = DBAccess.RunSQLReturnTable(mysql);
 				for (DataRow dr : mydt.Rows) {
 					String msgAskFor = dr.getValue(TrackAttr.Msg).toString();
 					String worker = dr.getValue(TrackAttr.EmpFrom).toString();
@@ -815,7 +815,7 @@ public class CCFlowAPI {
 
 				String sql = "SELECT * FROM ND" + Integer.parseInt(fk_flow) + "Track WHERE WorkID=" + workID + " AND "
 						+ TrackAttr.ActionType + "=" + ActionType.AskforHelp.getValue();
-				DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				DataTable dt = DBAccess.RunSQLReturnTable(sql);
 				for (DataRow dr : dt.Rows) {
 					String msgAskFor = dr.getValue(TrackAttr.Msg).toString();
 					String worker = dr.getValue(TrackAttr.EmpFrom).toString();
@@ -838,7 +838,7 @@ public class CCFlowAPI {
 				rws.Retrieve(ReturnWorkAttr.ReturnToNode, fk_node, ReturnWorkAttr.WorkID, workID, ReturnWorkAttr.RDT);
 				if (rws.size() != 0) {
 					//String msgInfo = "";
-					for (BP.WF.ReturnWork rw : rws.ToJavaList()) {
+					for (ReturnWork rw : rws.ToJavaList()) {
 						DataRow drMsg = dtAlert.NewRow();
 
 						drMsg.put("Title", "来自节点:" + rw.getReturnNodeName() + " 退回人:" + rw.getReturnerName() + "  "
@@ -872,7 +872,7 @@ public class CCFlowAPI {
 			case Shift:
 				// 判断移交过来的。
 				ShiftWorks fws = new ShiftWorks();
-				BP.En.QueryObject qo = new QueryObject(fws);
+				QueryObject qo = new QueryObject(fws);
 				qo.AddWhere(ShiftWorkAttr.WorkID, workID);
 				qo.addAnd();
 				qo.AddWhere(ShiftWorkAttr.FK_Node, fk_node);

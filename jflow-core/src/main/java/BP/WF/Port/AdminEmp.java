@@ -131,7 +131,7 @@ public class AdminEmp extends EntityNoName {
      * 重写基类方法
      * 
      */
-    public BP.En.Map getEnMap() {
+    public Map getEnMap() {
     {
             if (this.get_enMap() != null)
                 return this.get_enMap();
@@ -141,12 +141,12 @@ public class AdminEmp extends EntityNoName {
             map.AddTBStringPK(AdminEmpAttr.No, null, "帐号", true, true, 1, 50, 36);
             map.AddTBString(AdminEmpAttr.Name, null, "名称", true,false, 0, 50, 20);
             map.AddDDLEntities(AdminEmpAttr.FK_Dept, null, "主部门", new BP.Port.Depts(), false);
-            map.AddDDLEntities(AdminEmpAttr.OrgNo, null, "组织", new BP.WF.Port.Incs(), true);
+            map.AddDDLEntities(AdminEmpAttr.OrgNo, null, "组织", new Incs(), true);
 
             map.AddDDLSysEnum(AdminEmpAttr.UseSta, 3, "用户状态", true, true, AdminEmpAttr.UseSta, "@0=禁用@1=启用");
             map.AddDDLSysEnum(AdminEmpAttr.UserType, 3, "用户状态", true, true, AdminEmpAttr.UserType, "@0=普通用户@1=管理员用户");
 
-            map.AddDDLEntities(AdminEmpAttr.RootOfFlow, null, "流程权限节点", new BP.WF.Template.FlowSorts(), true);
+            map.AddDDLEntities(AdminEmpAttr.RootOfFlow, null, "流程权限节点", new FlowSorts(), true);
             map.AddDDLEntities(AdminEmpAttr.RootOfForm, null, "表单权限节点", new BP.WF.Template.SysFormTrees(), true);
             map.AddDDLEntities(AdminEmpAttr.RootOfDept, null, "组织结构权限节点", new BP.GPM.Depts(), true);
 
@@ -222,17 +222,17 @@ public class AdminEmp extends EntityNoName {
         if (dept.RetrieveFromDBSources() == 0)
             return "err@orgNo错误, 不存在 Port_Dept 里面。";
 
-        BP.WF.Port.Inc inc = new BP.WF.Port.Inc();
+        Inc inc = new Inc();
         inc.setNo(orgNo);
         if (inc.RetrieveFromDBSources() == 0)
             return "err@orgNo错误, 不存在 Port_Inc 里面。";
 
         //求根目录流程树.
-        BP.WF.Template.FlowSort fsRoot = new BP.WF.Template.FlowSort();
+        FlowSort fsRoot = new FlowSort();
         fsRoot.Retrieve(BP.WF.Template.FlowSortAttr.ParentNo,"0");
 
 
-        BP.WF.Template.FlowSort fs = new BP.WF.Template.FlowSort();
+        FlowSort fs = new FlowSort();
         fs.setNo("Inc" + orgNo);
         if (fs.RetrieveFromDBSources() == 1)
             return "err@该组织已经初始化过流程树目录.";

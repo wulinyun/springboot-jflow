@@ -23,7 +23,7 @@ public class StationExts extends EntitiesNoName
 	@Override
 	public Entity getGetNewEntity()
 	{
-		return new BP.GPM.StationExt();
+		return new StationExt();
 	}
 
 		///#region 为了适应自动翻译成java的需要,把实体转换成List.

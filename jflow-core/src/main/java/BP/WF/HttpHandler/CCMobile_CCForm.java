@@ -66,11 +66,11 @@ public class CCMobile_CCForm extends WebContralBase
         GEDtls dtls = new GEDtls(this.getEnsName());
         GEDtl dtl = (GEDtl) dtls.getGetNewEntity();
         dtls.Retrieve("RefPK", this.GetRequestVal("RefPKVal"));
-        BP.En.Map map = dtl.getEnMap();
+        Map map = dtl.getEnMap();
         for (GEDtl item : dtls.ToJavaList())
         {
             String pkval = item.GetValStringByKey(dtl.getPK());
-            for (Attr attr : ((BP.En.Map) map).getAttrs())
+            for (Attr attr : ((Map) map).getAttrs())
             {
                 if (attr.getUIVisible() == false )
                     continue;

@@ -60,7 +60,7 @@ public class EnCfg extends EntityNo
 		String str = this.GetValStringByKey(EnCfgAttr.FJSavePath);
 		if (str.equals("") || str == null || str.equals(""))
 		{
-			return BP.Sys.SystemConfig.getPathOfDataUser() + this.getNo()
+			return SystemConfig.getPathOfDataUser() + this.getNo()
 					+ "/";
 		}
 		return str;
@@ -76,7 +76,7 @@ public class EnCfg extends EntityNo
 		String str = this.GetValStringByKey(EnCfgAttr.FJWebPath);
 		if (str.equals("") || str == null)
 		{
-			return BP.Sys.Glo.getRequest().getRemoteHost() + "/DataUser/"
+			return Glo.getRequest().getRemoteHost() + "/DataUser/"
 					+ this.getNo() + "/";
 		}
 		return str;

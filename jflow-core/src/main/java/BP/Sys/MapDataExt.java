@@ -954,7 +954,7 @@ public class MapDataExt extends EntityNoName
 				0, 500, 20, true);
 		// 数据源.
 		map.AddDDLEntities(MapDataAttr.DBSrc, "local", "数据源",
-				new BP.Sys.SFDBSrcs(), true);
+				new SFDBSrcs(), true);
 		
 		// 基本属性.
 		
@@ -1102,7 +1102,7 @@ public class MapDataExt extends EntityNoName
 				+ this.getNo() + "&UserNo=" + WebUser.getNo() + "&SID="
 				+ WebUser.getSID() + "&AppCenterDBType="
 				+ BP.DA.DBAccess.getAppCenterDBType() + "&CustomerNo="
-				+ BP.Sys.SystemConfig.getCustomerNo();
+				+ SystemConfig.getCustomerNo();
 		try
 		{
 			PubClass.WinOpen(ContextHolderUtils.getResponse(), url, 800, 650);
@@ -1125,7 +1125,7 @@ public class MapDataExt extends EntityNoName
 				+ this.getNo() + "&UserNo=" + WebUser.getNo() + "&SID="
 				+ WebUser.getSID() + "&AppCenterDBType="
 				+ BP.DA.DBAccess.getAppCenterDBType() + "&CustomerNo="
-				+ BP.Sys.SystemConfig.getCustomerNo();
+				+ SystemConfig.getCustomerNo();
 		try
 		{
 			PubClass.WinOpen(ContextHolderUtils.getResponse(), url, 800, 650);

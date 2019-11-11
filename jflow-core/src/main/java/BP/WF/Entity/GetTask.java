@@ -18,7 +18,7 @@ import BP.Web.WebUser;
 /**
  * 取回任务
  */
-public class GetTask extends BP.En.Entity
+public class GetTask extends Entity
 {
 	private Map _enMap;
 	

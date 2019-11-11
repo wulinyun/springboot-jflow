@@ -139,7 +139,7 @@ public class RptExportTemplate
 
 			return true;
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			return false;
 		}

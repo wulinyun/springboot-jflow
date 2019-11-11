@@ -414,7 +414,7 @@ public class Attr
 				try
 				{
 					return Integer.parseInt(this._defaultVal.toString());
-				} catch (java.lang.Exception e)
+				} catch (Exception e)
 				{
 					return 0;
 					// throw new
@@ -428,7 +428,7 @@ public class Attr
 				try
 				{
 					return Float.parseFloat(this._defaultVal.toString());
-				} catch (java.lang.Exception e2)
+				} catch (Exception e2)
 				{
 					return 0;
 					// throw new
@@ -442,7 +442,7 @@ public class Attr
 				try
 				{
 					return Float.parseFloat(this._defaultVal.toString());
-				} catch (java.lang.Exception e3)
+				} catch (Exception e3)
 				{
 					return 0;
 					// throw new
@@ -464,7 +464,7 @@ public class Attr
 					{
 						return 0;
 					}
-				} catch (java.lang.Exception e4)
+				} catch (Exception e4)
 				{
 					throw new RuntimeException("@设置[" + this.getKey()
 							+ "]默认值出现错误，[" + this._defaultVal.toString()
@@ -479,7 +479,7 @@ public class Attr
 				try
 				{
 					return Double.parseDouble(this._defaultVal.toString());
-				} catch (java.lang.Exception e5)
+				} catch (Exception e5)
 				{
 					throw new RuntimeException("@设置[" + this.getKey()
 							+ "]默认值出现错误，[" + _defaultVal.toString()

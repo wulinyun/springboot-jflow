@@ -64,9 +64,9 @@ public class FrmLinks extends EntitiesMyPK
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<FrmLink> Tolist()
+	public final ArrayList<FrmLink> Tolist()
 	{
-		java.util.ArrayList<FrmLink> list = new java.util.ArrayList<FrmLink>();
+		ArrayList<FrmLink> list = new ArrayList<FrmLink>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((FrmLink)this.get(i));

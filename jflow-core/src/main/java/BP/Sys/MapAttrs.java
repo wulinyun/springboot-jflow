@@ -89,9 +89,9 @@ public class MapAttrs extends EntitiesMyPK
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<MapAttr> Tolist()
+	public final ArrayList<MapAttr> Tolist()
 	{
-		java.util.ArrayList<MapAttr> list = new java.util.ArrayList<MapAttr>();
+		ArrayList<MapAttr> list = new ArrayList<MapAttr>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((MapAttr)this.get(i));

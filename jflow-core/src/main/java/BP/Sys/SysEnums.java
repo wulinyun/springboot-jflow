@@ -234,7 +234,7 @@ public class SysEnums extends Entities {
 					+ "p";
 			ps.Add("p", val);
 			return en.RunSQL(ps);
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			Entity en = this.getGetNewEntity();
 
 			try {
@@ -296,8 +296,8 @@ public class SysEnums extends Entities {
 	 * 
 	 * @return List
 	 */
-	public final java.util.ArrayList<SysEnum> Tolist() {
-		java.util.ArrayList<SysEnum> list = new java.util.ArrayList<SysEnum>();
+	public final ArrayList<SysEnum> Tolist() {
+		ArrayList<SysEnum> list = new ArrayList<SysEnum>();
 		for (int i = 0; i < this.size(); i++) {
 			list.add((SysEnum) this.get(i));
 		}

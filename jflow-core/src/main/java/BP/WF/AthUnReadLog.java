@@ -128,7 +128,7 @@ public class AthUnReadLog extends EntityMyPK {
 	@Override
 	public UAC getHisUAC() throws Exception {
 
-		BP.En.UAC uac = new BP.En.UAC();
+		UAC uac = new UAC();
 		uac.Readonly();
 		return uac;
 

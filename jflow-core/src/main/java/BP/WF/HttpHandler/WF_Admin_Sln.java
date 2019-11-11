@@ -62,8 +62,8 @@ public class WF_Admin_Sln extends WebContralBase {
 	 */
 	public final String BindForm_GetFlowNodeDropList() throws Exception {
 		Nodes nodes = new Nodes();
-		nodes.Retrieve(BP.WF.Template.NodeAttr.FK_Flow, this.getFK_Flow(),
-				BP.WF.Template.NodeAttr.Step);
+		nodes.Retrieve(NodeAttr.FK_Flow, this.getFK_Flow(),
+				NodeAttr.Step);
 
 		if (nodes.size() == 0) {
 			return "";
@@ -187,7 +187,7 @@ public class WF_Admin_Sln extends WebContralBase {
 		formTrees.RetrieveAll(SysFormTreeAttr.Idx);
 
 		// 根节点
-		BP.WF.Template.FlowFormTree root = new BP.WF.Template.FlowFormTree();
+		FlowFormTree root = new FlowFormTree();
 		root.setNo("00");
 		root.setParentNo("0");
 		root.setName("表单库");
@@ -206,7 +206,7 @@ public class WF_Admin_Sln extends WebContralBase {
 				continue;
 			}
 			// 文件夹
-			BP.WF.Template.FlowFormTree nodeFolder = new BP.WF.Template.FlowFormTree();
+			FlowFormTree nodeFolder = new FlowFormTree();
 			nodeFolder.setNo(formTree.getNo());
 			nodeFolder.setParentNo(formTree.getParentNo());
 			nodeFolder.setName(formTree.getName());
@@ -221,7 +221,7 @@ public class WF_Admin_Sln extends WebContralBase {
 			mapS.RetrieveByAttr(MapDataAttr.FK_FormTree, formTree.getNo());
 			if (mapS != null && mapS.size() > 0) {
 				for (MapData map : mapS.Tolist()) {
-					BP.WF.Template.FlowFormTree formFolder = new BP.WF.Template.FlowFormTree();
+					FlowFormTree formFolder = new FlowFormTree();
 					formFolder.setNo(map.getNo());
 					formFolder.setParentNo(map.getFK_FormTree());
 					formFolder.setName(map.getName() + "[" + map.getNo() + "]");
@@ -267,7 +267,7 @@ public class WF_Admin_Sln extends WebContralBase {
 		appendMenus.append(",\"state\":\"open\"");
 
 		// attributes
-		BP.WF.Template.FlowFormTree formTree = (BP.WF.Template.FlowFormTree) ((root instanceof BP.WF.Template.FlowFormTree) ? root
+		FlowFormTree formTree = (FlowFormTree) ((root instanceof FlowFormTree) ? root
 				: null);
 		if (formTree != null) {
 			String url = formTree.getUrl() == null ? "" : formTree.getUrl();
@@ -307,7 +307,7 @@ public class WF_Admin_Sln extends WebContralBase {
 			}
 
 			// attributes
-			BP.WF.Template.FlowFormTree formTree = (BP.WF.Template.FlowFormTree) ((item instanceof BP.WF.Template.FlowFormTree) ? item
+			FlowFormTree formTree = (FlowFormTree) ((item instanceof FlowFormTree) ? item
 					: null);
 			if (formTree != null) {
 				String url = formTree.getUrl() == null ? "" : formTree.getUrl();
@@ -458,21 +458,21 @@ public class WF_Admin_Sln extends WebContralBase {
 		int idx = 0;
 		for (MapAttr attr : attrs.ToJavaList())
 		{
-			if(attr.getKeyOfEn() == BP.WF.WorkAttr.RDT)
+			if(attr.getKeyOfEn() == WorkAttr.RDT)
 				continue;
-			else if(attr.getKeyOfEn() == BP.WF.WorkAttr.FID)
+			else if(attr.getKeyOfEn() == WorkAttr.FID)
 				continue;
-			else if(attr.getKeyOfEn() == BP.WF.WorkAttr.OID)
+			else if(attr.getKeyOfEn() == WorkAttr.OID)
 				continue;
-			else if(attr.getKeyOfEn() == BP.WF.WorkAttr.Rec)
+			else if(attr.getKeyOfEn() == WorkAttr.Rec)
 				continue;
-			else if(attr.getKeyOfEn() == BP.WF.WorkAttr.MyNum)
+			else if(attr.getKeyOfEn() == WorkAttr.MyNum)
 				continue;
-			else if(attr.getKeyOfEn() == BP.WF.WorkAttr.MD5)
+			else if(attr.getKeyOfEn() == WorkAttr.MD5)
 				continue;
-			else if(attr.getKeyOfEn() == BP.WF.WorkAttr.Emps)
+			else if(attr.getKeyOfEn() == WorkAttr.Emps)
 				continue;
-			else if(attr.getKeyOfEn() == BP.WF.WorkAttr.CDT)
+			else if(attr.getKeyOfEn() == WorkAttr.CDT)
 				continue;
 
 			fieldsAttrsList.add(new FieldsAttrs());
@@ -635,12 +635,12 @@ public class WF_Admin_Sln extends WebContralBase {
 			}
 			public final String Aths_Init() throws Exception
 			{
-				BP.Sys.FrmAttachments fas = new BP.Sys.FrmAttachments();
+				FrmAttachments fas = new FrmAttachments();
 				fas.Retrieve(FrmAttachmentAttr.FK_MapData, this.getFK_MapData());
 
 				java.util.ArrayList<AthsAttrs> athsAttrsList = new java.util.ArrayList<AthsAttrs>();
 				int idx = 0;
-				for (BP.Sys.FrmAttachment item : fas.ToJavaList())
+				for (FrmAttachment item : fas.ToJavaList())
 				{
 					if (item.getFK_Node() != 0)
 					{
@@ -693,12 +693,12 @@ public class WF_Admin_Sln extends WebContralBase {
 	
 	// /#region 从表权限.
 	public final String Dtls_Init() throws Exception {
-		 BP.Sys.MapDtls dtls = new BP.Sys.MapDtls();
+		 MapDtls dtls = new MapDtls();
 			dtls.Retrieve(MapDtlAttr.FK_MapData, this.getFK_MapData());
 			java.util.ArrayList<DtlsAttrs> dtlsAttrsList = new java.util.ArrayList<DtlsAttrs>();
 			int idx = 0;
 
-			for (BP.Sys.MapDtl item : dtls.ToJavaList())
+			for (MapDtl item : dtls.ToJavaList())
 			{
 				if (item.getFK_Node() != 0)
 				{

@@ -35,7 +35,7 @@ public class EnVers extends EntitiesMyPK{
 			 
 			 @return List
 			*/
-			public final java.util.List<EnVer> ToJavaList()
+			public final List<EnVer> ToJavaList()
 			{
 				return (List<EnVer>)(Object)this;
 			}

@@ -52,7 +52,7 @@ public class EnVerDtls extends EntitiesMyPK{
 		 
 		 @return List
 		*/
-		public final java.util.List<EnVerDtl> ToJavaList()
+		public final List<EnVerDtl> ToJavaList()
 		{
 			return (List<EnVerDtl>)(Object)this;
 		}

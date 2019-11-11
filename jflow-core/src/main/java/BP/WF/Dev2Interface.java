@@ -89,39 +89,39 @@ public class Dev2Interface {
 	 */
 	public static int getTodolist_EmpWorks() throws Exception {
 		Paras ps = new Paras();
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String sql;
 
 		if (WebUser.getIsAuthorize() == false) {
 			// 不是授权状态
-			if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+			if (Glo.getIsEnableTaskPool() == true) {
 				ps.SQL = "SELECT count(WorkID) as Num FROM WF_EmpWorks WHERE FK_Emp=" + dbstr
 						+ "FK_Emp AND TaskSta!=1 ";
 			} else {
 				ps.SQL = "SELECT count(WorkID) as Num FROM WF_EmpWorks WHERE  FK_Emp=" + dbstr + "FK_Emp ";
 			}
 
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			// throw new Exception(ps.SQL);
 
 			// BP.DA.Log.DebugWriteInfo(ps.SQL);
-			return BP.DA.DBAccess.RunSQLReturnValInt(ps);
+			return DBAccess.RunSQLReturnValInt(ps);
 		}
 
 		// 如果是授权状态, 获取当前委托人的信息.
 		WFEmp emp = new WFEmp(WebUser.getNo());
 		switch (emp.getHisAuthorWay()) {
 		case All:
-			if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+			if (Glo.getIsEnableTaskPool() == true) {
 				ps.SQL = "SELECT count(WorkID) as Num FROM WF_EmpWorks WHERE FK_Emp=" + dbstr
 						+ "FK_Emp AND TaskSta!=1  ";
 			} else {
 				ps.SQL = "SELECT count(WorkID) as Num FROM WF_EmpWorks WHERE FK_Emp=" + dbstr + "FK_Emp ";
 			}
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			break;
 		case SpecFlows:
-			if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+			if (Glo.getIsEnableTaskPool() == true) {
 				ps.SQL = "SELECT count(WorkID) as Num FROM WF_EmpWorks WHERE FK_Emp=" + dbstr
 						+ "FK_Emp AND  FK_Flow IN " + emp.getAuthorFlows() + " AND TaskSta!=0   ";
 			} else {
@@ -129,23 +129,23 @@ public class Dev2Interface {
 						+ "FK_Emp AND  FK_Flow IN " + emp.getAuthorFlows();
 			}
 
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			break;
 		case None:
 			// 不是授权状态
-			if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+			if (Glo.getIsEnableTaskPool() == true) {
 				ps.SQL = "SELECT count(WorkID) as Num FROM WF_EmpWorks WHERE FK_Emp=" + dbstr
 						+ "FK_Emp AND TaskSta!=1 ";
 			} else {
 				ps.SQL = "SELECT count(WorkID) as Num FROM WF_EmpWorks WHERE FK_Emp=" + dbstr + "FK_Emp ";
 			}
 
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
-			return BP.DA.DBAccess.RunSQLReturnValInt(ps);
+			ps.Add("FK_Emp", WebUser.getNo());
+			return DBAccess.RunSQLReturnValInt(ps);
 		default:
 			throw new RuntimeException("no such way...");
 		}
-		return BP.DA.DBAccess.RunSQLReturnValInt(ps);
+		return DBAccess.RunSQLReturnValInt(ps);
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class Dev2Interface {
 		Paras ps = new Paras();
 		ps.SQL = "SELECT count(MyPK) as Num FROM WF_CCList WHERE CCTo=" + SystemConfig.getAppCenterDBVarStr()
 				+ "FK_Emp AND Sta=0";
-		ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+		ps.Add("FK_Emp", WebUser.getNo());
 		return DBAccess.RunSQLReturnValInt(ps, 0);
 	}
 
@@ -198,8 +198,8 @@ public class Dev2Interface {
 	 */
 	public static int getTodolist_HungUpNum() throws Exception {
 		String sql = "select  COUNT(WorkID) AS Num from WF_GenerWorkFlow where WFState=4 and  WorkID in (SELECT distinct WorkID FROM WF_HungUp WHERE Rec='"
-				+ BP.Web.WebUser.getNo() + "')";
-		return BP.DA.DBAccess.RunSQLReturnValInt(sql);
+				+ WebUser.getNo() + "')";
+		return DBAccess.RunSQLReturnValInt(sql);
 	}
 
 	/**
@@ -217,14 +217,14 @@ public class Dev2Interface {
 					+ WebUser.getNo()
 					+ "' AND A.WFState!=3 AND B.IsEnable=1 AND (B.IsPass=1 OR B.IsPass<0) AND A.FK_Flow IN "
 					+ emp.getAuthorFlows();
-			return BP.DA.DBAccess.RunSQLReturnValInt(sql);
+			return DBAccess.RunSQLReturnValInt(sql);
 		} else {
 			Paras ps = new Paras();
 			ps.SQL = "SELECT count( distinct a.WorkID ) as Num FROM WF_GenerWorkFlow A, WF_GenerWorkerlist B WHERE A.WorkID=B.WorkID AND B.FK_Emp="
 					+ SystemConfig.getAppCenterDBVarStr()
 					+ "FK_Emp AND B.IsEnable=1 AND A.WFState!=3 AND (B.IsPass=1 OR B.IsPass<0) ";
 			ps.Add("FK_Emp", WebUser.getNo());
-			return BP.DA.DBAccess.RunSQLReturnValInt(ps);
+			return DBAccess.RunSQLReturnValInt(ps);
 		}
 	}
 
@@ -235,12 +235,12 @@ public class Dev2Interface {
 	 */
 	public static int getTodolist_Draft() throws Exception {
 		// 获取数据.
-		String dbStr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
-		BP.DA.Paras ps = new BP.DA.Paras();
+		String dbStr = SystemConfig.getAppCenterDBVarStr();
+		Paras ps = new Paras();
 		ps.SQL = "SELECT count(a.WorkID ) as Num FROM WF_GenerWorkFlow A WHERE WFState=1 AND Starter=" + dbStr
 				+ "Starter";
-		ps.Add(GenerWorkFlowAttr.Starter, BP.Web.WebUser.getNo());
-		return BP.DA.DBAccess.RunSQLReturnValInt(ps);
+		ps.Add(GenerWorkFlowAttr.Starter, WebUser.getNo());
+		return DBAccess.RunSQLReturnValInt(ps);
 	}
 
 	/**
@@ -253,16 +253,16 @@ public class Dev2Interface {
 		if (Glo.getIsDeleteGenerWorkFlow() == false) {
 			// 如果不是删除流程注册表.
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			ps.SQL = "SELECT count(WorkID) Num FROM WF_GenerWorkFlow WHERE Emps LIKE '%@" + WebUser.getNo()
 					+ "@%' AND WFState=" + WFState.Complete.getValue();
-			return BP.DA.DBAccess.RunSQLReturnValInt(ps, 0);
+			return DBAccess.RunSQLReturnValInt(ps, 0);
 		} else {
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			ps.SQL = "SELECT count(*) Num FROM V_FlowData WHERE FlowEmps LIKE '%@" + WebUser.getNo()
 					+ "%' AND FID=0 AND WFState=" + WFState.Complete.getValue();
-			return BP.DA.DBAccess.RunSQLReturnValInt(ps, 0);
+			return DBAccess.RunSQLReturnValInt(ps, 0);
 		}
 	}
 
@@ -277,7 +277,7 @@ public class Dev2Interface {
 		// throw new Exception("@你必须在Web.config中启用IsEnableTaskPool才可以执行此操作。");
 
 		Paras ps = new Paras();
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String wfSql = "  (WFState=" + WFState.Askfor.getValue() + " OR WFState=" + WFState.Runing.getValue()
 				+ " OR WFState=" + WFState.Shift.getValue() + " OR WFState=" + WFState.ReturnSta.getValue()
 				+ ") AND TaskSta=" + TaskSta.Sharing.getValue();
@@ -286,8 +286,8 @@ public class Dev2Interface {
 		if (WebUser.getIsAuthorize() == false) {
 			// 不是授权状态
 			ps.SQL = "SELECT COUNT(WorkID) FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr + "FK_Emp ";
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
-			return BP.DA.DBAccess.RunSQLReturnValInt(ps);
+			ps.Add("FK_Emp", WebUser.getNo());
+			return DBAccess.RunSQLReturnValInt(ps);
 		}
 
 		// 如果是授权状态, 获取当前委托人的信息.
@@ -296,33 +296,33 @@ public class Dev2Interface {
 		case All:
 			ps.SQL = "SELECT COUNT(WorkID) FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr
 					+ "FK_Emp AND TaskSta=0";
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			break;
 		case SpecFlows:
 			ps.SQL = "SELECT COUNT(WorkID) FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr
 					+ "FK_Emp AND  FK_Flow IN " + emp.getAuthorFlows() + " ";
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			break;
 		case None:
 			// 不是授权状态
 			ps.SQL = "SELECT COUNT(WorkID) FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr + "FK_Emp ";
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
-			return BP.DA.DBAccess.RunSQLReturnValInt(ps);
+			ps.Add("FK_Emp", WebUser.getNo());
+			return DBAccess.RunSQLReturnValInt(ps);
 		default:
 			throw new RuntimeException("no such way...");
 		}
-		return BP.DA.DBAccess.RunSQLReturnValInt(ps);
+		return DBAccess.RunSQLReturnValInt(ps);
 	}
 
 	// / <summary>
 	// / 申请下来的工作个数
 	// / </summary>
 	public static int getTodolist_Apply() throws Exception {
-		if (BP.WF.Glo.getIsEnableTaskPool() == false)
+		if (Glo.getIsEnableTaskPool() == false)
 			return 0;
 
 		Paras ps = new Paras();
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String wfSql = "  (WFState=" + WFState.Askfor.getValue() + " OR WFState=" + WFState.Runing.getValue()
 				+ " OR WFState=" + WFState.Shift.getValue() + " OR WFState=" + WFState.ReturnSta.getValue()
 				+ ") AND TaskSta=" + TaskSta.Takeback.getValue();
@@ -341,29 +341,29 @@ public class Dev2Interface {
 			// ") as v1 left join JXW_Inc v2 on v1.WorkID=v2.OID left join
 			// Jxw_Inc V3 on v1.PWorkID = v3.OID ORDER BY v1.ADT DESC";
 
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
-			return BP.DA.DBAccess.RunSQLReturnValInt(ps);
+			ps.Add("FK_Emp", WebUser.getNo());
+			return DBAccess.RunSQLReturnValInt(ps);
 		}
 
 		/* 如果是授权状态, 获取当前委托人的信息. */
-		BP.WF.Port.WFEmp emp = new BP.WF.Port.WFEmp(WebUser.getNo());
+		WFEmp emp = new WFEmp(WebUser.getNo());
 		switch (emp.getHisAuthorWay()) {
 		case All:
 			ps.SQL = "SELECT COUNT(WorkID) FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr
 					+ "FK_Emp AND TaskSta=0";
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			break;
 		case SpecFlows:
 			ps.SQL = "SELECT COUNT(WorkID) FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr
 					+ "FK_Emp AND  FK_Flow IN " + emp.getAuthorFlows() + "";
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			break;
 		case None:
 			throw new Exception("对方(" + WebUser.getNo() + ")已经取消了授权.");
 		default:
 			throw new Exception("no such way...");
 		}
-		return BP.DA.DBAccess.RunSQLReturnValInt(ps);
+		return DBAccess.RunSQLReturnValInt(ps);
 	}
 
 	/**
@@ -451,11 +451,11 @@ public class Dev2Interface {
 	public static void DTS_AutoStarterFlow(Flow fl) throws Exception {
 
 		/// #region 读取数据.
-		BP.Sys.MapExt me = new BP.Sys.MapExt();
+		MapExt me = new MapExt();
 		int i = me.Retrieve(MapExtAttr.FK_MapData, "ND" + Integer.parseInt(fl.getNo()) + "01", MapExtAttr.ExtType,
 				"PageLoadFull");
 		if (i == 0) {
-			BP.DA.Log.DefaultLogWriteLineError("没有为流程(" + fl.getName() + ")的开始节点设置发起数据,请参考说明书解决.");
+			Log.DefaultLogWriteLineError("没有为流程(" + fl.getName() + ")的开始节点设置发起数据,请参考说明书解决.");
 			return;
 		}
 
@@ -469,13 +469,13 @@ public class Dev2Interface {
 
 			String[] tempStrs = sql.split("[=]", -1);
 			String dtlName = tempStrs[0];
-			DataTable dtlTable = BP.DA.DBAccess.RunSQLReturnTable(sql.replace(dtlName + "=", ""));
+			DataTable dtlTable = DBAccess.RunSQLReturnTable(sql.replace(dtlName + "=", ""));
 			dtlTable.TableName = dtlName;
 			ds.Tables.add(dtlTable);
 		}
 		String errMsg = "";
 		// 获取主表数据.
-		DataTable dtMain = BP.DA.DBAccess.RunSQLReturnTable(me.getTag());
+		DataTable dtMain = DBAccess.RunSQLReturnTable(me.getTag());
 		if (dtMain.Columns.contains("Starter") == false) {
 			errMsg += "@配值的主表中没有Starter列.";
 		}
@@ -485,7 +485,7 @@ public class Dev2Interface {
 		}
 
 		if (errMsg.length() > 2) {
-			BP.DA.Log.DefaultLogWriteLineError("流程(" + fl.getName() + ")的开始节点设置发起数据,不完整." + errMsg);
+			Log.DefaultLogWriteLineError("流程(" + fl.getName() + ")的开始节点设置发起数据,不完整." + errMsg);
 			return;
 		}
 		String nodeTable = "ND" + Integer.parseInt(fl.getNo()) + "01";
@@ -499,17 +499,17 @@ public class Dev2Interface {
 			}
 
 			String starter = dr.getValue("Starter").toString();
-			if (!starter.equals(BP.Web.WebUser.getNo())) {
-				BP.Web.WebUser.Exit();
-				BP.Port.Emp emp = new BP.Port.Emp();
+			if (!starter.equals(WebUser.getNo())) {
+				WebUser.Exit();
+				Emp emp = new Emp();
 				emp.setNo(starter);
 				if (emp.RetrieveFromDBSources() == 0) {
-					BP.DA.Log.DefaultLogWriteLineInfo(
+					Log.DefaultLogWriteLineInfo(
 							"@数据驱动方式发起流程(" + fl.getName() + ")设置的发起人员:" + emp.getNo() + "不存在。");
 					continue;
 				}
 
-				BP.Web.WebUser.SignInOfGener(emp);
+				WebUser.SignInOfGener(emp);
 			}
 
 			/// #region 给值.
@@ -556,7 +556,7 @@ public class Dev2Interface {
 				WorkNode wn = new WorkNode(wk, nd);
 				String msg = wn.NodeSend().ToMsgOfHtml();
 			} catch (RuntimeException ex) {
-				BP.DA.Log.DefaultLogWriteLineWarning(ex.getMessage());
+				Log.DefaultLogWriteLineWarning(ex.getMessage());
 			}
 		}
 	}
@@ -572,7 +572,7 @@ public class Dev2Interface {
 	 * @throws NumberFormatException
 	 */
 	public static String GetFlowStarters(String fk_flow) throws NumberFormatException, Exception {
-		BP.WF.Node nd = new Node(Integer.parseInt(fk_flow + "01"));
+		Node nd = new Node(Integer.parseInt(fk_flow + "01"));
 		String sql = "";
 		switch (nd.getHisDeliveryWay()) {
 		case ByBindEmp: // 按人员
@@ -584,7 +584,7 @@ public class Dev2Interface {
 					+ nd.getNodeID() + ")";
 			break;
 		case ByStation: // 按岗位
-			sql = "SELECT * FROM Port_Emp WHERE No IN (SELECT FK_Emp FROM " + BP.WF.Glo.getEmpStation()
+			sql = "SELECT * FROM Port_Emp WHERE No IN (SELECT FK_Emp FROM " + Glo.getEmpStation()
 					+ " WHERE FK_Station IN ( SELECT FK_Station from WF_nodeStation where FK_Node=" + nd.getNodeID()
 					+ ")) ";
 			break;
@@ -595,7 +595,7 @@ public class Dev2Interface {
 	}
 
 	public static String GetFlowStarters(String fk_flow, String fk_dept) throws NumberFormatException, Exception {
-		BP.WF.Node nd = new Node(Integer.parseInt(fk_flow + "01"));
+		Node nd = new Node(Integer.parseInt(fk_flow + "01"));
 		String sql = "";
 		switch (nd.getHisDeliveryWay()) {
 		case ByBindEmp: // 按人员
@@ -607,7 +607,7 @@ public class Dev2Interface {
 					+ nd.getNodeID() + ") and fk_dept='" + fk_dept + "' ";
 			break;
 		case ByStation: // 按岗位
-			sql = "SELECT * FROM Port_Emp WHERE No IN (SELECT FK_Emp FROM " + BP.WF.Glo.getEmpStation()
+			sql = "SELECT * FROM Port_Emp WHERE No IN (SELECT FK_Emp FROM " + Glo.getEmpStation()
 					+ " WHERE FK_Station IN ( SELECT FK_Station from WF_nodeStation where FK_Node=" + nd.getNodeID()
 					+ ")) and fk_dept='" + fk_dept + "' ";
 			break;
@@ -665,7 +665,7 @@ public class Dev2Interface {
 		ds.Tables.add(ens.ToDataTableField("WF_SelectAccper"));
 
 		// 把节点信息写入里面.
-		BP.WF.Nodes nds = new Nodes();
+		Nodes nds = new Nodes();
 		nds.Retrieve(NodeAttr.FK_Flow, fk_flow);
 		ds.Tables.add(nds.ToDataTableField("WF_Node"));
 
@@ -708,7 +708,7 @@ public class Dev2Interface {
 		ds.Tables.add(ens.ToDataTableField("WF_SelectAccper"));
 
 		// 把节点信息写入里面.
-		BP.WF.Nodes nds = new Nodes();
+		Nodes nds = new Nodes();
 		nds.Retrieve(NodeAttr.FK_Flow, fk_flow);
 		ds.Tables.add(nds.ToDataTableField("WF_Node"));
 
@@ -723,7 +723,7 @@ public class Dev2Interface {
 		/// #region 获取track数据.
 		String sqlOfWhere2 = "";
 		String sqlOfWhere1 = "";
-		String dbStr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbStr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		if (fid == 0) {
 			sqlOfWhere1 = " WHERE (FID=" + dbStr + "WorkID11 OR WorkID=" + dbStr + "WorkID12 )  ";
@@ -743,7 +743,7 @@ public class Dev2Interface {
 
 		try {
 			dt = DBAccess.RunSQLReturnTable(ps);
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			// 处理track表.
 			Track.CreateOrRepairTrackTable(fk_flow);
 			dt = DBAccess.RunSQLReturnTable(ps);
@@ -1005,17 +1005,17 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static Flows DB_GenerCanStartFlowsOfEntities(String userNo) throws Exception {
-		if (BP.Sys.SystemConfig.getOSDBSrc() == OSDBSrc.Database) {
+		if (SystemConfig.getOSDBSrc() == OSDBSrc.Database) {
 			String sql = "";
 			// 采用新算法.
-			if (BP.WF.Glo.getOSModel() == BP.Sys.OSModel.OneOne) {
+			if (Glo.getOSModel() == OSModel.OneOne) {
 				sql = "SELECT FK_Flow FROM V_FlowStarter WHERE FK_Emp='" + userNo + "'";
 			} else {
 				sql = "SELECT FK_Flow FROM V_FlowStarterBPM WHERE FK_Emp='" + userNo + "'";
 			}
 
 			Flows fls = new Flows();
-			BP.En.QueryObject qo = new BP.En.QueryObject(fls);
+			QueryObject qo = new QueryObject(fls);
 			qo.AddWhereInSQL("No", sql);
 			qo.addAnd();
 			qo.AddWhere(FlowAttr.IsCanStart, true);
@@ -1030,17 +1030,17 @@ public class Dev2Interface {
 			return fls;
 		}
 
-		if (BP.Sys.SystemConfig.getOSDBSrc() == OSDBSrc.WebServices) {
+		if (SystemConfig.getOSDBSrc() == OSDBSrc.WebServices) {
 			String sql = "";
 			// 按岗位计算.
 			sql += "SELECT A.FK_Flow FROM WF_Node A,WF_NodeStation B WHERE A.NodePosType=0 AND ( A.WhoExeIt=0 OR A.WhoExeIt=2 ) AND  A.NodeID=B.FK_Node AND B.FK_Station IN ("
-					+ BP.Web.WebUser.getHisStationsStr() + ")";
+					+ WebUser.getHisStationsStr() + ")";
 			sql += " UNION  "; // 按指定的人员计算.
 			sql += "SELECT FK_Flow FROM WF_Node WHERE NodePosType=0 AND ( WhoExeIt=0 OR WhoExeIt=2 ) AND NodeID IN ( SELECT FK_Node FROM WF_NodeEmp WHERE FK_Emp='"
 					+ userNo + "' ) ";
 			sql += " UNION  "; // 按部门计算.
 			sql += "SELECT A.FK_Flow FROM WF_Node A,WF_NodeDept B WHERE A.NodePosType=0 AND ( A.WhoExeIt=0 OR A.WhoExeIt=2 ) AND  A.NodeID=B.FK_Node AND B.FK_Dept IN ("
-					+ BP.Web.WebUser.getHisDeptsStr() + ") ";
+					+ WebUser.getHisDeptsStr() + ") ";
 
 			//// 采用新算法.
 			// if (BP.WF.Glo.OSModel == BP.Sys.OSModel.OneOne)
@@ -1051,7 +1051,7 @@ public class Dev2Interface {
 			//// userNo + "'";
 
 			Flows fls = new Flows();
-			BP.En.QueryObject qo = new BP.En.QueryObject(fls);
+			QueryObject qo = new QueryObject(fls);
 			qo.AddWhereInSQL("No", sql);
 			qo.addAnd();
 			qo.AddWhere(FlowAttr.IsCanStart, true);
@@ -1221,20 +1221,20 @@ public class Dev2Interface {
 
 	public static DataTable DB_GenerDraftDataTable(String flowNo) throws Exception {
 		// 获取数据.
-		String dbStr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
-		BP.DA.Paras ps = new BP.DA.Paras();
+		String dbStr = SystemConfig.getAppCenterDBVarStr();
+		Paras ps = new Paras();
 		if (flowNo == null) {
 			ps.SQL = "SELECT WorkID,Title,FK_Flow,FlowName,RDT,FlowNote FROM WF_GenerWorkFlow A WHERE WFState=1 AND Starter="
 					+ dbStr + "Starter ORDER BY RDT";
-			ps.Add(GenerWorkFlowAttr.Starter, BP.Web.WebUser.getNo());
+			ps.Add(GenerWorkFlowAttr.Starter, WebUser.getNo());
 		} else {
 			ps.SQL = "SELECT WorkID,Title,FK_Flow,FlowName,RDT,FlowNote FROM WF_GenerWorkFlow A WHERE WFState=1 AND Starter="
 					+ dbStr + "Starter AND FK_Flow=" + dbStr + "FK_Flow ORDER BY RDT";
 			ps.Add(GenerWorkFlowAttr.FK_Flow, flowNo);
-			ps.Add(GenerWorkFlowAttr.Starter, BP.Web.WebUser.getNo());
+			ps.Add(GenerWorkFlowAttr.Starter, WebUser.getNo());
 		}
 
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
+		DataTable dt = DBAccess.RunSQLReturnTable(ps);
 
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 			dt.Columns.get("WORKID").ColumnName = "WorkID";
@@ -1263,7 +1263,7 @@ public class Dev2Interface {
 			flowNo = null;
 		}
 		if (userNo == null) {
-			userNo = BP.Web.WebUser.getNo();
+			userNo = WebUser.getNo();
 		}
 		String orderByColumn = " ORDER BY rdt desc";
 		if (StringUtils.isNotBlank(orderBy)) {
@@ -1277,7 +1277,7 @@ public class Dev2Interface {
 					+ SystemConfig.getAppCenterDBVarStr() + "FK_Flow" + orderByColumn;
 			ps.Add("FK_Flow", flowNo);
 		}
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
+		DataTable dt = DBAccess.RunSQLReturnTable(ps);
 		// 添加oracle的处理
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 			dt.Columns.get("WORKID").ColumnName = "WorkID";
@@ -1361,12 +1361,12 @@ public class Dev2Interface {
 			wfStateSql = " WFState=" + showWhat;
 
 		Paras ps = new Paras();
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String sql;
 		if (WebUser.getIsAuthorize() == false) {
 			// 不是授权状态
 			if (fk_node == 0) {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL = "SELECT * FROM WF_EmpWorks  WHERE FK_Emp=" + dbstr + "FK_Emp AND TaskSta=0 AND "
 							+ wfStateSql + " ORDER BY FK_Flow,ADT DESC ";
 				} else {
@@ -1376,7 +1376,7 @@ public class Dev2Interface {
 
 				ps.Add("FK_Emp", userNo);
 			} else {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL = "SELECT * FROM WF_EmpWorks  WHERE FK_Emp=" + dbstr + "FK_Emp AND TaskSta=0 AND FK_Node="
 							+ dbstr + "FK_Node  AND " + wfStateSql + " ORDER BY  ADT DESC ";
 				} else {
@@ -1387,7 +1387,7 @@ public class Dev2Interface {
 				ps.Add("FK_Node", fk_node);
 				ps.Add("FK_Emp", userNo);
 			}
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
+			DataTable dt = DBAccess.RunSQLReturnTable(ps);
 			// 添加oracle的处理
 			if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 				dt.Columns.get("PRI").ColumnName = "PRI";
@@ -1436,7 +1436,7 @@ public class Dev2Interface {
 		switch (emp.getHisAuthorWay()) {
 		case All:
 			if (fk_node == 0) {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL = "SELECT * FROM WF_EmpWorks WHERE  FK_Emp=" + dbstr
 							+ "FK_Emp  AND TaskSta=0 ORDER BY FK_Flow,ADT DESC ";
 				} else {
@@ -1445,7 +1445,7 @@ public class Dev2Interface {
 
 				ps.Add("FK_Emp", userNo);
 			} else {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL = "SELECT * FROM WF_EmpWorks WHERE  FK_Emp=" + dbstr + "FK_Emp AND FK_Node" + dbstr
 							+ "FK_Node AND TaskSta=0 ORDER BY FK_Flow,ADT DESC ";
 				} else {
@@ -1459,7 +1459,7 @@ public class Dev2Interface {
 			break;
 		case SpecFlows:
 			if (fk_node == 0) {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					sql = "SELECT * FROM WF_EmpWorks WHERE FK_Emp=" + dbstr + "FK_Emp AND  FK_Flow IN "
 							+ emp.getAuthorFlows() + " AND TaskSta=0 ORDER BY FK_Flow,ADT DESC ";
 				} else {
@@ -1469,7 +1469,7 @@ public class Dev2Interface {
 
 				ps.Add("FK_Emp", userNo);
 			} else {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					sql = "SELECT * FROM WF_EmpWorks WHERE  FK_Emp=" + dbstr + "FK_Emp  AND FK_Node" + dbstr
 							+ "FK_Node AND FK_Flow IN " + emp.getAuthorFlows()
 							+ " AND TaskSta=0  ORDER BY FK_Flow,ADT DESC ";
@@ -1487,7 +1487,7 @@ public class Dev2Interface {
 		default:
 			throw new RuntimeException("no such way...");
 		}
-		DataTable dt2 = BP.DA.DBAccess.RunSQLReturnTable(ps);
+		DataTable dt2 = DBAccess.RunSQLReturnTable(ps);
 		// 添加oracle的处理
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 			dt2.Columns.get("PRI").ColumnName = "PRI";
@@ -1548,12 +1548,12 @@ public class Dev2Interface {
 		// 转化成编号.
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
 		Paras ps = new Paras();
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String sql;
 		if (WebUser.getIsAuthorize() == false) {
 			// 不是授权状态
 			if (StringHelper.isNullOrEmpty(fk_flow)) {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL = "SELECT * FROM WF_EmpWorks WHERE FK_Emp=" + dbstr + "FK_Emp AND TaskSta=0 AND WFState!="
 							+ WFState.Batch.getValue() + " ORDER BY FK_Flow,ADT DESC ";
 				} else {
@@ -1563,7 +1563,7 @@ public class Dev2Interface {
 
 				ps.Add("FK_Emp", userNo);
 			} else {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL = "SELECT * FROM WF_EmpWorks WHERE FK_Emp=" + dbstr + "FK_Emp AND TaskSta=0 AND FK_Flow="
 							+ dbstr + "FK_Flow  AND WFState!=" + WFState.Batch.getValue() + " ORDER BY  ADT DESC ";
 				} else {
@@ -1574,7 +1574,7 @@ public class Dev2Interface {
 				ps.Add("FK_Flow", fk_flow);
 				ps.Add("FK_Emp", userNo);
 			}
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			return DBAccess.RunSQLReturnTable(ps);
 		}
 
 		// 如果是授权状态, 获取当前委托人的信息.
@@ -1582,7 +1582,7 @@ public class Dev2Interface {
 		switch (emp.getHisAuthorWay()) {
 		case All:
 			if (StringHelper.isNullOrEmpty(fk_flow)) {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL = "SELECT * FROM WF_EmpWorks WHERE  FK_Emp=" + dbstr
 							+ "FK_Emp  AND TaskSta=0 ORDER BY FK_Flow,ADT DESC ";
 				} else {
@@ -1591,7 +1591,7 @@ public class Dev2Interface {
 
 				ps.Add("FK_Emp", userNo);
 			} else {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL = "SELECT * FROM WF_EmpWorks WHERE  FK_Emp=" + dbstr + "FK_Emp AND FK_Flow" + dbstr
 							+ "FK_Flow AND TaskSta=0 ORDER BY FK_Flow,ADT DESC ";
 				} else {
@@ -1605,7 +1605,7 @@ public class Dev2Interface {
 			break;
 		case SpecFlows:
 			if (StringHelper.isNullOrEmpty(fk_flow)) {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					sql = "SELECT * FROM WF_EmpWorks WHERE FK_Emp=" + dbstr + "FK_Emp AND  FK_Flow IN "
 							+ emp.getAuthorFlows() + " AND TaskSta=0 ORDER BY FK_Flow,ADT DESC ";
 				} else {
@@ -1615,7 +1615,7 @@ public class Dev2Interface {
 
 				ps.Add("FK_Emp", userNo);
 			} else {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					sql = "SELECT * FROM WF_EmpWorks WHERE  FK_Emp=" + dbstr + "FK_Emp  AND FK_Flow" + dbstr
 							+ "FK_Flow AND FK_Flow IN " + emp.getAuthorFlows()
 							+ " AND TaskSta=0  ORDER BY FK_Flow,ADT DESC ";
@@ -1633,7 +1633,7 @@ public class Dev2Interface {
 		default:
 			throw new RuntimeException("no such way...");
 		}
-		return BP.DA.DBAccess.RunSQLReturnTable(ps);
+		return DBAccess.RunSQLReturnTable(ps);
 	}
 
 	/**
@@ -1652,12 +1652,12 @@ public class Dev2Interface {
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
 
 		Paras ps = new Paras();
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String sql;
 		if (WebUser.getIsAuthorize() == false) {
 			// 不是授权状态
 			if (StringHelper.isNullOrEmpty(fk_flow)) {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL = "SELECT * FROM WF_EmpWorks WHERE WFState=" + dbstr + "WFState AND FK_Emp=" + dbstr
 							+ "FK_Emp AND TaskSta=0   ORDER BY FK_Flow,ADT DESC ";
 				} else {
@@ -1668,7 +1668,7 @@ public class Dev2Interface {
 				ps.Add("WFState", wfState.getValue());
 				ps.Add("FK_Emp", userNo);
 			} else {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL = "SELECT * FROM WF_EmpWorks WHERE WFState=" + dbstr + "WFState AND FK_Emp=" + dbstr
 							+ "FK_Emp AND FK_Flow=" + dbstr + "FK_Flow AND TaskSta=0  ORDER BY  ADT DESC ";
 				} else {
@@ -1680,7 +1680,7 @@ public class Dev2Interface {
 				ps.Add("FK_Flow", fk_flow);
 				ps.Add("FK_Emp", userNo);
 			}
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			return DBAccess.RunSQLReturnTable(ps);
 		}
 
 		// 如果是授权状态, 获取当前委托人的信息.
@@ -1688,7 +1688,7 @@ public class Dev2Interface {
 		switch (emp.getHisAuthorWay()) {
 		case All:
 			if (StringHelper.isNullOrEmpty(fk_flow)) {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL = "SELECT * FROM WF_EmpWorks WHERE WFState=" + dbstr + "WFState AND FK_Emp=" + dbstr
 							+ "FK_Emp  AND TaskSta=0  ORDER BY FK_Flow,ADT DESC ";
 				} else {
@@ -1697,9 +1697,9 @@ public class Dev2Interface {
 				}
 
 				ps.Add("WFState", wfState.getValue());
-				ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+				ps.Add("FK_Emp", WebUser.getNo());
 			} else {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL = "SELECT * FROM WF_EmpWorks WHERE WFState=" + dbstr + "WFState AND FK_Emp=" + dbstr
 							+ "FK_Emp AND FK_Flow" + dbstr + "FK_Flow AND TaskSta=0  ORDER BY FK_Flow,ADT DESC ";
 				} else {
@@ -1708,13 +1708,13 @@ public class Dev2Interface {
 				}
 
 				ps.Add("WFState", wfState.getValue());
-				ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+				ps.Add("FK_Emp", WebUser.getNo());
 				ps.Add("FK_Flow", fk_flow);
 			}
 			break;
 		case SpecFlows:
 			if (StringHelper.isNullOrEmpty(fk_flow)) {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					sql = "SELECT * FROM WF_EmpWorks WHERE WFState=" + dbstr + "WFState AND FK_Emp=" + dbstr
 							+ "FK_Emp AND  FK_Flow IN " + emp.getAuthorFlows()
 							+ " AND TaskSta=0   ORDER BY FK_Flow,ADT DESC ";
@@ -1724,9 +1724,9 @@ public class Dev2Interface {
 				}
 
 				ps.Add("WFState", wfState.getValue());
-				ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+				ps.Add("FK_Emp", WebUser.getNo());
 			} else {
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					sql = "SELECT * FROM WF_EmpWorks WHERE WFState=" + dbstr + "WFState AND FK_Emp=" + dbstr
 							+ "FK_Emp  AND FK_Flow" + dbstr + "FK_Flow AND FK_Flow IN " + emp.getAuthorFlows()
 							+ " AND TaskSta=0   ORDER BY FK_Flow,ADT DESC ";
@@ -1737,7 +1737,7 @@ public class Dev2Interface {
 				}
 
 				ps.Add("WFState", wfState.getValue());
-				ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+				ps.Add("FK_Emp", WebUser.getNo());
 				ps.Add("FK_Flow", fk_flow);
 			}
 			break;
@@ -1746,7 +1746,7 @@ public class Dev2Interface {
 		default:
 			throw new RuntimeException("no such way...");
 		}
-		return BP.DA.DBAccess.RunSQLReturnTable(ps);
+		return DBAccess.RunSQLReturnTable(ps);
 	}
 
 	/**
@@ -1757,19 +1757,19 @@ public class Dev2Interface {
 	 */
 	public static DataTable DB_Todolist(String userNo) throws Exception {
 		if (userNo == null) {
-			userNo = BP.Web.WebUser.getNo();
+			userNo = WebUser.getNo();
 			if (WebUser.getIsAuthorize() == false) {
 				throw new RuntimeException("@授权登录的模式下不能调用此接口.");
 			}
 		}
 
 		Paras ps = new Paras();
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String wfSql = "  WFState=" + WFState.Askfor.getValue() + " OR WFState=" + WFState.Runing.getValue()
 				+ "  OR WFState=" + WFState.AskForReplay.getValue() + " OR WFState=" + WFState.Shift.getValue()
 				+ " OR WFState=" + WFState.ReturnSta.getValue() + " OR WFState=" + WFState.Fix.getValue();
 		// 不是授权状态
-		if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+		if (Glo.getIsEnableTaskPool() == true) {
 			ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr + "FK_Emp AND TaskSta!=1 ";
 		} else {
 			ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr + "FK_Emp ";
@@ -1783,7 +1783,7 @@ public class Dev2Interface {
 		for (WFEmp emp : emps.ToJavaList()) {
 			switch (emp.getHisAuthorWay()) {
 			case All:
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL += " UNION  SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp='" + emp.getNo()
 							+ "' AND TaskSta!=1  ";
 				} else {
@@ -1792,7 +1792,7 @@ public class Dev2Interface {
 				}
 				break;
 			case SpecFlows:
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					ps.SQL += " UNION SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp='" + emp.getNo()
 							+ "' AND  FK_Flow IN " + emp.getAuthorFlows() + " AND TaskSta!=0 ";
 				} else {
@@ -1806,7 +1806,7 @@ public class Dev2Interface {
 				throw new RuntimeException("no such way...");
 			}
 		}
-		return BP.DA.DBAccess.RunSQLReturnTable(ps);
+		return DBAccess.RunSQLReturnTable(ps);
 	}
 
 	// ORIGINAL LINE: public static DataTable DB_Todolist(string userNo, int
@@ -1828,7 +1828,7 @@ public class Dev2Interface {
 
 		sql += "  ORDER BY  B.Idx, C.Idx, A.RDT DESC ";
 
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		// 添加oracle的处理
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 			dt.Columns.get("PRI").ColumnName = "PRI";
@@ -1880,7 +1880,7 @@ public class Dev2Interface {
 	 */
 	public static DataTable DB_GenerEmpWorksOfDataTable() throws Exception {
 		Paras ps = new Paras();
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String wfSql = "  WFState=" + WFState.Askfor.getValue() + " OR WFState=" + WFState.Runing.getValue()
 				+ "  OR WFState=" + WFState.AskForReplay.getValue() + " OR WFState=" + WFState.Shift.getValue()
 				+ " OR WFState=" + WFState.ReturnSta.getValue() + " OR WFState=" + WFState.Fix.getValue();
@@ -1888,7 +1888,7 @@ public class Dev2Interface {
 
 		if (WebUser.getIsAuthorize() == false) {
 			// 不是授权状态
-			if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+			if (Glo.getIsEnableTaskPool() == true) {
 				ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr
 						+ "FK_Emp AND TaskSta!=1  ORDER BY ADT DESC";
 			} else {
@@ -1896,25 +1896,25 @@ public class Dev2Interface {
 						+ "FK_Emp ORDER BY ADT DESC";
 			}
 
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			ps.Add("FK_Emp", WebUser.getNo());
+			return DBAccess.RunSQLReturnTable(ps);
 		}
 
 		// 如果是授权状态, 获取当前委托人的信息.
 		WFEmp emp = new WFEmp(WebUser.getNo());
 		switch (emp.getHisAuthorWay()) {
 		case All:
-			if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+			if (Glo.getIsEnableTaskPool() == true) {
 				ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr
 						+ "FK_Emp AND TaskSta!=1  ORDER BY ADT DESC";
 			} else {
 				ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr
 						+ "FK_Emp ORDER BY ADT DESC";
 			}
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			break;
 		case SpecFlows:
-			if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+			if (Glo.getIsEnableTaskPool() == true) {
 				ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr
 						+ "FK_Emp AND  FK_Flow IN " + emp.getAuthorFlows() + " AND TaskSta!=0    ORDER BY ADT DESC";
 			} else {
@@ -1922,11 +1922,11 @@ public class Dev2Interface {
 						+ "FK_Emp AND  FK_Flow IN " + emp.getAuthorFlows() + "   ORDER BY ADT DESC";
 			}
 
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			break;
 		case None:
 			// 不是授权状态
-			if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+			if (Glo.getIsEnableTaskPool() == true) {
 				ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr
 						+ "FK_Emp AND TaskSta!=1  ORDER BY ADT DESC";
 			} else {
@@ -1934,14 +1934,14 @@ public class Dev2Interface {
 						+ "FK_Emp ORDER BY ADT DESC";
 			}
 
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			ps.Add("FK_Emp", WebUser.getNo());
+			return DBAccess.RunSQLReturnTable(ps);
 
 		// WebUser.setAuth(null); //对方已经取消了授权.
 		default:
 			throw new RuntimeException("no such way...");
 		}
-		return BP.DA.DBAccess.RunSQLReturnTable(ps);
+		return DBAccess.RunSQLReturnTable(ps);
 	}
 
 	/**
@@ -1955,10 +1955,10 @@ public class Dev2Interface {
 		if (Glo.getIsDeleteGenerWorkFlow() == false) {
 			// 如果不是删除流程注册表.
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			ps.SQL = "SELECT FK_Flow as No,FlowName,COUNT(*) Num FROM WF_GenerWorkFlow WHERE Emps LIKE '%@" + userNo
 					+ "@%' AND FID=0 AND WFState=" + WFState.Complete.getValue() + " GROUP BY FK_Flow,FlowName";
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			return DBAccess.RunSQLReturnTable(ps);
 		} else {
 			throw new RuntimeException("未实现..");
 			// Paras ps = new Paras();
@@ -2004,11 +2004,11 @@ public class Dev2Interface {
 			return ens.ToDataTableField();
 		} else {
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			ps.SQL = "SELECT *,FlowEndNode FK_Node FROM V_FlowData WHERE FlowEmps LIKE '%@" + userNo
 					+ "%' AND   FID=0 AND WFState=" + WFState.Complete.getValue();
 
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			return DBAccess.RunSQLReturnTable(ps);
 		}
 	}
 
@@ -2040,10 +2040,10 @@ public class Dev2Interface {
 			return ens.ToDataTableField();
 		} else {
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			ps.SQL = "SELECT *,FlowEndNode FK_Node FROM V_FlowData WHERE FK_Flow='" + strFlow
 					+ "' AND FlowEmps LIKE '%@" + userNo + "%' AND FID=0 AND WFState=" + WFState.Complete.getValue();
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			return DBAccess.RunSQLReturnTable(ps);
 		}
 	}
 
@@ -2075,10 +2075,10 @@ public class Dev2Interface {
 			return ens.ToDataTableField();
 		} else {
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			ps.SQL = "SELECT *,FlowEndNode FK_Node FROM V_FlowData WHERE FK_Flow='" + strFlow
 					+ "' AND FID=0 AND WFState=" + WFState.Complete.getValue();
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			return DBAccess.RunSQLReturnTable(ps);
 		}
 	}
 
@@ -2092,18 +2092,18 @@ public class Dev2Interface {
 		if (Glo.getIsDeleteGenerWorkFlow() == false) {
 			// 如果不是删除流程注册表.
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			ps.SQL = "SELECT T.FK_Flow as \"FK_Flow\", T.FlowName as \"FlowName\", COUNT(T.WorkID) as \"Num\" FROM WF_GenerWorkFlow T WHERE T.Emps LIKE '%@"
 					+ WebUser.getNo() + "@%' AND T.FID=0 AND T.WFSta=" + WFSta.Complete.getValue()
 					+ " GROUP BY T.FK_Flow,T.FlowName";
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			return DBAccess.RunSQLReturnTable(ps);
 		} else {
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			ps.SQL = "SELECT T.FK_Flow as \"FK_Flow\", T.FlowName as \"FlowName\", COUNT(T.WorkID) as \"Num\" FROM V_FlowData T WHERE T.FlowEmps LIKE '%@"
 					+ WebUser.getNo() + "@%'  AND T.FID=0 AND T.WFSta=" + WFSta.Complete.getValue()
 					+ "   GROUP BY T.FK_Flow,T.FlowName";
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			return DBAccess.RunSQLReturnTable(ps);
 		}
 	}
 
@@ -2117,10 +2117,10 @@ public class Dev2Interface {
 		if (Glo.getIsDeleteGenerWorkFlow() == false) {
 			// 如果不是删除流程注册表.
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			ps.SQL = "SELECT 'RUNNING' AS Type, T.* FROM WF_GenerWorkFlow T WHERE T.Emps LIKE '%@" + WebUser.getNo()
 					+ "@%' AND T.FID=0 AND T.WFState=" + WFState.Complete.getValue() + " ORDER BY  RDT DESC";
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
+			DataTable dt = DBAccess.RunSQLReturnTable(ps);
 			//
 			if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 				dt.Columns.get("TYPE").setColumnName("Type");
@@ -2165,10 +2165,10 @@ public class Dev2Interface {
 			return dt;
 		} else {
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			ps.SQL = "SELECT 'RUNNING' AS Type, T.* FROM V_FlowData T WHERE T.FlowEmps LIKE '%@" + WebUser.getNo()
 					+ "@%' AND T.FID=0 AND T.WFState=" + WFState.Complete.getValue() + " ORDER BY RDT DESC";
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
+			DataTable dt = DBAccess.RunSQLReturnTable(ps);
 			if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 				dt.Columns.get("TYPE").setColumnName("Type");
 				dt.Columns.get("WORKID").setColumnName("WorkID");
@@ -2223,16 +2223,16 @@ public class Dev2Interface {
 		if (Glo.getIsDeleteGenerWorkFlow() == false) {
 			// 如果不是删除流程注册表.
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			ps.SQL = "SELECT 'RUNNING' AS Type, T.* FROM WF_GenerWorkFlow T WHERE T.Emps LIKE '%@" + userNo
 					+ "@%' AND T.FID=0 AND T.WFState=" + WFState.Complete.getValue() + " ORDER BY  RDT DESC";
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			return DBAccess.RunSQLReturnTable(ps);
 		} else {
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			ps.SQL = "SELECT 'RUNNING' AS Type, T.* FROM V_FlowData T WHERE T.FlowEmps LIKE '%@" + userNo
 					+ "@%' AND T.FID=0 AND T.WFState=" + WFState.Complete.getValue() + " ORDER BY RDT DESC";
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			return DBAccess.RunSQLReturnTable(ps);
 		}
 	}
 
@@ -2278,7 +2278,7 @@ public class Dev2Interface {
 		if (Glo.getIsDeleteGenerWorkFlow() == false) {
 			// 如果不是删除流程注册表.
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			if (StringHelper.isNullOrEmpty(fk_flow)) {
 				if (StringHelper.isNullOrEmpty(title)) {
 					ps.SQL = "SELECT 'RUNNING' AS Type,* FROM WF_GenerWorkFlow WHERE Emps LIKE '%@" + WebUser.getNo()
@@ -2300,10 +2300,10 @@ public class Dev2Interface {
 							+ WFState.Complete.getValue() + " and FK_Flow='" + fk_flow + "' order by RDT desc";
 				}
 			}
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			return DBAccess.RunSQLReturnTable(ps);
 		} else {
 			Paras ps = new Paras();
-			String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+			String dbstr = SystemConfig.getAppCenterDBVarStr();
 			if (StringHelper.isNullOrEmpty(fk_flow)) {
 				if (StringHelper.isNullOrEmpty(title)) {
 					ps.SQL = "SELECT 'RUNNING' AS Type,* FROM V_FlowData WHERE FlowEmps LIKE '%@" + WebUser.getNo()
@@ -2325,7 +2325,7 @@ public class Dev2Interface {
 							+ " and FK_Flow='" + fk_flow + "' order by RDT desc";
 				}
 			}
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			return DBAccess.RunSQLReturnTable(ps);
 		}
 	}
 
@@ -2368,12 +2368,12 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static DataTable DB_TaskPool() throws Exception {
-		if (BP.WF.Glo.getIsEnableTaskPool() == false) {
+		if (Glo.getIsEnableTaskPool() == false) {
 			throw new RuntimeException("@你必须在Web.config中启用IsEnableTaskPool才可以执行此操作。");
 		}
 
 		Paras ps = new Paras();
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String wfSql = "  (WFState=" + WFState.Askfor.getValue() + " OR WFState=" + WFState.Runing.getValue()
 				+ " OR WFState=" + WFState.Shift.getValue() + " OR WFState=" + WFState.ReturnSta.getValue()
 				+ ") AND TaskSta=" + TaskSta.Sharing.getValue();
@@ -2382,8 +2382,8 @@ public class Dev2Interface {
 		if (WebUser.getIsAuthorize() == false) {
 			// 不是授权状态
 			ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr + "FK_Emp ";
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			ps.Add("FK_Emp", WebUser.getNo());
+			return DBAccess.RunSQLReturnTable(ps);
 		}
 
 		// 如果是授权状态, 获取当前委托人的信息.
@@ -2391,12 +2391,12 @@ public class Dev2Interface {
 		switch (emp.getHisAuthorWay()) {
 		case All:
 			ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr + "FK_Emp AND TaskSta=0";
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			break;
 		case SpecFlows:
 			ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr + "FK_Emp AND  FK_Flow IN "
 					+ emp.getAuthorFlows() + " ";
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			break;
 		case None:
 			throw new RuntimeException("对方(" + WebUser.getNo() + ")已经取消了授权.");
@@ -2450,12 +2450,12 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static DataTable DB_TaskPoolOfMyApply() throws Exception {
-		if (BP.WF.Glo.getIsEnableTaskPool() == false) {
+		if (Glo.getIsEnableTaskPool() == false) {
 			throw new RuntimeException("@你必须在Web.config中启用IsEnableTaskPool才可以执行此操作。");
 		}
 
 		Paras ps = new Paras();
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String wfSql = "  (WFState=" + WFState.Askfor.getValue() + " OR WFState=" + WFState.Runing.getValue()
 				+ " OR WFState=" + WFState.Shift.getValue() + " OR WFState=" + WFState.ReturnSta.getValue()
 				+ ") AND TaskSta=" + TaskSta.Takeback.getValue();
@@ -2473,8 +2473,8 @@ public class Dev2Interface {
 			// realSql + ") as v1 left join JXW_Inc v2 on v1.WorkID=v2.OID left
 			// join Jxw_Inc V3 on v1.PWorkID = v3.OID ORDER BY v1.ADT DESC";
 
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
-			return BP.DA.DBAccess.RunSQLReturnTable(ps);
+			ps.Add("FK_Emp", WebUser.getNo());
+			return DBAccess.RunSQLReturnTable(ps);
 		}
 
 		// 如果是授权状态, 获取当前委托人的信息.
@@ -2482,12 +2482,12 @@ public class Dev2Interface {
 		switch (emp.getHisAuthorWay()) {
 		case All:
 			ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr + "FK_Emp AND TaskSta=0";
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			break;
 		case SpecFlows:
 			ps.SQL = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp=" + dbstr + "FK_Emp AND  FK_Flow IN "
 					+ emp.getAuthorFlows() + "";
-			ps.Add("FK_Emp", BP.Web.WebUser.getNo());
+			ps.Add("FK_Emp", WebUser.getNo());
 			break;
 		case None:
 			throw new RuntimeException("对方(" + WebUser.getNo() + ")已经取消了授权.");
@@ -2495,8 +2495,8 @@ public class Dev2Interface {
 			throw new RuntimeException("no such way...");
 		}
 		// @杜.翻译
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
-		if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.Oracle) {
+		DataTable dt = DBAccess.RunSQLReturnTable(ps);
+		if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 			dt.Columns.get("WORKID").ColumnName = "WorkID";
 			dt.Columns.get("ISREAD").ColumnName = "IsRead";
 			dt.Columns.get("STARTER").ColumnName = "Starter";
@@ -2654,12 +2654,12 @@ public class Dev2Interface {
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
 
 		Flow fl = new Flow(fk_flow);
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		String sql = "SELECT OID,Title,RDT,FID FROM " + fl.getPTable() + " WHERE WFState=" + sta.getValue()
 				+ " AND Rec=" + dbstr + "Rec";
-		BP.DA.Paras ps = new BP.DA.Paras();
+		Paras ps = new Paras();
 		ps.SQL = sql;
-		ps.Add("Rec", BP.Web.WebUser.getNo());
+		ps.Add("Rec", WebUser.getNo());
 		return DBAccess.RunSQLReturnTable(ps);
 	}
 
@@ -2797,7 +2797,7 @@ public class Dev2Interface {
 							+ workid + " AND a.IsEnable=1 AND a.IsPass=1 AND a.FK_Node!=" + fk_node + " ORDER BY a.RDT";
 			}
 
-			if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.Oracle) {
+			if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 				DataTable dtt = DBAccess.RunSQLReturnTable(sql);
 				dtt.Columns.clear();
 				dtt.Columns.Add("No", String.class); // 节点ID
@@ -2831,7 +2831,7 @@ public class Dev2Interface {
 						+ " ORDER BY a.RDT ";
 			}
 
-			if (BP.Sys.SystemConfig.getAppCenterDBType() == DBType.Oracle) {
+			if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 				DataTable dtt = DBAccess.RunSQLReturnTable(sql);
 				dtt.Columns.clear();
 				dtt.Columns.Add("No", String.class); // 节点ID
@@ -3054,7 +3054,7 @@ public class Dev2Interface {
 			}
 		}
 
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
+		DataTable dt = DBAccess.RunSQLReturnTable(ps);
 		if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 			dt.Columns.get("WORKID").ColumnName = "WorkID";
 			dt.Columns.get("STARTERNAME").ColumnName = "StarterName";
@@ -3112,7 +3112,7 @@ public class Dev2Interface {
 		String dbStr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		if (WebUser.getIsAuthorize()) {
-			WFEmp emp = new WFEmp(BP.Web.WebUser.getNo());
+			WFEmp emp = new WFEmp(WebUser.getNo());
 			ps.SQL = "SELECT a.FK_Flow as \"FK_Flow\" ,a.FlowName as \"FlowName\", Count(a.WorkID) as \"Num\" FROM WF_GenerWorkFlow A, WF_GenerWorkerlist B WHERE A.WorkID=B.WorkID AND B.FK_Emp="
 					+ dbStr + "FK_Emp AND B.IsEnable=1 AND  (B.IsPass=1 or B.IsPass < 0) AND A.FK_Flow IN "
 					+ emp.getAuthorFlows() + " GROUP BY A.FK_Flow, A.FlowName";
@@ -3123,7 +3123,7 @@ public class Dev2Interface {
 					+ "FK_Emp AND B.IsEnable=1 AND  (B.IsPass=1 or B.IsPass < 0)  GROUP BY A.FK_Flow, A.FlowName";
 			ps.Add("FK_Emp", WebUser.getNo());
 		}
-		return BP.DA.DBAccess.RunSQLReturnTable(ps);
+		return DBAccess.RunSQLReturnTable(ps);
 	}
 
 	/**
@@ -3136,7 +3136,7 @@ public class Dev2Interface {
 		String dbStr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		if (WebUser.getIsAuthorize()) {
-			WFEmp emp = new WFEmp(BP.Web.WebUser.getNo());
+			WFEmp emp = new WFEmp(WebUser.getNo());
 			ps.SQL = "SELECT a.FK_Flow,a.FlowName, Count(a.WorkID) as Num FROM WF_GenerWorkFlow A, WF_GenerWorkerlist B WHERE A.WorkID=B.WorkID AND B.FK_Emp="
 					+ dbStr + "FK_Emp AND B.IsEnable=1 AND  (B.IsPass=1 or B.IsPass < 0) AND A.FK_Flow IN "
 					+ emp.getAuthorFlows() + " GROUP BY A.FK_Flow, A.FlowName";
@@ -3147,7 +3147,7 @@ public class Dev2Interface {
 					+ "FK_Emp AND B.IsEnable=1 AND  (B.IsPass=1 or B.IsPass < 0)  GROUP BY A.FK_Flow, A.FlowName";
 			ps.Add("FK_Emp", WebUser.getNo());
 		}
-		return BP.DA.DBAccess.RunSQLReturnTable(ps);
+		return DBAccess.RunSQLReturnTable(ps);
 	}
 
 	public static DataTable DB_GenerRuning2(String userNo, String fk_flow, String title) {
@@ -3178,7 +3178,7 @@ public class Dev2Interface {
 			}
 		}
 
-		return BP.DA.DBAccess.RunSQLReturnTable(sql);
+		return DBAccess.RunSQLReturnTable(sql);
 	}
 
 	/**
@@ -3234,7 +3234,7 @@ public class Dev2Interface {
 			sql = "SELECT LEFT(CONVERT(VARCHAR(20),RDT,120),10) AS SortRDT,Datepart(WEEKDAY, CONVERT(DATETIME,RDT)  + @@DateFirst - 1) AS WeekRDT,"
 					+ "* FROM Sys_SMS WHERE SendTo ='" + WebUser.getNo() + "'  ORDER BY RDT DESC";
 		}
-		return BP.DA.DBAccess.RunSQLReturnTable(sql);
+		return DBAccess.RunSQLReturnTable(sql);
 	}
 
 	/**
@@ -3253,7 +3253,7 @@ public class Dev2Interface {
 			sql = "SELECT LEFT(CONVERT(VARCHAR(20),RDT,120),10) AS SortRDT,Datepart(WEEKDAY, CONVERT(DATETIME,RDT)  + @@DateFirst - 1) AS WeekRDT,"
 					+ "* FROM Sys_SMS WHERE SendTo ='" + No + "'  ORDER BY RDT DESC";
 		}
-		return BP.DA.DBAccess.RunSQLReturnTable(sql);
+		return DBAccess.RunSQLReturnTable(sql);
 	}
 
 	/**
@@ -3264,7 +3264,7 @@ public class Dev2Interface {
 	public static DataTable DB_GenerUpdateMsgSta(String myPK) {
 		String sql = "";
 		sql = " UPDATE Sys_SMS SET IsRead=1 WHERE MyPK='" + myPK + "'";
-		return BP.DA.DBAccess.RunSQLReturnTable(sql);
+		return DBAccess.RunSQLReturnTable(sql);
 	}
 
 	/**
@@ -3274,7 +3274,7 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static DataTable DB_GenerRuning() throws Exception {
-		DataTable dt = DB_GenerRuning(BP.Web.WebUser.getNo(), null);
+		DataTable dt = DB_GenerRuning(WebUser.getNo(), null);
 		/*
 		 * dt.Columns.Add("Type");
 		 * 
@@ -3405,7 +3405,7 @@ public class Dev2Interface {
 	 */
 	public static DataTable GetBatch(int FK_Node) throws Exception {
 
-		BP.WF.Node nd = new BP.WF.Node(FK_Node);
+		Node nd = new Node(FK_Node);
 		Flow fl = nd.getHisFlow();
 		String fromTable = "";
 
@@ -3419,7 +3419,7 @@ public class Dev2Interface {
 				+ " AND b.FK_Emp='" + WebUser.getNo() + "'";
 		// string sql = "SELECT Title,RDT,ADT,SDT,FID,WorkID,Starter FROM
 		// WF_EmpWorks WHERE FK_Emp='" + WebUser.getNo() + "'";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		return dt;
 	}
 
@@ -3431,7 +3431,7 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static String Port_Login(String userNo) throws Exception {
-		BP.Port.Emp emp = new BP.Port.Emp(userNo);
+		Emp emp = new Emp(userNo);
 		emp.RetrieveFromDBSources();
 		WebUser.SignInOfGener(emp, true);
 		WebUser.setIsWap(false);
@@ -3453,11 +3453,11 @@ public class Dev2Interface {
 			return;
 		}
 
-		if (BP.Sys.SystemConfig.getOSDBSrc() == OSDBSrc.Database) {
+		if (SystemConfig.getOSDBSrc() == OSDBSrc.Database) {
 			Paras ps = new Paras();
-			ps.SQL = "SELECT SID FROM Port_Emp WHERE No=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "No";
+			ps.SQL = "SELECT SID FROM Port_Emp WHERE No=" + SystemConfig.getAppCenterDBVarStr() + "No";
 			ps.Add("No", userNo);
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
+			DataTable dt = DBAccess.RunSQLReturnTable(ps);
 			if (dt.Rows.size() == 0) {
 				throw new RuntimeException("用户不存在或者SID错误。");
 			}
@@ -3467,7 +3467,7 @@ public class Dev2Interface {
 			}
 		}
 
-		BP.Port.Emp emp = new BP.Port.Emp(userNo);
+		Emp emp = new Emp(userNo);
 		WebUser.SignInOfGener(emp);
 		WebUser.setIsWap(false);
 		return;
@@ -3491,7 +3491,7 @@ public class Dev2Interface {
 			String authName) throws Exception {
 		if (userName == null) {
 			// 仅仅传递了人员编号，就按照人员来取.
-			BP.Port.Emp emp = new BP.Port.Emp();
+			Emp emp = new Emp();
 			emp.setNo(userNo);
 			emp.RetrieveFromDBSources();
 			WebUser.SignInOfGener(emp);
@@ -3500,7 +3500,7 @@ public class Dev2Interface {
 			return Port_GetSID(userNo);
 		}
 		// 执行登录.
-		BP.Web.WebUser.SignInOfGener2017(userNo, userName, deptNo, deptName, null, null);
+		WebUser.SignInOfGener2017(userNo, userName, deptNo, deptName, null, null);
 		return null;
 	}
 
@@ -3511,7 +3511,7 @@ public class Dev2Interface {
 	 */
 	public static String Port_Login(String userNo, boolean isRememberMe) throws Exception {
 		isRememberMe = true;
-		BP.Port.Emp emp = new BP.Port.Emp(userNo);
+		Emp emp = new Emp(userNo);
 		WebUser.SignInOfGener(emp, isRememberMe);
 		WebUser.setIsWap(false);
 		WebUser.setAuth(""); // 设置授权人为空.
@@ -3561,7 +3561,7 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static void Port_SendMsg(String userNo, String msgTitle, String msgDoc, String msgFlag) throws Exception {
-		Port_SendMsg(userNo, msgTitle, msgDoc, msgFlag, BP.WF.SMSMsgType.Self, null, 0, 0, 0);
+		Port_SendMsg(userNo, msgTitle, msgDoc, msgFlag, SMSMsgType.Self, null, 0, 0, 0);
 	}
 
 	/**
@@ -3574,9 +3574,9 @@ public class Dev2Interface {
 	public static String Port_GetSIDName(String userNo) {
 		String info = "";
 		Paras ps = new Paras();
-		ps.SQL = "SELECT SID, Name FROM Port_Emp WHERE No=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "No";
+		ps.SQL = "SELECT SID, Name FROM Port_Emp WHERE No=" + SystemConfig.getAppCenterDBVarStr() + "No";
 		ps.Add("No", userNo);
-		DataTable table = BP.DA.DBAccess.RunSQLReturnTable(ps);
+		DataTable table = DBAccess.RunSQLReturnTable(ps);
 		info = BP.Tools.FormatToJson.ToJson(table);
 		return info;
 	}
@@ -3589,26 +3589,26 @@ public class Dev2Interface {
 	 * @return SID
 	 */
 	public static String Port_GetSID(String userNo) {
-		if (BP.Sys.SystemConfig.getOSDBSrc() == OSDBSrc.Database) {
+		if (SystemConfig.getOSDBSrc() == OSDBSrc.Database) {
 			Paras ps = new Paras();
-			ps.SQL = "SELECT SID FROM Port_Emp WHERE No=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "No";
+			ps.SQL = "SELECT SID FROM Port_Emp WHERE No=" + SystemConfig.getAppCenterDBVarStr() + "No";
 			ps.Add("No", userNo);
-			String sid = BP.DA.DBAccess.RunSQLReturnString(ps);
+			String sid = DBAccess.RunSQLReturnString(ps);
 			if (StringHelper.isNullOrEmpty(sid) == true) {
 				try {
 					// 判断是否更新的是用户表中的SID
 					if (Glo.getUpdataSID().contains("UPDATE Port_Emp SET SID=") == true) {
 						// 判断是否视图，如果为视图则不进行修改 @于庆海 需要翻译
-						if (BP.DA.DBAccess.IsView("Port_Emp") == true) {
+						if (DBAccess.IsView("Port_Emp") == true) {
 							return sid;
 						}
 					}
-					sid = BP.DA.DBAccess.GenerGUID();
+					sid = DBAccess.GenerGUID();
 					ps.SQL = Glo.getUpdataSID();
 					ps.Add("SID", sid);
 					ps.Add("No", userNo);
-					BP.DA.DBAccess.RunSQL(ps);
-				} catch (java.lang.Exception e) {
+					DBAccess.RunSQL(ps);
+				} catch (Exception e) {
 					// throw new Exception("@可");
 					// 这里有可能是更新失败，是因为用户连接的视图.
 				}
@@ -3652,13 +3652,13 @@ public class Dev2Interface {
 		// 判断是否更新的是用户表中的SID
 		if (Glo.getUpdataSID().contains("UPDATE Port_Emp SET SID=") == true) {
 			// 判断是否视图，如果为视图则不进行修改 @于庆海 需要翻译
-			if (BP.DA.DBAccess.IsView("Port_Emp") == true) {
+			if (DBAccess.IsView("Port_Emp") == true) {
 				return false;
 			}
 		}
 
 		String sql = "";
-		sql = BP.Sys.SystemConfig.GetValByKey("UpdateSID", sql);
+		sql = SystemConfig.GetValByKey("UpdateSID", sql);
 		if (sql.equals("")) {
 			sql = "UPDATE Port_Emp SET SID=@SID WHERE No=@No";
 		}
@@ -3666,7 +3666,7 @@ public class Dev2Interface {
 		sql = sql.replace("@SID", "'" + sid + "'");
 		sql = sql.replace("@No", "'" + userNo + "'");
 
-		if (BP.DA.DBAccess.RunSQL(sql) == 1) {
+		if (DBAccess.RunSQL(sql) == 1) {
 			return true;
 		} else {
 			return false;
@@ -3704,8 +3704,8 @@ public class Dev2Interface {
 		}
 
 		String para = "@FK_Flow=" + flowNo + "@WorkID=" + workID + "@FK_Node=" + nodeID + "@Sender="
-				+ BP.Web.WebUser.getNo();
-		BP.WF.SMS.SendMsg(userNo, title, msgDoc, msgFlag, msgType, para);
+				+ WebUser.getNo();
+		SMS.SendMsg(userNo, title, msgDoc, msgFlag, msgType, para);
 	}
 
 	/**
@@ -3767,7 +3767,7 @@ public class Dev2Interface {
 		sms.setHisMobileSta(MsgSta.Disable);
 
 		// 其他属性.
-		sms.setRDT(BP.DA.DataType.getCurrentDataTime());
+		sms.setRDT(DataType.getCurrentDataTime());
 
 		// 消息参数.
 		sms.setAtPara(paras);
@@ -3829,7 +3829,7 @@ public class Dev2Interface {
 		sms.setMobileInfo(smsDoc);
 
 		// 其他属性.
-		sms.setRDT(BP.DA.DataType.getCurrentDataTime());
+		sms.setRDT(DataType.getCurrentDataTime());
 
 		sms.setMsgType(msgType); // 消息类型.
 
@@ -3878,11 +3878,11 @@ public class Dev2Interface {
 	public static DataTable Port_GetNewMsg(String userNo, String dateLastTime) {
 		Paras ps = new Paras();
 		ps.SQL = "SELECT MsgType , Count(*) as Num FROM Sys_SMS WHERE SendTo="
-				+ BP.Sys.SystemConfig.getAppCenterDBVarStr() + "SendTo AND RDT >"
-				+ BP.Sys.SystemConfig.getAppCenterDBVarStr() + "RDT Group By MsgType";
-		ps.Add(BP.WF.SMSAttr.SendTo, userNo);
-		ps.Add(BP.WF.SMSAttr.RDT, dateLastTime);
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
+				+ SystemConfig.getAppCenterDBVarStr() + "SendTo AND RDT >"
+				+ SystemConfig.getAppCenterDBVarStr() + "RDT Group By MsgType";
+		ps.Add(SMSAttr.SendTo, userNo);
+		ps.Add(SMSAttr.RDT, dateLastTime);
+		DataTable dt = DBAccess.RunSQLReturnTable(ps);
 		return dt;
 	}
 
@@ -3896,9 +3896,9 @@ public class Dev2Interface {
 	public static DataTable Port_GetNewMsg(String userNo) {
 		Paras ps = new Paras();
 		ps.SQL = "SELECT MsgType , Count(*) as Num FROM Sys_SMS WHERE SendTo="
-				+ BP.Sys.SystemConfig.getAppCenterDBVarStr() + "SendTo  Group By MsgType";
-		ps.Add(BP.WF.SMSAttr.SendTo, userNo);
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
+				+ SystemConfig.getAppCenterDBVarStr() + "SendTo  Group By MsgType";
+		ps.Add(SMSAttr.SendTo, userNo);
+		DataTable dt = DBAccess.RunSQLReturnTable(ps);
 		return dt;
 	}
 
@@ -3963,7 +3963,7 @@ public class Dev2Interface {
 
 		try {
 			t.Insert();
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			t.CheckPhysicsTable();
 			t.Insert();
 			t.DirectInsert();
@@ -3973,7 +3973,7 @@ public class Dev2Interface {
 		if (at == ActionType.CallChildenFlow) {
 			/* 如果是吊起子流程，就要向它父流程信息里写数据，让父流程可以看到能够发起那些流程数据。 */
 			AtPara ap = new AtPara(tag);
-			BP.WF.GenerWorkFlow gwf = new GenerWorkFlow(ap.GetValInt64ByKey(GenerWorkFlowAttr.PWorkID));
+			GenerWorkFlow gwf = new GenerWorkFlow(ap.GetValInt64ByKey(GenerWorkFlowAttr.PWorkID));
 			t.setWorkID(gwf.getWorkID());
 
 			nd = new Node(gwf.getFK_Node());
@@ -4039,7 +4039,7 @@ public class Dev2Interface {
 
 		try {
 			t.Insert();
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			t.CheckPhysicsTable();
 			t.Insert();
 			t.DirectInsert();
@@ -4047,7 +4047,7 @@ public class Dev2Interface {
 		if (at == ActionType.CallChildenFlow) {
 			// 如果是吊起子流程，就要向它父流程信息里写数据，让父流程可以看到能够发起那些流程数据。
 			AtPara ap = new AtPara(tag);
-			BP.WF.GenerWorkFlow gwf = new GenerWorkFlow(ap.GetValInt64ByKey(GenerWorkFlowAttr.PWorkID));
+			GenerWorkFlow gwf = new GenerWorkFlow(ap.GetValInt64ByKey(GenerWorkFlowAttr.PWorkID));
 			t.setWorkID(gwf.getWorkID());
 
 			nd = new Node(gwf.getFK_Node());
@@ -4106,14 +4106,14 @@ public class Dev2Interface {
 	public static void WriteTrackWorkCheck(String flowNo, int currNodeID, long workid, long fid, String msg,
 			String optionName) throws Exception {
 
-		String dbStr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbStr = SystemConfig.getAppCenterDBVarStr();
 
 		GenerWorkFlow gwf = new GenerWorkFlow();
 		gwf.setWorkID(workid);
 		gwf.RetrieveFromDBSources();
 
 		// 求主键 2017.10.6以前的逻辑.
-		String tag = currNodeID + "_" + workid + "_" + fid + "_" + BP.Web.WebUser.getNo();
+		String tag = currNodeID + "_" + workid + "_" + fid + "_" + WebUser.getNo();
 
 		// 求当前是否是会签. zhangsan,张三;李四;王五;
 		String nodeName = gwf.getNodeName();
@@ -4133,7 +4133,7 @@ public class Dev2Interface {
 			ps.Add(TrackAttr.NDFrom, currNodeID);
 			DBAccess.RunSQL(ps);
 
-			BP.WF.Dev2Interface.WriteTrack(flowNo, currNodeID, nodeName, workid, fid, msg, ActionType.WorkCheck, tag,
+			Dev2Interface.WriteTrack(flowNo, currNodeID, nodeName, workid, fid, msg, ActionType.WorkCheck, tag,
 					null, optionName, null, null, null, null, null);
 			// 写入日志.
 			// WriteTrackAdv(flowNo, currNodeID, nodeName, workid, fid, msg,
@@ -4161,7 +4161,7 @@ public class Dev2Interface {
 			// 如果没有更新到，就写入.
 			// WriteTrack(flowNo, currNodeID, nodeName, workid, fid, msg,
 			// ActionType.WorkCheck, tag, null, optionName);
-			BP.WF.Dev2Interface.WriteTrack(flowNo, currNodeID, nodeName, workid, fid, msg, ActionType.WorkCheck, tag,
+			Dev2Interface.WriteTrack(flowNo, currNodeID, nodeName, workid, fid, msg, ActionType.WorkCheck, tag,
 					null, optionName, null, null, null, null, null);
 		}
 
@@ -4235,7 +4235,7 @@ public class Dev2Interface {
 		if (at == ActionType.CallChildenFlow) {
 			/* 如果是吊起子流程，就要向它父流程信息里写数据，让父流程可以看到能够发起那些流程数据。 */
 			AtPara ap = new AtPara(tag);
-			BP.WF.GenerWorkFlow gwf = new GenerWorkFlow(ap.GetValInt64ByKey(GenerWorkFlowAttr.PWorkID));
+			GenerWorkFlow gwf = new GenerWorkFlow(ap.GetValInt64ByKey(GenerWorkFlowAttr.PWorkID));
 			t.setWorkID(gwf.getWorkID());
 
 			t.setNDFrom(gwf.getFK_Node());
@@ -4269,8 +4269,8 @@ public class Dev2Interface {
 	 */
 	public static void WriteTrackDailyLog(String flowNo, int nodeFrom, long workid, long fid, String msg,
 			String optionName) throws Exception {
-		String dbStr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
-		String today = BP.DA.DataType.getCurrentDate();
+		String dbStr = SystemConfig.getAppCenterDBVarStr();
+		String today = DataType.getCurrentDate();
 
 		Paras ps = new Paras();
 		ps.SQL = "UPDATE  ND" + Integer.parseInt(flowNo) + "Track SET Msg=" + dbStr + "Msg WHERE  RDT LIKE '" + today
@@ -4409,14 +4409,14 @@ public class Dev2Interface {
 		String table = "ND" + Integer.parseInt(flowNo) + "Track";
 		String sql = "SELECT MyPK FROM " + table + " WHERE NDFrom=" + nodeFrom + " AND WorkID=" + workid
 				+ " And NDTo='0' ORDER BY RDT DESC ";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		if (dt.Rows.size() == 0) {
 			return false;
 		}
 
 		String pk = dt.Rows.get(0).getValue(0).toString();
 		sql = "UPDATE " + table + " SET " + TrackAttr.ActionTypeText + "='" + label + "' WHERE MyPK=" + pk;
-		BP.DA.DBAccess.RunSQL(sql);
+		DBAccess.RunSQL(sql);
 		return true;
 	}
 
@@ -4437,14 +4437,14 @@ public class Dev2Interface {
 		String table = "ND" + Integer.parseInt(flowNo) + "Track";
 		String sql = "SELECT MyPK FROM " + table + " WHERE NDFrom=" + nodeFrom + " AND WorkID=" + workid
 				+ "  ORDER BY RDT DESC ";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		if (dt.Rows.size() == 0) {
 			return false;
 		}
 
 		String pk = dt.Rows.get(0).getValue(0).toString();
 		sql = "UPDATE " + table + " SET " + TrackAttr.ActionTypeText + "='" + label + "' WHERE MyPK=" + pk;
-		BP.DA.DBAccess.RunSQL(sql);
+		DBAccess.RunSQL(sql);
 		return true;
 	}
 
@@ -4462,7 +4462,7 @@ public class Dev2Interface {
 		String sql = "SELECT Msg FROM " + table + " WHERE NDFrom=" + nodeFrom + " AND ActionType="
 				+ ActionType.WorkCheck.getValue() + " AND EmpFrom='" + WebUser.getNo() + "' AND WorkID=" + workId
 				+ " ORDER BY RDT DESC ";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		if (dt.Rows.size() == 0) {
 			// BP.Sys.FrmWorkCheck fwc = new FrmWorkCheck(nodeFrom);
 			// return fwc.FWCDefInfo;
@@ -4491,7 +4491,7 @@ public class Dev2Interface {
 		String table = "ND" + Integer.parseInt(flowNo) + "Track";
 		String sql = "SELECT Msg FROM " + table + " WHERE NDFrom=" + nodeFrom + " AND ActionType="
 				+ ActionType.WorkCheck.getValue() + " AND WorkID=" + workId + " ORDER BY RDT DESC ";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		if (dt.Rows.size() == 0) {
 			// BP.Sys.FrmWorkCheck fwc = new FrmWorkCheck(nodeFrom);
 			// return fwc.FWCDefInfo;
@@ -4517,7 +4517,7 @@ public class Dev2Interface {
 		String table = "ND" + Integer.parseInt(flowNo) + "Track";
 		String sql = "DELETE FROM " + table + " WHERE NDFrom=" + nodeFrom + " AND ActionType="
 				+ ActionType.WorkCheck.getValue() + " AND EmpFrom='" + WebUser.getNo() + "' AND WorkID=" + workId;
-		BP.DA.DBAccess.RunSQL(sql);
+		DBAccess.RunSQL(sql);
 	}
 
 	public static String GetAskForHelpReInfo(String flowNo, long workId, int nodeFrom) throws Exception {
@@ -4525,7 +4525,7 @@ public class Dev2Interface {
 		String sql = "SELECT Msg FROM " + table + " WHERE NDFrom=" + nodeFrom + " AND ActionType="
 				+ ActionType.AskforHelp.getValue() + " AND EmpFrom='" + WebUser.getNo() + "' AND WorkID=" + workId
 				+ " ORDER BY RDT DESC ";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		if (dt.Rows.size() == 0) {
 			return "";
 		}
@@ -4546,7 +4546,7 @@ public class Dev2Interface {
 	public static void SetTrackInfo(String flowNo, long workId, int nodeFrom, int actionType, String strMsg) {
 		String table = "ND" + Integer.parseInt(flowNo) + "Track";
 
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "UPDATE " + table + " SET Msg=" + dbstr + "Msg  WHERE ActionType=" + dbstr + "ActionType and WorkID="
 				+ dbstr + "WorkID and NDFrom=" + dbstr + "NDFrom";
@@ -4554,7 +4554,7 @@ public class Dev2Interface {
 		ps.Add("ActionType", actionType);
 		ps.Add("WorkID", workId);
 		ps.Add("NDFrom", nodeFrom);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 	}
 
 	/**
@@ -4566,19 +4566,19 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static void SetBillNo(String flowNo, long workID, String newBillNo) throws Exception {
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "UPDATE WF_GenerWorkFlow SET BillNo=" + dbstr + "BillNo  WHERE WorkID=" + dbstr + "WorkID";
 		ps.Add("BillNo", newBillNo);
 		ps.Add("WorkID", workID);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 
 		Flow fl = new Flow(flowNo);
 		ps = new Paras();
 		ps.SQL = "UPDATE " + fl.getPTable() + " SET BillNo=" + dbstr + "BillNo WHERE OID=" + dbstr + "OID";
 		ps.Add("BillNo", newBillNo);
 		ps.Add("OID", workID);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 	}
 
 	/**
@@ -4613,7 +4613,7 @@ public class Dev2Interface {
 			parentEmpNo = WebUser.getNo();
 		}
 
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "UPDATE WF_GenerWorkFlow SET PFlowNo=" + dbstr + "PFlowNo, PWorkID=" + dbstr + "PWorkID,PNodeID="
 				+ dbstr + "PNodeID,PEmp=" + dbstr + "PEmp WHERE WorkID=" + dbstr + "WorkID";
@@ -4623,7 +4623,7 @@ public class Dev2Interface {
 		ps.Add(GenerWorkFlowAttr.PEmp, parentEmpNo);
 		ps.Add(GenerWorkFlowAttr.WorkID, subFlowWorkID);
 
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 
 		Flow fl = new Flow(subFlowNo);
 		ps = new Paras();
@@ -4635,7 +4635,7 @@ public class Dev2Interface {
 		ps.Add(NDXRptBaseAttr.PEmp, parentEmpNo);
 		ps.Add(NDXRptBaseAttr.OID, subFlowWorkID);
 
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 	}
 
 	public static GERpt Flow_GenerGERpt(String flowNo, long workID) throws NumberFormatException, Exception {
@@ -4715,7 +4715,7 @@ public class Dev2Interface {
 	 */
 	public static String Flow_DoRebackWorkFlow(String flowNo, long workid, int backToNodeID, String note)
 			throws Exception {
-		BP.WF.Template.FlowExt fs = new BP.WF.Template.FlowExt(flowNo);
+		FlowExt fs = new FlowExt(flowNo);
 		return fs.DoRebackFlowData(workid, backToNodeID, note);
 
 	}
@@ -4747,17 +4747,17 @@ public class Dev2Interface {
 		// 转化成编号.
 		flowNo = TurnFlowMarkToFlowNo(flowNo);
 
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "DELETE FROM WF_GenerWorkFlow WHERE WorkID=" + dbstr + "WorkID";
 		ps.Add("WorkID", workID);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 
 		Flow fl = new Flow(flowNo);
 		ps = new Paras();
 		ps.SQL = "DELETE FROM " + fl.getPTable() + " WHERE OID=" + dbstr + "OID";
 		ps.Add("OID", workID);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 
 		// 删除开始节点数据.
 		Node nd = fl.getHisStartNode();
@@ -4765,9 +4765,9 @@ public class Dev2Interface {
 		ps = new Paras();
 		ps.SQL = "DELETE FROM " + wk.getEnMap().getPhysicsTable() + " WHERE OID=" + dbstr + "OID";
 		ps.Add("OID", workID);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 
-		BP.DA.Log.DefaultLogWriteLineInfo(WebUser.getName() + "删除了FlowNo 为'" + flowNo + "',workID为'" + workID + "'的数据");
+		Log.DefaultLogWriteLineInfo(WebUser.getName() + "删除了FlowNo 为'" + flowNo + "',workID为'" + workID + "'的数据");
 
 		return "删除成功";
 	}
@@ -4953,7 +4953,7 @@ public class Dev2Interface {
 					+ " AND (A.ActionType=1 OR A.ActionType=0 OR A.ActionType=7 OR A.ActionType=8 OR A.ActionType=11)"
 					+ " AND (A.EmpFrom=B.No) AND (B.FK_Dept=C.No) ORDER BY A.RDT, A.NDFrom";
 
-			DataTable dtTrack = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			DataTable dtTrack = DBAccess.RunSQLReturnTable(sql);
 
 			for (DataRow drTrack : dtTrack.Rows) {
 				
@@ -4991,7 +4991,7 @@ public class Dev2Interface {
 			if (gwf.getWFState() != WFState.Complete  ) {
 			
 			GenerWorkerLists gwls = new GenerWorkerLists();
-			QueryObject qo = new BP.En.QueryObject(gwls);
+			QueryObject qo = new QueryObject(gwls);
 			qo.addLeftBracket();
 			qo.AddWhere(GenerWorkerListAttr.WorkID,workID);
 			qo.addOr();
@@ -5069,7 +5069,7 @@ public class Dev2Interface {
 				continue;
 			}
 
-			BP.Port.Emp emp = new Emp(empID);
+			Emp emp = new Emp(empID);
 			todoEmps += emp.getNo() + "," + emp.getName();
 
 			emps.AddEntity(emp);
@@ -5100,7 +5100,7 @@ public class Dev2Interface {
 			gwl.setWhoExeIt(0);
 			try {
 				gwl.Insert();
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 				gwl.Update();
 			}
 		}
@@ -5209,7 +5209,7 @@ public class Dev2Interface {
 		// throw new Exception("@当前人员不能执行此节点上的工作.");
 
 		// 获取当前nodeID.
-		int currNodeID = BP.WF.Dev2Interface.Node_GetCurrentNodeID(fk_flow, workid);
+		int currNodeID = Dev2Interface.Node_GetCurrentNodeID(fk_flow, workid);
 
 		// 获取
 		Node nd = new Node(currNodeID);
@@ -5232,7 +5232,7 @@ public class Dev2Interface {
 		Paras ps = new Paras();
 		ps.SQL = "SELECT FK_Node FROM WF_GenerWorkFlow WHERE WorkID=" + SystemConfig.getAppCenterDBVarStr() + "WorkID";
 		ps.Add("WorkID", workID);
-		return BP.DA.DBAccess.RunSQLReturnValInt(ps);
+		return DBAccess.RunSQLReturnValInt(ps);
 	}
 
 	/**
@@ -5282,7 +5282,7 @@ public class Dev2Interface {
 		ps.SQL = "SELECT * FROM WF_GenerWorkerList WHERE IsEnable=1 AND IsPass=0 AND WorkID="
 				+ SystemConfig.getAppCenterDBVarStr() + "WorkID";
 		ps.Add("WorkID", workID);
-		return BP.DA.DBAccess.RunSQLReturnTable(ps);
+		return DBAccess.RunSQLReturnTable(ps);
 	}
 
 	/**
@@ -5299,8 +5299,8 @@ public class Dev2Interface {
 			long pworkID) throws Exception {
 		Node nd = new Node(Integer.parseInt(flowNo + "01"));
 		if (nd.getIsGuestNode() == true) {
-			if (!BP.Web.WebUser.getNo().equals("Guest")) {
-				throw new RuntimeException("@当前节点是来宾处理节点，但是目前您{" + BP.Web.WebUser.getNo() + "}不是来宾帐号。");
+			if (!WebUser.getNo().equals("Guest")) {
+				throw new RuntimeException("@当前节点是来宾处理节点，但是目前您{" + WebUser.getNo() + "}不是来宾帐号。");
 			}
 			return true;
 		}
@@ -5312,7 +5312,7 @@ public class Dev2Interface {
 			switch (nd.getHisDeliveryWay()) {
 			case ByStation:
 			case ByStationOnly:
-				ps.SQL = "SELECT COUNT(A.FK_Node) as Num FROM WF_NodeStation A, " + BP.WF.Glo.getEmpStation()
+				ps.SQL = "SELECT COUNT(A.FK_Node) as Num FROM WF_NodeStation A, " + Glo.getEmpStation()
 						+ " B WHERE A.FK_Station= B.FK_Station AND  A.FK_Node=" + dbstr + "FK_Node AND B.FK_Emp="
 						+ dbstr + "FK_Emp";
 				ps.Add("FK_Node", nd.getNodeID());
@@ -5320,7 +5320,7 @@ public class Dev2Interface {
 				num = DBAccess.RunSQLReturnValInt(ps);
 				break;
 			case ByDept:
-				ps.SQL = "SELECT COUNT(A.FK_Node) as Num FROM WF_NodeDept A, " + BP.WF.Glo.getEmpDept()
+				ps.SQL = "SELECT COUNT(A.FK_Node) as Num FROM WF_NodeDept A, " + Glo.getEmpDept()
 						+ " B WHERE A.FK_Dept= B.FK_Dept AND  A.FK_Node=" + dbstr + "FK_Node AND B.FK_Emp=" + dbstr
 						+ "FK_Emp";
 				ps.Add("FK_Node", nd.getNodeID());
@@ -5453,7 +5453,7 @@ public class Dev2Interface {
 	 * @return 返回该节点上的子流程是否完成？
 	 */
 	public static boolean Flow_CheckAllSubFlowIsOver(int nodeID, long workID) {
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "SELECT COUNT(WorkID) FROM WF_GenerWorkFlow WHERE  PNodeID=" + dbstr + "PNodeID AND PWorkID=" + dbstr
 				+ "PWorkID AND WFState!=" + dbstr + "WFState ";
@@ -5461,7 +5461,7 @@ public class Dev2Interface {
 		ps.Add(GenerWorkFlowAttr.PWorkID, workID);
 		ps.Add(GenerWorkFlowAttr.WFState, WFState.Complete.getValue());
 
-		if (BP.DA.DBAccess.RunSQLReturnValInt(ps) == 0) {
+		if (DBAccess.RunSQLReturnValInt(ps) == 0) {
 			return true;
 		} else {
 			return false;
@@ -5533,7 +5533,7 @@ public class Dev2Interface {
 				+ dbstr + "FK_Emp AND b.IsEnable=1 AND a.WorkID=" + dbstr + "WorkID ";
 		ps.Add("FK_Emp", userNo);
 		ps.Add("WorkID", workID);
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
+		DataTable dt = DBAccess.RunSQLReturnTable(ps);
 		if (dt.Rows.size() == 0) {
 			return false;
 		}
@@ -5561,7 +5561,7 @@ public class Dev2Interface {
 		// 判断是否是客户处理节点.
 		int isGuestNode = Integer.parseInt(dt.Rows.get(0).getValue("IsGuestNode").toString());
 		if (isGuestNode == 1) {
-			if (dt.Rows.get(0).getValue("GuestNo").toString().equals(BP.Web.GuestUser.getNo())) {
+			if (dt.Rows.get(0).getValue("GuestNo").toString().equals(GuestUser.getNo())) {
 				return true;
 			} else {
 				return false;
@@ -5622,7 +5622,7 @@ public class Dev2Interface {
 				+ nodeID + "'  AND b.FK_Node=c.NodeID AND a.WorkID=b.WorkID AND a.FK_Node=b.FK_Node  AND b.GuestNo='"
 				+ userNo + "' AND b.IsEnable=1 AND a.WorkID=" + workID;
 
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		if (dt.Rows.size() == 0) {
 			return false;
 		}
@@ -5677,35 +5677,35 @@ public class Dev2Interface {
 		}
 
 		// 先从轨迹里判断.
-		String dbStr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbStr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "SELECT count(MyPK) as Num FROM ND" + Integer.parseInt(flowNo) + "Track WHERE (WorkID=" + dbStr
 				+ "WorkID OR FID=" + dbStr + "FID) AND (EmpFrom=" + dbStr + "Emp1 OR EmpTo=" + dbStr + "Emp2)";
-		ps.Add(BP.WF.TrackAttr.WorkID, workid);
-		ps.Add(BP.WF.TrackAttr.FID, workid);
+		ps.Add(TrackAttr.WorkID, workid);
+		ps.Add(TrackAttr.FID, workid);
 		ps.Add("Emp1", userNo);
 		ps.Add("Emp2", userNo);
 
-		if (BP.DA.DBAccess.RunSQLReturnValInt(ps) > 1) {
+		if (DBAccess.RunSQLReturnValInt(ps) > 1) {
 			return true;
 		}
 
 		// 在查看该流程的发起者，与当前人是否在同一个部门，如果是也返回true.
 		ps = new Paras();
 		ps.SQL = "SELECT FK_Dept FROM WF_GenerWorkFlow WHERE WorkID=" + dbStr + "WorkID OR WorkID=" + dbStr + "FID";
-		ps.Add(BP.WF.TrackAttr.WorkID, workid);
-		ps.Add(BP.WF.TrackAttr.FID, workid);
+		ps.Add(TrackAttr.WorkID, workid);
+		ps.Add(TrackAttr.FID, workid);
 
-		String fk_dept = BP.DA.DBAccess.RunSQLReturnStringIsNull(ps, null);
+		String fk_dept = DBAccess.RunSQLReturnStringIsNull(ps, null);
 		if (fk_dept == null) {
-			BP.WF.Flow fl = new Flow(flowNo);
+			Flow fl = new Flow(flowNo);
 			ps.SQL = "SELECT FK_Dept FROM " + fl.getPTable() + " WHERE OID=" + dbStr + "WorkID OR OID=" + dbStr + "FID";
-			fk_dept = BP.DA.DBAccess.RunSQLReturnStringIsNull(ps, null);
+			fk_dept = DBAccess.RunSQLReturnStringIsNull(ps, null);
 			if (fk_dept == null) {
 				throw new RuntimeException("@流程引擎数据被删除.");
 			}
 		}
-		if (fk_dept.equals(BP.Web.WebUser.getFK_Dept())) {
+		if (fk_dept.equals(WebUser.getFK_Dept())) {
 			return true;
 		}
 
@@ -5729,7 +5729,7 @@ public class Dev2Interface {
 		WorkFlow wf = new WorkFlow(flowNo, workid);
 		String msg = wf.DoDeleteWorkFlowByReal(false);
 
-		BP.WF.Dev2Interface.WriteTrackInfo(flowNo, gwf.getFK_Node(), gwf.getNodeName(), gwf.getFID(), 0, info, "删除子线程");
+		Dev2Interface.WriteTrackInfo(flowNo, gwf.getFK_Node(), gwf.getNodeName(), gwf.getFID(), 0, info, "删除子线程");
 		return msg;
 	}
 
@@ -5766,7 +5766,7 @@ public class Dev2Interface {
 			toEmpName += wl.getFK_EmpText() + ",";
 
 			// 发消息.
-			BP.WF.Dev2Interface.Port_SendMsg(wl.getFK_Emp(), mailTitle, msg, null, BP.WF.SMSMsgType.DoPress,
+			Dev2Interface.Port_SendMsg(wl.getFK_Emp(), mailTitle, msg, null, SMSMsgType.DoPress,
 					gwf.getFK_Flow(), gwf.getFK_Node(), gwf.getWorkID(), gwf.getFID());
 
 			wl.setPressTimes(wl.getPressTimes() + 1);
@@ -5812,7 +5812,7 @@ public class Dev2Interface {
 		wk.setOID(workid);
 		wk.RetrieveFromDBSources();
 		Flow fl = nd.getHisFlow();
-		String title = BP.WF.WorkFlowBuessRole.GenerTitle(fl, wk);
+		String title = WorkFlowBuessRole.GenerTitle(fl, wk);
 		return Flow_SetFlowTitle(flowNo, workid, title);
 	}
 
@@ -5985,7 +5985,7 @@ public class Dev2Interface {
 
 		// 产生工作列表.
 		String sql = "SELECT workid FROM wf_generworkerlist WHERE workid='" + workid + "'";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		if (dt.Rows.size() == 0) {
 			GenerWorkerList gwl = new GenerWorkerList();
 			gwl.setWorkID(workid);
@@ -6041,7 +6041,7 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static String Flow_Schedule(long workid, int toNodeID, String toEmper) throws Exception {
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 
 		Node nd = new Node(toNodeID);
 		Emp emp = new Emp(toEmper);
@@ -6061,7 +6061,7 @@ public class Dev2Interface {
 		Paras ps = new Paras();
 		ps.SQL = "UPDATE WF_GenerWorkerList SET IsPass=1 WHERE WorkID=" + dbstr + "WorkID";
 		ps.Add(GenerWorkFlowAttr.WorkID, workid);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 
 		// 更新流程数据信息。
 		Flow fl = new Flow(gwf.getFK_Flow());
@@ -6071,7 +6071,7 @@ public class Dev2Interface {
 		ps.Add(NDXRptBaseAttr.FlowEnder, toEmper);
 		ps.Add(NDXRptBaseAttr.FlowEndNode, toNodeID);
 		ps.Add(NDXRptBaseAttr.OID, workid);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 
 		// 执行更新.
 		GenerWorkerLists gwls = new GenerWorkerLists(workid);
@@ -6097,7 +6097,7 @@ public class Dev2Interface {
 		}
 
 		String sql = "SELECT COUNT(*) FROM WF_EmpWorks where WorkID=" + workid + " and fk_emp='" + toEmper + "'";
-		int i = BP.DA.DBAccess.RunSQLReturnValInt(sql);
+		int i = DBAccess.RunSQLReturnValInt(sql);
 		if (i == 0) {
 			throw new RuntimeException("@调度错误");
 		}
@@ -6121,7 +6121,7 @@ public class Dev2Interface {
 	public static void Flow_SetFlowTransferCustom(String flowNo, long workid, TransferCustomType runType, String paras)
 			throws Exception {
 		// 删除以前存储的参数.
-		BP.DA.DBAccess.RunSQL("DELETE FROM WF_TransferCustom WHERE WorkID=" + workid);
+		DBAccess.RunSQL("DELETE FROM WF_TransferCustom WHERE WorkID=" + workid);
 
 		// 保存参数.
 		// 参数格式为 @104`SubFlow002`1`zhangsan,lisi`wangwu,chenba`王五,陈八@......
@@ -6189,7 +6189,7 @@ public class Dev2Interface {
 			gwf.setStarterName(WebUser.getName());
 
 			gwf.setFK_Flow(flowNo);
-			BP.WF.Flow fl = new Flow(flowNo);
+			Flow fl = new Flow(flowNo);
 			gwf.setFK_FlowSort(fl.getFK_FlowSort());
 			gwf.setSysType(fl.getSysType());
 			gwf.setFK_Dept(WebUser.getFK_Dept());
@@ -6229,7 +6229,7 @@ public class Dev2Interface {
 			gwf.setStarterName(WebUser.getName());
 
 			gwf.setFK_Flow(flowNo);
-			BP.WF.Flow fl = new Flow(flowNo);
+			Flow fl = new Flow(flowNo);
 			gwf.setFK_FlowSort(fl.getFK_FlowSort());
 			gwf.setSysType(fl.getSysType());
 
@@ -6245,7 +6245,7 @@ public class Dev2Interface {
 			return; // 如果是按照设置的模式运行，就要更改状态后退出它.
 		}
 		// 删除以前存储的参数.
-		BP.DA.DBAccess.RunSQL("DELETE FROM WF_TransferCustom WHERE WorkID=" + workid);
+		DBAccess.RunSQL("DELETE FROM WF_TransferCustom WHERE WorkID=" + workid);
 		// 保存参数.
 		// 参数格式为 格式为:@节点编号1;处理人员1,处理人员2,处理人员n;应处理时间(可选)
 		// 例如1:
@@ -6341,7 +6341,7 @@ public class Dev2Interface {
 					+ "WorkID AND Starter=" + SystemConfig.getAppCenterDBVarStr() + "Starter";
 			ps.Add("WorkID", workid);
 			ps.Add("Starter", userNo);
-			String user = BP.DA.DBAccess.RunSQLReturnStringIsNull(ps, null);
+			String user = DBAccess.RunSQLReturnStringIsNull(ps, null);
 			if (user == null) {
 				return false;
 			}
@@ -6356,7 +6356,7 @@ public class Dev2Interface {
 					+ "FK_Emp";
 			ps.Add("WorkID", workid);
 			ps.Add("FK_Emp", userNo);
-			String user = BP.DA.DBAccess.RunSQLReturnStringIsNull(ps, null);
+			String user = DBAccess.RunSQLReturnStringIsNull(ps, null);
 			if (user == null) {
 				return false;
 			}
@@ -6405,13 +6405,13 @@ public class Dev2Interface {
 		pss.SQL = "SELECT EMPFROM FROM ND" + Integer.parseInt(flowNo) + "Track WHERE MyPK="
 				+ SystemConfig.getAppCenterDBVarStr() + "MyPK ";
 		pss.Add("MyPK", mypk);
-		String str = BP.DA.DBAccess.RunSQLReturnString(pss);
+		String str = DBAccess.RunSQLReturnString(pss);
 		if (str.equals(username) || username.equals(str)) {
 			Paras ps = new Paras();
 			ps.SQL = "DELETE FROM ND" + Integer.parseInt(flowNo) + "Track WHERE MyPK="
 					+ SystemConfig.getAppCenterDBVarStr() + "MyPK ";
 			ps.Add("MyPK", mypk);
-			BP.DA.DBAccess.RunSQL(ps);
+			DBAccess.RunSQL(ps);
 			return "删除成功.";
 		} else {
 			return "删除失败,仅能删除自己评论!";
@@ -6470,7 +6470,7 @@ public class Dev2Interface {
 		WFEmp emp = new WFEmp(WebUser.getNo());
 		emp.setAuthor(Author);
 		emp.setAuthorWay(AuthorWay);
-		emp.setAuthorDate(BP.DA.DataType.getCurrentDate());
+		emp.setAuthorDate(DataType.getCurrentDate());
 
 		if (!StringHelper.isNullOrEmpty(AuthorFlows)) {
 			emp.setAuthorFlows(AuthorFlows);
@@ -6506,7 +6506,7 @@ public class Dev2Interface {
 		}
 
 		WFEmp myau = new WFEmp(WebUser.getNo());
-		BP.DA.Log.DefaultLogWriteLineInfo("取消授权:" + WebUser.getNo() + "取消了对(" + myau.getAuthor() + ")的授权。");
+		Log.DefaultLogWriteLineInfo("取消授权:" + WebUser.getNo() + "取消了对(" + myau.getAuthor() + ")的授权。");
 		myau.setAuthor("");
 		myau.setAuthorWay(0);
 		myau.setAuthorDate("");
@@ -6525,7 +6525,7 @@ public class Dev2Interface {
 		if (WebUser.getNo() == null) {
 			throw new RuntimeException("@ 非法用户，请执行登录后再试。");
 		}
-		return BP.DA.DBAccess.RunSQLReturnTable("SELECT * FROM WF_EMP WHERE AUTHOR='" + WebUser.getNo() + "'");
+		return DBAccess.RunSQLReturnTable("SELECT * FROM WF_EMP WHERE AUTHOR='" + WebUser.getNo() + "'");
 	}
 
 	/**
@@ -6550,7 +6550,7 @@ public class Dev2Interface {
 					+ " OR WFState=" + WFState.ReturnSta.getValue() + " OR WFState=" + WFState.Fix.getValue();
 			switch (emp.getHisAuthorWay()) {
 			case All:
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					sql = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp='" + emp.getNo()
 							+ "' AND TaskSta!=1  ORDER BY ADT DESC";
 				} else {
@@ -6559,7 +6559,7 @@ public class Dev2Interface {
 				}
 				break;
 			case SpecFlows:
-				if (BP.WF.Glo.getIsEnableTaskPool() == true) {
+				if (Glo.getIsEnableTaskPool() == true) {
 					sql = "SELECT * FROM WF_EmpWorks WHERE (" + wfSql + ") AND FK_Emp='" + emp.getNo()
 							+ "' AND  FK_Flow IN " + emp.getAuthorFlows() + " AND TaskSta!=0    ORDER BY ADT DESC";
 				} else {
@@ -6570,7 +6570,7 @@ public class Dev2Interface {
 			default:
 				break;
 			}
-			return BP.DA.DBAccess.RunSQLReturnTable(sql);
+			return DBAccess.RunSQLReturnTable(sql);
 		}
 		return null;
 	}
@@ -6591,7 +6591,7 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static String GetFlowParas(int nodeID, long workid) throws Exception {
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "SELECT Paras FROM WF_GenerWorkerlist WHERE FK_Node=" + dbstr + "FK_Node AND WorkID=" + dbstr
 				+ "WorkID";
@@ -6616,7 +6616,7 @@ public class Dev2Interface {
 	 * @return 发送到第二个节点的执行信息
 	 * @throws Exception
 	 */
-	public static SendReturnObjs Node_StartWork(String flowNo, java.util.Hashtable ht, DataSet workDtls, int nextNodeID,
+	public static SendReturnObjs Node_StartWork(String flowNo, Hashtable ht, DataSet workDtls, int nextNodeID,
 			String nextWorker) throws Exception {
 		return Node_StartWork(flowNo, ht, workDtls, nextNodeID, nextWorker, 0, null);
 	}
@@ -6641,10 +6641,10 @@ public class Dev2Interface {
 	 * @return 发送到第二个节点的执行信息
 	 * @throws Exception
 	 */
-	public static SendReturnObjs Node_StartWork(String flowNo, java.util.Hashtable htWork, DataSet workDtls,
+	public static SendReturnObjs Node_StartWork(String flowNo, Hashtable htWork, DataSet workDtls,
 			int nextNodeID, String nextWorker, long parentWorkID, String parentFlowNo) throws Exception {
 		// 给全局变量赋值.
-		BP.WF.Glo.setSendHTOfTemp(htWork);
+		Glo.setSendHTOfTemp(htWork);
 
 		// 转化成编号.
 		flowNo = TurnFlowMarkToFlowNo(flowNo);
@@ -6729,7 +6729,7 @@ public class Dev2Interface {
 				ps.Add(GenerWorkerListAttr.FK_Node, Integer.parseInt(flowNo + "01"));
 				try {
 					DBAccess.RunSQL(ps);
-				} catch (java.lang.Exception e) {
+				} catch (Exception e) {
 					GenerWorkerList gwl = new GenerWorkerList();
 					gwl.CheckPhysicsTable();
 					DBAccess.RunSQL(ps);
@@ -6838,11 +6838,11 @@ public class Dev2Interface {
 		return Node_CreateBlankWork(flowNo, null, null, null, null, 0, 0, null, 0, null, 0, null);
 	}
 
-	public static long Node_CreateBlankWork(String flowNo, java.util.Hashtable ht, DataSet workDtls, String starter,
+	public static long Node_CreateBlankWork(String flowNo, Hashtable ht, DataSet workDtls, String starter,
 			String title, long parentWorkID, long parentFID, String parentFlowNo, int parentNodeID, String parentEmp,
 			int jumpToNode, String jumpToEmp) throws Exception {
 		// 把一些其他的参数也增加里面去,传递给ccflow.
-		java.util.Hashtable<String, Comparable> htPara = new java.util.Hashtable<String, Comparable>();
+		Hashtable<String, Comparable> htPara = new Hashtable<String, Comparable>();
 
 		if (parentWorkID != 0) {
 			htPara.put(StartFlowParaNameList.PWorkID, parentWorkID);
@@ -6863,7 +6863,7 @@ public class Dev2Interface {
 
 		// 给全局变量赋值.
 		if (null != ht) {
-			BP.WF.Glo.setSendHTOfTemp(ht);
+			Glo.setSendHTOfTemp(ht);
 		}
 
 		// 转化成编号.
@@ -6960,7 +6960,7 @@ public class Dev2Interface {
 
 			ps.Add(GERptAttr.WFState, WFState.Blank.getValue());
 			ps.Add(GERptAttr.FK_Dept, empStarter.getFK_Dept());
-			ps.Add(GERptAttr.Title, BP.WF.WorkFlowBuessRole.GenerTitle(fl, wk));
+			ps.Add(GERptAttr.Title, WorkFlowBuessRole.GenerTitle(fl, wk));
 			ps.Add(GERptAttr.OID, wk.getOID());
 			DBAccess.RunSQL(ps);
 		}
@@ -6982,7 +6982,7 @@ public class Dev2Interface {
 		gwf.setNodeName(nd.getName());
 		gwf.setWFState(WFState.Blank);
 		if (StringHelper.isNullOrEmpty(title)) {
-			gwf.setTitle(BP.WF.WorkFlowBuessRole.GenerTitle(fl, wk));
+			gwf.setTitle(WorkFlowBuessRole.GenerTitle(fl, wk));
 		} else {
 			gwf.setTitle(title);
 		}
@@ -7020,12 +7020,12 @@ public class Dev2Interface {
 
 		if (parentWorkID != 0) {
 			// 设置父流程信息
-			BP.WF.Dev2Interface.SetParentInfo(flowNo, wk.getOID(), parentFlowNo, parentWorkID, parentNodeID, parentEmp);
+			Dev2Interface.SetParentInfo(flowNo, wk.getOID(), parentFlowNo, parentWorkID, parentNodeID, parentEmp);
 		}
 
 		// 如果有跳转.
 		if (jumpToNode != 0) {
-			BP.WF.Dev2Interface.Node_SendWork(flowNo, wk.getOID(), null, null, jumpToNode, jumpToEmp);
+			Dev2Interface.Node_SendWork(flowNo, wk.getOID(), null, null, jumpToNode, jumpToEmp);
 		}
 
 		return wk.getOID();
@@ -7079,11 +7079,11 @@ public class Dev2Interface {
 		return Node_CreateStartNodeWork(flowNo, null, null, null, null, 0, null, 0);
 	}
 
-	public static long Node_CreateStartNodeWork(String flowNo, java.util.Hashtable htWork, DataSet workDtls,
+	public static long Node_CreateStartNodeWork(String flowNo, Hashtable htWork, DataSet workDtls,
 			String flowStarter, String title, long parentWorkID, String parentFlowNo, int parentNDFrom)
 			throws Exception {
 		// 给全局变量赋值.
-		BP.WF.Glo.setSendHTOfTemp(htWork);
+		Glo.setSendHTOfTemp(htWork);
 
 		// 转化成编号.
 		flowNo = TurnFlowMarkToFlowNo(flowNo);
@@ -7179,7 +7179,7 @@ public class Dev2Interface {
 		}
 
 		if (StringHelper.isNullOrEmpty(title)) {
-			gwf.setTitle(BP.WF.WorkFlowBuessRole.GenerTitle(fl, wk));
+			gwf.setTitle(WorkFlowBuessRole.GenerTitle(fl, wk));
 		} else {
 			gwf.setTitle(title);
 		}
@@ -7376,7 +7376,7 @@ public class Dev2Interface {
 		return Node_SendWork(fk_flow, workID, ht, null);
 	}
 
-	public static SendReturnObjs Node_SendWork(String fk_flow, long workID, java.util.Hashtable ht, DataSet dsDtl)
+	public static SendReturnObjs Node_SendWork(String fk_flow, long workID, Hashtable ht, DataSet dsDtl)
 			throws Exception {
 		// 转化成编号.
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
@@ -7416,7 +7416,7 @@ public class Dev2Interface {
 	 * @return 执行信息
 	 * @throws Exception
 	 */
-	public static SendReturnObjs Node_SendWork(String fk_flow, long workID, java.util.Hashtable htWork, int toNodeID,
+	public static SendReturnObjs Node_SendWork(String fk_flow, long workID, Hashtable htWork, int toNodeID,
 			String nextWorkers) throws Exception {
 		// 转化成编号.
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
@@ -7445,7 +7445,7 @@ public class Dev2Interface {
 	 * @return 执行信息
 	 * @throws Exception
 	 */
-	public static SendReturnObjs Node_SendWork(String fk_flow, long workID, java.util.Hashtable htWork,
+	public static SendReturnObjs Node_SendWork(String fk_flow, long workID, Hashtable htWork,
 			DataSet workDtls, int toNodeID, String nextWorkers) throws Exception {
 		return Node_SendWork(fk_flow, workID, htWork, workDtls, toNodeID, nextWorkers, WebUser.getNo(),
 				WebUser.getName(), WebUser.getFK_Dept(), WebUser.getFK_DeptName(), null);
@@ -7479,7 +7479,7 @@ public class Dev2Interface {
 	 * @return 发送的结果对象
 	 * @throws Exception
 	 */
-	public static SendReturnObjs Node_SendWork(String fk_flow, long workID, java.util.Hashtable htWork,
+	public static SendReturnObjs Node_SendWork(String fk_flow, long workID, Hashtable htWork,
 			DataSet workDtls, int toNodeID, String nextWorkers, String execUserNo, String execUserName,
 			String execUserDeptNo, String execUserDeptName, String title) throws Exception {
 		// 给临时的发送变量赋值，解决带有参数的转向。
@@ -7489,7 +7489,7 @@ public class Dev2Interface {
 		// fk_flow = TurnFlowMarkToFlowNo(fk_flow);
 		int currNodeId = Dev2Interface.Node_GetCurrentNodeID(fk_flow, workID);
 		if (htWork != null) {
-			BP.WF.Dev2Interface.Node_SaveWork(fk_flow, currNodeId, workID, htWork, workDtls);
+			Dev2Interface.Node_SaveWork(fk_flow, currNodeId, workID, htWork, workDtls);
 		}
 
 		// 变量.
@@ -7605,21 +7605,21 @@ public class Dev2Interface {
 
 		try {
 			gwl.Insert();
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException("@该人员已经存在处理队列中，您不能增加.");
 		}
 
 		// 开始更新他们的顺序, 首先从数据库里获取他们的顺序. lxl职位由小到大
 		String sql = "SELECT No,Name FROM Port_Emp WHERE No IN (SELECT FK_Emp FROM WF_GenerWorkerList WHERE WorkID="
 				+ workid + " AND FK_Node=" + nodeID + " AND IsPass >=100 ) ORDER BY IDX desc";
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		int idx = 100;
 		for (DataRow dr : dt.Rows) {
 			idx++;
 			String myEmpNo = dr.getValue(0).toString();
 			sql = "UPDATE WF_GenerWorkerList SET IsPass=" + idx + " WHERE FK_Emp='" + myEmpNo + "' AND WorkID=" + workid
 					+ " AND FK_Node=" + nodeID;
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 		}
 	}
 
@@ -7719,13 +7719,13 @@ public class Dev2Interface {
 
 		try {
 			list.Insert();
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			list.CheckPhysicsTable();
 			list.Update();
 		}
 
 		//
-		BP.WF.Dev2Interface.Port_SendMsg(toEmpNo, msgTitle, msgDoc, "CC" + gwf.getFK_Node() + "_" + gwf.getWorkID(),
+		Dev2Interface.Port_SendMsg(toEmpNo, msgTitle, msgDoc, "CC" + gwf.getFK_Node() + "_" + gwf.getWorkID(),
 				SMSMsgType.CC, gwf.getFK_Flow(), gwf.getFK_Node(), gwf.getWorkID(), gwf.getFID());
 
 		// 记录日志.
@@ -7808,11 +7808,11 @@ public class Dev2Interface {
 
 		try {
 			list.Insert();
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			list.CheckPhysicsTable();
 			list.Update();
 		}
-		BP.WF.Dev2Interface.Port_SendMsg(toEmpNo, msgTitle, msgDoc, "CC" + gwf.getFK_Node() + "_" + gwf.getWorkID(),
+		Dev2Interface.Port_SendMsg(toEmpNo, msgTitle, msgDoc, "CC" + gwf.getFK_Node() + "_" + gwf.getWorkID(),
 				SMSMsgType.CC, gwf.getFK_Flow(), gwf.getFK_Node(), gwf.getWorkID(), gwf.getFID());
 		// 记录日志.
 		Glo.AddToTrack(ActionType.CC, gwf.getFK_Flow(), workID, gwf.getFID(), gwf.getFK_Node(), gwf.getNodeName(),
@@ -7909,7 +7909,7 @@ public class Dev2Interface {
 
 				try {
 					list.Insert();
-				} catch (java.lang.Exception e) {
+				} catch (Exception e) {
 					list.CheckPhysicsTable();
 					list.Update();
 				}
@@ -7933,7 +7933,7 @@ public class Dev2Interface {
 				}
 
 				sql = "SELECT No,Name,FK_Dept FROM Port_Emp WHERE FK_Dept='" + deptNo + "'";
-				DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				DataTable dt = DBAccess.RunSQLReturnTable(sql);
 				for (DataRow dr : dt.Rows) {
 					String empNo = dr.getValue(0).toString();
 					String empName = dr.getValue(1).toString();
@@ -7987,7 +7987,7 @@ public class Dev2Interface {
 
 					try {
 						list.Insert();
-					} catch (java.lang.Exception e2) {
+					} catch (Exception e2) {
 						list.CheckPhysicsTable();
 						list.Update();
 					}
@@ -8015,7 +8015,7 @@ public class Dev2Interface {
 				sql = "SELECT No,Name, a.FK_Dept FROM Port_Emp a, " + Glo.getEmpStation()
 						+ " B  WHERE a.No=B.FK_Emp AND B.FK_Station='" + staNo + "'";
 
-				DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				DataTable dt = DBAccess.RunSQLReturnTable(sql);
 				for (DataRow dr : dt.Rows) {
 					String empNo = dr.getValue(0).toString();
 					String empName = dr.getValue(1).toString();
@@ -8069,7 +8069,7 @@ public class Dev2Interface {
 
 					try {
 						list.Insert();
-					} catch (java.lang.Exception e3) {
+					} catch (Exception e3) {
 						list.CheckPhysicsTable();
 						list.Update();
 					}
@@ -8103,7 +8103,7 @@ public class Dev2Interface {
 				sql += "SELECT A.No, A.Name, A.FK_Dept FROM Port_Emp A, GPM_GroupEmp B  WHERE A.No=B.FK_Emp AND B.FK_Group='"
 						+ group + "'";
 
-				DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				DataTable dt = DBAccess.RunSQLReturnTable(sql);
 				for (DataRow dr : dt.Rows) {
 					String empNo = dr.getValue(0).toString();
 					String empName = dr.getValue(1).toString();
@@ -8157,7 +8157,7 @@ public class Dev2Interface {
 
 					try {
 						list.Insert();
-					} catch (java.lang.Exception e4) {
+					} catch (Exception e4) {
 						list.CheckPhysicsTable();
 						list.Update();
 					}
@@ -8192,7 +8192,7 @@ public class Dev2Interface {
 		Paras ps = new Paras();
 		ps.SQL = "DELETE FROM WF_CCList WHERE MyPK=" + SystemConfig.getAppCenterDBVarStr() + "MyPK";
 		ps.Add(CCListAttr.MyPK, mypk);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 	}
 
 	/**
@@ -8217,7 +8217,7 @@ public class Dev2Interface {
 		ps.Add(CCListAttr.WorkID, workid);
 		ps.Add(CCListAttr.FK_Node, nodeID);
 		ps.Add(CCListAttr.CCTo, empNo);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 	}
 
 	/**
@@ -8235,7 +8235,7 @@ public class Dev2Interface {
 				+ SystemConfig.getAppCenterDBVarStr() + "MyPK";
 		ps.Add(CCListAttr.Sta, CCSta.Read.getValue());
 		ps.Add(CCListAttr.MyPK, mypk);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 	}
 
 	/**
@@ -8336,7 +8336,7 @@ public class Dev2Interface {
 
 		try {
 			list.Insert();
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			list.CheckPhysicsTable();
 			list.Update();
 		}
@@ -8347,8 +8347,8 @@ public class Dev2Interface {
 				WebUser.getName(), nd.getNodeID(), nd.getName(), toEmpNo, toEmpName, msgTitle, null);
 
 		// 发送邮件.
-		BP.WF.Dev2Interface.Port_SendMsg(toEmpNo, WebUser.getName() + "把工作:" + gwf.getTitle(), "抄送:" + msgTitle,
-				"CC" + nd.getNodeID() + "_" + workID + "_", BP.WF.SMSMsgType.CC, gwf.getFK_Flow(), gwf.getFK_Node(),
+		Dev2Interface.Port_SendMsg(toEmpNo, WebUser.getName() + "把工作:" + gwf.getTitle(), "抄送:" + msgTitle,
+				"CC" + nd.getNodeID() + "_" + workID + "_", SMSMsgType.CC, gwf.getFK_Flow(), gwf.getFK_Node(),
 				gwf.getWorkID(), gwf.getFID());
 
 		return "已经成功的把工作抄送给:" + toEmpNo + "," + toEmpName;
@@ -8384,7 +8384,7 @@ public class Dev2Interface {
 		}
 
 		// 删除流程.
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Flow fl = new Flow(fk_flow);
 		Paras ps = new Paras();
 		ps.SQL = "DELETE FROM " + fl.getPTable() + " WHERE OID=" + dbstr + "OID ";
@@ -8412,7 +8412,7 @@ public class Dev2Interface {
 				throw new RuntimeException("@设置待办错误，只有在开始节点时才能设置待办，现在的节点是:" + gwf.getNodeName());
 			}
 
-			gwf.setTodoEmps(BP.Web.WebUser.getNo() + "," + WebUser.getName() + ";");
+			gwf.setTodoEmps(WebUser.getNo() + "," + WebUser.getName() + ";");
 			gwf.setTodoEmpsNum(1);
 			gwf.setWFState(WFState.Runing);
 			gwf.Update();
@@ -8435,14 +8435,14 @@ public class Dev2Interface {
 				+ SystemConfig.getAppCenterDBVarStr() + "WorkID AND IsPass=0";
 		ps.Add("SDT", sdt);
 		ps.Add("WorkID", workID);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 
 		ps = new Paras();
 		ps.SQL = "UPDATE WF_GenerWorkFlow SET SDTOfNode=" + SystemConfig.getAppCenterDBVarStr()
 				+ "SDTOfNode WHERE WorkID=" + SystemConfig.getAppCenterDBVarStr() + "WorkID ";
 		ps.Add("SDTOfNode", sdt);
 		ps.Add("WorkID", workID);
-		BP.DA.DBAccess.RunSQL(ps);
+		DBAccess.RunSQL(ps);
 
 	}
 
@@ -8471,7 +8471,7 @@ public class Dev2Interface {
 				throw new RuntimeException("@设置草稿错误，只有在开始节点时才能设置草稿，现在的节点是:" + gwf.getTitle());
 			}
 
-			gwf.setTodoEmps(BP.Web.WebUser.getNo() + "," + WebUser.getName() + ";");
+			gwf.setTodoEmps(WebUser.getNo() + "," + WebUser.getName() + ";");
 			gwf.setTodoEmpsNum(1);
 			gwf.setWFState(WFState.Draft);
 			gwf.Update();
@@ -8533,7 +8533,7 @@ public class Dev2Interface {
 		// 转化成编号.
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
 
-		return Node_SaveWork(fk_flow, fk_node, workID, new java.util.Hashtable(), null);
+		return Node_SaveWork(fk_flow, fk_node, workID, new Hashtable(), null);
 	}
 
 	/**
@@ -8548,7 +8548,7 @@ public class Dev2Interface {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String Node_SaveWork(String fk_flow, int fk_node, long workID, java.util.Hashtable wk)
+	public static String Node_SaveWork(String fk_flow, int fk_node, long workID, Hashtable wk)
 			throws Exception {
 		// 转化成编号.
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
@@ -8568,7 +8568,7 @@ public class Dev2Interface {
 	 * @return 返回执行信息
 	 * @throws Exception
 	 */
-	public static String Node_SaveWork(String fk_flow, int fk_node, long workID, java.util.Hashtable htWork,
+	public static String Node_SaveWork(String fk_flow, int fk_node, long workID, Hashtable htWork,
 			DataSet dsDtls) throws Exception {
 		if (htWork == null) {
 			return "参数错误，保存失败。";
@@ -8702,7 +8702,7 @@ public class Dev2Interface {
 				}
 			}
 			// 获取表单树的数据
-			BP.WF.WorkNode workNode = new WorkNode(workID, fk_node);
+			WorkNode workNode = new WorkNode(workID, fk_node);
 			Work treeWork = workNode.CopySheetTree();
 			if (treeWork != null) {
 				wk.Copy(treeWork);
@@ -8798,7 +8798,7 @@ public class Dev2Interface {
 
 					gwf.setFK_Dept(WebUser.getFK_Dept());
 					gwf.setDeptName(WebUser.getFK_DeptName());
-					gwf.setTitle(BP.WF.WorkFlowBuessRole.GenerTitle(fl, wk));
+					gwf.setTitle(WorkFlowBuessRole.GenerTitle(fl, wk));
 					gwf.setStarter(WebUser.getNo());
 					gwf.setStarterName(WebUser.getName());
 					gwf.setRDT(DataType.getCurrentDataTimess());
@@ -8853,7 +8853,7 @@ public class Dev2Interface {
 	 * @return 返回执行信息
 	 * @throws Exception
 	 */
-	public static void Node_SaveFlowSheet(String fk_mapdata, long workID, java.util.Hashtable htData) throws Exception {
+	public static void Node_SaveFlowSheet(String fk_mapdata, long workID, Hashtable htData) throws Exception {
 		Node_SaveFlowSheet(fk_mapdata, workID, htData, null);
 	}
 
@@ -8871,7 +8871,7 @@ public class Dev2Interface {
 	 * @return 返回执行信息
 	 * @throws Exception
 	 */
-	public static void Node_SaveFlowSheet(String fk_mapdata, long workID, java.util.Hashtable htData, DataSet workDtls)
+	public static void Node_SaveFlowSheet(String fk_mapdata, long workID, Hashtable htData, DataSet workDtls)
 			throws Exception {
 		MapData md = new MapData(fk_mapdata);
 		GEEntity en = md.getHisGEEn();
@@ -8955,28 +8955,28 @@ public class Dev2Interface {
 		gwf.setTaskSta(TaskSta.Takeback);
 		gwf.Update();
 
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		// 设置已经被取走的状态。
 		ps.SQL = "UPDATE WF_GenerWorkerlist SET IsEnable=-1 WHERE IsEnable=1 AND WorkID=" + dbstr
 				+ "WorkID AND FK_Node=" + dbstr + "FK_Node AND FK_Emp!=" + dbstr + "FK_Emp ";
 		ps.Add(GenerWorkerListAttr.WorkID, workid);
 		ps.Add(GenerWorkerListAttr.FK_Node, gwf.getFK_Node());
-		ps.Add(GenerWorkerListAttr.FK_Emp, BP.Web.WebUser.getNo());
+		ps.Add(GenerWorkerListAttr.FK_Emp, WebUser.getNo());
 		int i = DBAccess.RunSQL(ps);
 
-		BP.WF.Dev2Interface.WriteTrackInfo(gwf.getFK_Flow(), gwf.getFK_Node(), gwf.getNodeName(), workid, 0,
+		Dev2Interface.WriteTrackInfo(gwf.getFK_Flow(), gwf.getFK_Node(), gwf.getNodeName(), workid, 0,
 				"任务被" + WebUser.getName() + "从任务池取走.", "获取");
 		if (i > 0) {
 			Paras ps1 = new Paras();
 			// 取走后 将WF_GenerWorkFlow 中的 TodoEmps,TodoEmpsNum 修改下 杨玉慧
 			ps1.SQL = "UPDATE WF_GenerWorkFlow SET TodoEmps=" + dbstr + "TodoEmps,TodoEmpsNum=1 WHERE  WorkID=" + dbstr
 					+ "WorkID";
-			String toDoEmps = BP.Web.WebUser.getNo() + "," + BP.Web.WebUser.getName();
+			String toDoEmps = WebUser.getNo() + "," + WebUser.getName();
 			ps1.Add(GenerWorkFlowAttr.TodoEmps, toDoEmps);
 			ps1.Add(GenerWorkerListAttr.WorkID, workid);
-			BP.DA.Log.DefaultLogWriteLineInfo(toDoEmps);
-			BP.DA.Log.DefaultLogWriteLineInfo(ps1.SQL);
+			Log.DefaultLogWriteLineInfo(toDoEmps);
+			Log.DefaultLogWriteLineInfo(ps1.SQL);
 			DBAccess.RunSQL(ps1);
 		}
 
@@ -9016,7 +9016,7 @@ public class Dev2Interface {
 		gwf.setTaskSta(TaskSta.Sharing);
 		gwf.Update();
 
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		// 设置已经被取走的状态。
 		ps.SQL = "UPDATE WF_GenerWorkerlist SET IsEnable=1 WHERE IsEnable=-1 AND WorkID=" + dbstr + "WorkID ";
@@ -9034,7 +9034,7 @@ public class Dev2Interface {
 					+ "WorkID AND FK_Node=" + dbstr + "FK_Node ";
 			ps1.Add(GenerWorkerListAttr.WorkID, workid);
 			ps1.Add(GenerWorkerListAttr.FK_Node, gwf.getFK_Node());
-			ps1.Add(GenerWorkerListAttr.FK_Emp, BP.Web.WebUser.getNo());
+			ps1.Add(GenerWorkerListAttr.FK_Emp, WebUser.getNo());
 			DataTable toDoEmpsTable = DBAccess.RunSQLReturnTable(ps1);
 			String toDoEmps = "";
 			String toDoEmpsNum = "";
@@ -9054,12 +9054,12 @@ public class Dev2Interface {
 			ps2.Add(GenerWorkFlowAttr.TodoEmps, toDoEmps);
 			ps2.Add(GenerWorkFlowAttr.TodoEmpsNum, toDoEmpsNum);
 			ps2.Add(GenerWorkerListAttr.WorkID, workid);
-			BP.DA.Log.DefaultLogWriteLineInfo(toDoEmps);
-			BP.DA.Log.DefaultLogWriteLineInfo(ps2.SQL);
+			Log.DefaultLogWriteLineInfo(toDoEmps);
+			Log.DefaultLogWriteLineInfo(ps2.SQL);
 			DBAccess.RunSQL(ps2);
 		}
 
-		BP.WF.Dev2Interface.WriteTrackInfo(gwf.getFK_Flow(), gwf.getFK_Node(), gwf.getNodeName(), workid, 0,
+		Dev2Interface.WriteTrackInfo(gwf.getFK_Flow(), gwf.getFK_Node(), gwf.getNodeName(), workid, 0,
 				"任务被" + WebUser.getName() + "放入了任务池.", "放入");
 	}
 
@@ -9091,7 +9091,7 @@ public class Dev2Interface {
 		        }
 
 		        //检查是否是单选？
-		        BP.WF.Template.Selector st = new Selector(toNodeID);
+		        Selector st = new Selector(toNodeID);
 		   SelectAccpers sas = new SelectAccpers();
 		        if (st.getIsSimpleSelector() == true)
 		        {
@@ -9182,7 +9182,7 @@ public class Dev2Interface {
 		// 转化成编号.
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
 		HungUpWay way = HungUpWay.forValue(wayInt);
-		BP.WF.WorkFlow wf = new WorkFlow(fk_flow, workid);
+		WorkFlow wf = new WorkFlow(fk_flow, workid);
 		return wf.DoHungUp(way, reldata, hungNote);
 	}
 
@@ -9201,7 +9201,7 @@ public class Dev2Interface {
 	public static void Node_UnHungUpWork(String fk_flow, long workid, String msg) throws Exception {
 		// 转化成编号.
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
-		BP.WF.WorkFlow wf = new WorkFlow(fk_flow, workid);
+		WorkFlow wf = new WorkFlow(fk_flow, workid);
 		wf.DoUnHungUp();
 	}
 
@@ -9217,7 +9217,7 @@ public class Dev2Interface {
 	 * @return 返回时间串，如果没有挂起的动作就抛出异常.
 	 */
 	public static Date Node_GetHungUpTimeSpan(String flowNo, int nodeID, long workid) {
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 
 		String instr = ActionType.HungUp.getValue() + "," + ActionType.UnHungUp.getValue();
 		Paras ps = new Paras();
@@ -9227,8 +9227,8 @@ public class Dev2Interface {
 		ps.Add(TrackAttr.NDFrom, nodeID);
 		DataTable dt = DBAccess.RunSQLReturnTable(ps);
 
-		java.util.Date dtStart = new java.util.Date();
-		java.util.Date dtEnd = new java.util.Date();
+		Date dtStart = new Date();
+		Date dtEnd = new Date();
 		for (DataRow item : dt.Rows) {
 			ActionType at = (ActionType) item.getValue(TrackAttr.ActionType);
 			// 挂起时间.
@@ -9270,7 +9270,7 @@ public class Dev2Interface {
 		}
 
 		// 获得当前流程注册信息.
-		BP.WF.GenerWorkFlow gwf = new GenerWorkFlow(workid);
+		GenerWorkFlow gwf = new GenerWorkFlow(workid);
 
 		// 检查当前人员是否开可以执行当前的工作?
 		if (Flow_IsCanDoCurrentWork(gwf.getWorkID(), WebUser.getNo()) == false) {
@@ -9295,9 +9295,9 @@ public class Dev2Interface {
 			gwl.setFK_Emp(askForEmp);
 			gwl.setFK_Node(gwf.getFK_Node());
 			gwl.setFK_NodeText(gwl.getFK_NodeText());
-			gwl.setFK_Emp(BP.Web.WebUser.getNo());
-			gwl.setFK_EmpText(BP.Web.WebUser.getName());
-			gwl.setFK_Dept(BP.Web.WebUser.getFK_Dept());
+			gwl.setFK_Emp(WebUser.getNo());
+			gwl.setFK_EmpText(WebUser.getName());
+			gwl.setFK_Dept(WebUser.getFK_Dept());
 			gwl.setIsPassInt(askforSta.getValue());
 			gwl.Insert();
 			// 重新查询.
@@ -9327,7 +9327,7 @@ public class Dev2Interface {
 				item.setFK_EmpText(emp.getName());
 				try {
 					item.Insert();
-				} catch (java.lang.Exception e) {
+				} catch (Exception e) {
 					item.Update();
 				}
 			} else {
@@ -9336,7 +9336,7 @@ public class Dev2Interface {
 		}
 
 		// 写入日志.
-		BP.WF.Dev2Interface.WriteTrack(gwf.getFK_Flow(), gwf.getFK_Node(), workid, gwf.getFID(), askForNote,
+		Dev2Interface.WriteTrack(gwf.getFK_Flow(), gwf.getFK_Node(), workid, gwf.getFID(), askForNote,
 				ActionType.AskforHelp, "", null, null, emp.getNo(), emp.getName());
 
 		Flow fl = new Flow(gwf.getFK_Flow());
@@ -9351,12 +9351,12 @@ public class Dev2Interface {
 				"UPDATE " + fl.getPTable() + " SET WFState=" + WFState.Askfor.getValue() + " WHERE OID=" + workid);
 
 		// 设置成工作未读。
-		BP.WF.Dev2Interface.Node_SetWorkUnRead(workid, askForEmp);
+		Dev2Interface.Node_SetWorkUnRead(workid, askForEmp);
 
 		String msg = "您的工作已经提交给(" + askForEmp + " " + emp.getName() + ")加签了。";
 
 		// 加签后事件
-		BP.WF.Node hisNode = new BP.WF.Node(gwf.getFK_Node());
+		Node hisNode = new Node(gwf.getFK_Node());
 		Work currWK = hisNode.getHisWork();
 		currWK.setOID(gwf.getWorkID());
 		currWK.Retrieve();
@@ -9394,7 +9394,7 @@ public class Dev2Interface {
 		String info = "";
 		try {
 			// 执行发送, 在发送的方法里面已经做了判断了,并且把 回复的信息写入了日志.
-			info = BP.WF.Dev2Interface.Node_SendWork(gwf.getFK_Flow(), workid, null, null, 0, null).ToMsgOfHtml();
+			info = Dev2Interface.Node_SendWork(gwf.getFK_Flow(), workid, null, null, 0, null).ToMsgOfHtml();
 		} catch (Exception ex) {
 			if (ex.getMessage().contains("请选择下一步骤工作") == true || ex.getMessage().contains("用户没有选择发送到的节点") == true) {
 				if (nd.getCondModel() == CondModel.ByUserSelected) {
@@ -9425,7 +9425,7 @@ public class Dev2Interface {
 		Node nd = new Node(gwf.getFK_Node());
 		try {
 			// 执行发送, 在发送的方法里面已经做了判断了,并且把 回复的信息写入了日志.
-			info = BP.WF.Dev2Interface.Node_SendWork(gwf.getFK_Flow(), workid).ToMsgOfHtml();
+			info = Dev2Interface.Node_SendWork(gwf.getFK_Flow(), workid).ToMsgOfHtml();
 			Node node = new Node(gwf.getFK_Node());
 			Work wk = node.getHisWork();
 			wk.setOID(workid);
@@ -9472,8 +9472,8 @@ public class Dev2Interface {
 			try {
 				String sql = "UPDATE WF_GenerWorkerlist SET FK_Emp='" + emp.getNo() + "', FK_EmpText='" + emp.getName()
 						+ "' WHERE FK_Emp='" + WebUser.getNo() + "' AND FK_Node=" + nodeID + " AND WorkID=" + workID;
-				BP.DA.DBAccess.RunSQL(sql);
-			} catch (java.lang.Exception e) {
+				DBAccess.RunSQL(sql);
+			} catch (Exception e) {
 				return "@移交失败，您所移交的人员(" + emp.getNo() + " " + emp.getName() + ")已经在代办列表里.";
 			}
 
@@ -9578,16 +9578,16 @@ public class Dev2Interface {
 					}
 
 					wl = new GenerWorkerList();
-					wl.setFK_Dept(BP.Web.WebUser.getFK_Dept());
+					wl.setFK_Dept(WebUser.getFK_Dept());
 					// mygwfl.FK_DeptT = BP.Web.WebUser.getFK_DeptName();
 					wl.setWorkID(workID);
 					wl.setFID(0);
-					wl.setFK_Emp(BP.Web.WebUser.getNo());
-					wl.setFK_EmpText(BP.Web.WebUser.getName());
+					wl.setFK_Emp(WebUser.getNo());
+					wl.setFK_EmpText(WebUser.getName());
 					wl.setFK_Node(nodeID);
 					wl.setFK_NodeText(nd.getName());
-					wl.setSender(BP.Web.WebUser.getNo());
-					wl.setRDT(BP.DA.DataType.getCurrentDataTimess());
+					wl.setSender(WebUser.getNo());
+					wl.setRDT(DataType.getCurrentDataTimess());
 					wl.setIsPass(false);
 					wl.setIsRead(false);
 					wl.setIsEnable(true);
@@ -9629,8 +9629,8 @@ public class Dev2Interface {
 				WebUser.getNo(), WebUser.getName(), nd.getNodeID(), nd.getName(), toEmp, emp.getName(), msg, null);
 
 		// 发送邮件.
-		BP.WF.Dev2Interface.Port_SendMsg(emp.getNo(), WebUser.getName() + "向您移交了工作" + gwf.getTitle(), "移交信息:" + msg,
-				"SF" + workID + "_" + sf.getFK_Node(), BP.WF.SMSMsgType.Shift, gwf.getFK_Flow(), gwf.getFK_Node(),
+		Dev2Interface.Port_SendMsg(emp.getNo(), WebUser.getName() + "向您移交了工作" + gwf.getTitle(), "移交信息:" + msg,
+				"SF" + workID + "_" + sf.getFK_Node(), SMSMsgType.Shift, gwf.getFK_Flow(), gwf.getFK_Node(),
 				gwf.getWorkID(), gwf.getFID());
 
 		String inf1o = "@工作移交成功。@您已经成功的把工作移交给：" + emp.getNo() + " , " + emp.getName();
@@ -9739,7 +9739,7 @@ public class Dev2Interface {
 		// 转化成编号.
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
 
-		int nodeID = BP.DA.DBAccess.RunSQLReturnValInt(
+		int nodeID = DBAccess.RunSQLReturnValInt(
 				"SELECT FK_Node FROM WF_GenerWorkFlow WHERE WorkID=" + workid + " AND FK_Flow='" + fk_flow + "'", 0);
 		if (nodeID == 0) {
 			return Integer.parseInt(fk_flow + "01");
@@ -9813,7 +9813,7 @@ public class Dev2Interface {
 		}
 
 		WorkNode wn = new WorkNode(workid, fromNodeID);
-		String msg = wn.NodeSend(new Node(tackToNodeID), BP.Web.WebUser.getNo()).ToMsgOfHtml();
+		String msg = wn.NodeSend(new Node(tackToNodeID), WebUser.getNo()).ToMsgOfHtml();
 		wn.AddToTrack(ActionType.Tackback, WebUser.getNo(), WebUser.getName(), tackToNodeID, nd.getName(),
 				"执行跳转审核的取回.");
 		return msg;
@@ -9838,10 +9838,10 @@ public class Dev2Interface {
 			throws Exception {
 		FrmWorkCheck fwc = new FrmWorkCheck(fk_node);
 
-		BP.WF.Dev2Interface.WriteTrackWorkCheck(fk_flow, fk_node, workid, fid, checkNote, fwc.getFWCOpLabel());
+		Dev2Interface.WriteTrackWorkCheck(fk_flow, fk_node, workid, fid, checkNote, fwc.getFWCOpLabel());
 
 		// 设置审核完成.
-		BP.WF.Dev2Interface.Node_CC_SetSta(fk_node, workid, BP.Web.WebUser.getNo(), BP.WF.Template.CCSta.CheckOver);
+		Dev2Interface.Node_CC_SetSta(fk_node, workid, WebUser.getNo(), CCSta.CheckOver);
 
 	}
 
@@ -9855,7 +9855,7 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static void Node_SetWorkRead(int nodeID, long workid) throws Exception {
-		Node_SetWorkRead(nodeID, workid, BP.Web.WebUser.getNo());
+		Node_SetWorkRead(nodeID, workid, WebUser.getNo());
 	}
 
 	/**
@@ -9872,7 +9872,7 @@ public class Dev2Interface {
 	public static void Node_SetWorkRead(int nodeID, long workid, String empNo) throws Exception {
 		Node nd = new Node(nodeID);
 
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "UPDATE WF_GenerWorkerList SET IsRead=1 WHERE WorkID=" + dbstr + "WorkID AND FK_Node=" + dbstr
 				+ "FK_Node AND FK_Emp=" + dbstr + "FK_Emp";
@@ -9914,7 +9914,7 @@ public class Dev2Interface {
 
 			try {
 				ps = new Paras();
-				ps.SQL = "SELECT " + BP.WF.WorkSysFieldAttr.SysIsReadReceipts + " FROM ND" + fromNodeID
+				ps.SQL = "SELECT " + WorkSysFieldAttr.SysIsReadReceipts + " FROM ND" + fromNodeID
 						+ "    WHERE OID=" + dbstr + "OID";
 				ps.Add("OID", workid);
 				DataTable dt1 = DBAccess.RunSQLReturnTable(ps);
@@ -9953,18 +9953,18 @@ public class Dev2Interface {
 
 			String paras = "";
 			try {
-				paras = BP.WF.Dev2Interface.GetFlowParas(fromNodeID, workid);
+				paras = Dev2Interface.GetFlowParas(fromNodeID, workid);
 			} catch (Exception e) {
 				Log.DebugWriteError("Dev2Interface Node_SetWorkRead " + e.getMessage());
 				e.printStackTrace();
 			}
 			if (StringHelper.isNullOrEmpty(paras)
-					|| paras.contains("@" + BP.WF.WorkSysFieldAttr.SysIsReadReceipts + "=") == false) {
+					|| paras.contains("@" + WorkSysFieldAttr.SysIsReadReceipts + "=") == false) {
 				throw new RuntimeException("@流程设计错误:在当前节点上个您设置了按开发者参数决定是否回执，但是没有找到该参数。");
 			}
 
 			// 开发者参数.
-			if (paras.contains("@" + BP.WF.WorkSysFieldAttr.SysIsReadReceipts + "=1") == true) {
+			if (paras.contains("@" + WorkSysFieldAttr.SysIsReadReceipts + "=1") == true) {
 				isSend = true;
 			}
 		}
@@ -9989,9 +9989,9 @@ public class Dev2Interface {
 			String sender = dt.Rows.get(0).getValue(0).toString();
 
 			// 发送已读回执。
-			BP.WF.Dev2Interface.Port_SendMsg(sender, "已读回执:" + title,
+			Dev2Interface.Port_SendMsg(sender, "已读回执:" + title,
 					"您发送的工作已经被" + WebUser.getName() + "在" + DataType.getCurrentDataTimeCNOfShort() + " 打开.",
-					"RP" + workid + "_" + nodeID, BP.WF.SMSMsgType.Self, nd.getFK_Flow(), nd.getNodeID(), workid, 0);
+					"RP" + workid + "_" + nodeID, SMSMsgType.Self, nd.getFK_Flow(), nd.getNodeID(), workid, 0);
 		}
 
 		// 执行节点打开后事件.
@@ -10013,7 +10013,7 @@ public class Dev2Interface {
 	 *            要设置的人
 	 */
 	public static void Node_SetWorkUnRead(long workid, String userNo) {
-		String dbstr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
+		String dbstr = SystemConfig.getAppCenterDBVarStr();
 		Paras ps = new Paras();
 		ps.SQL = "UPDATE WF_GenerWorkerList SET IsRead=0 WHERE WorkID=" + dbstr + "WorkID AND FK_Emp=" + dbstr
 				+ "FK_Emp";
@@ -10032,7 +10032,7 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static void Node_SetWorkUnRead(long workid) throws Exception {
-		Node_SetWorkUnRead(workid, BP.Web.WebUser.getNo());
+		Node_SetWorkUnRead(workid, WebUser.getNo());
 	}
 
 	/**
@@ -10145,7 +10145,7 @@ public class Dev2Interface {
 		// 转化成编号.
 		fk_flow = TurnFlowMarkToFlowNo(fk_flow);
 
-		String tKey = DateUtils.format(new java.util.Date(), "MMddhhmmss");
+		String tKey = DateUtils.format(new Date(), "MMddhhmmss");
 		String urlr3 = Glo.getCCFlowAppPath() + "WF/WorkOpt/Askfor.jsp?FK_Node=" + fk_node + "&FID=" + fid + "&WorkID="
 				+ workid + "&FK_Flow=" + fk_flow + "&s=" + tKey;
 		PubClass.WinOpen(ContextHolderUtils.getResponse(), urlr3, 800, 600);
@@ -10271,7 +10271,7 @@ public class Dev2Interface {
 				eleDBs.Delete(FrmEleDBAttr.FK_MapData, "ND" + nodeid, FrmEleDBAttr.RefPKVal, workid);
 			}
 
-			String sealimg = BP.WF.Glo.getCCFlowAppPath() + "DataUser/Seal/" + deptno + "_" + stationno + ".jpg";
+			String sealimg = Glo.getCCFlowAppPath() + "DataUser/Seal/" + deptno + "_" + stationno + ".jpg";
 
 			if (new File(sealimg).exists() == false) {
 				return "签章文件：" + sealimg + "不存在，请联系管理员！";
@@ -10299,7 +10299,7 @@ public class Dev2Interface {
 		// 求主键. 如果该表单挂接到流程上.
 		String pkVal = String.valueOf(workid);
 		// 多附件描述.
-		BP.Sys.FrmAttachment athDesc = new BP.Sys.FrmAttachment(athNo);
+		FrmAttachment athDesc = new FrmAttachment(athNo);
 		MapData mapData = new MapData(frmID);
 		if (nodeid != 0 && nodeid != 999999) {
 			// 判断表单方案。
@@ -10335,15 +10335,15 @@ public class Dev2Interface {
 			if (savePath.contains("@") == true || savePath.contains("*") == true) {
 				/* 如果有变量 */
 				savePath = savePath.replace("*", "@");
-				savePath = BP.WF.Glo.DealExp(savePath, null, null);
+				savePath = Glo.DealExp(savePath, null, null);
 
 				if (savePath.contains("@") && nodeid != 0) {
 					/* 如果包含 @ */
-					BP.WF.Flow flow = new BP.WF.Flow(flowid);
-					BP.WF.Data.GERpt myen = flow.getHisGERpt();
+					Flow flow = new Flow(flowid);
+					GERpt myen = flow.getHisGERpt();
 					myen.setOID(workid);
 					myen.RetrieveFromDBSources();
-					savePath = BP.WF.Glo.DealExp(savePath, myen, null);
+					savePath = Glo.DealExp(savePath, myen, null);
 				}
 				if (savePath.contains("@") == true)
 					throw new Exception("@路径配置错误,变量没有被正确的替换下来." + savePath);
@@ -10370,7 +10370,7 @@ public class Dev2Interface {
 
 			}
 
-			String guid = BP.DA.DBAccess.GenerGUID();
+			String guid = DBAccess.GenerGUID();
 			String ext = fileName.substring(fileName.lastIndexOf("."));
 			String realSaveTo = savePath + "\\" + guid + "." + fileName;
 
@@ -10434,8 +10434,8 @@ public class Dev2Interface {
 			dbUpload.setFileName(fileName);
 			dbUpload.setFileSize((float) info.length());
 			dbUpload.setRDT(DataType.getCurrentDataTimess());
-			dbUpload.setRec(BP.Web.WebUser.getNo());
-			dbUpload.setRecName(BP.Web.WebUser.getName());
+			dbUpload.setRec(WebUser.getNo());
+			dbUpload.setRecName(WebUser.getName());
 			dbUpload.setFID(fid);
 			dbUpload.setUploadGUID(guid);
 			dbUpload.setRefPKVal(pkVal);
@@ -10444,7 +10444,7 @@ public class Dev2Interface {
 
 			if (athDesc.getAthSaveWay() == AthSaveWay.DB) {
 				// 执行文件保存.
-				BP.DA.DBAccess.SaveFileToDB(realSaveTo, dbUpload.getEnMap().getPhysicsTable(), "MyPK",
+				DBAccess.SaveFileToDB(realSaveTo, dbUpload.getEnMap().getPhysicsTable(), "MyPK",
 						dbUpload.getMyPK(), "FDB");
 			}
 
@@ -10453,7 +10453,7 @@ public class Dev2Interface {
 
 		/// #region 保存到数据库 / FTP服务器上.
 		if (athDesc.getAthSaveWay() == AthSaveWay.DB || athDesc.getAthSaveWay() == AthSaveWay.FTPServer) {
-			String guid = BP.DA.DBAccess.GenerGUID();
+			String guid = DBAccess.GenerGUID();
 
 			// 把文件临时保存到一个位置.
 			String temp = SystemConfig.getPathOfTemp() + "/" + "" + guid + ".tmp";
@@ -10488,7 +10488,7 @@ public class Dev2Interface {
 
 			File info = new File(temp);
 			FrmAttachmentDB dbUpload = new FrmAttachmentDB();
-			dbUpload.setMyPK(BP.DA.DBAccess.GenerGUID());
+			dbUpload.setMyPK(DBAccess.GenerGUID());
 			dbUpload.setNodeID(nodeid);
 			dbUpload.setFK_FrmAttachment(athDesc.getMyPK());
 			dbUpload.setSort(sort);
@@ -10500,7 +10500,7 @@ public class Dev2Interface {
 
 			if (athDesc.getAthUploadWay() == AthUploadWay.Interwork) {
 				/* 如果是协同，就让他是PWorkID. */
-				String pWorkID = String.valueOf(BP.DA.DBAccess
+				String pWorkID = String.valueOf(DBAccess
 						.RunSQLReturnValInt("SELECT PWorkID FROM WF_GenerWorkFlow WHERE WorkID=" + pkVal, 0));
 				if (pWorkID == null || pWorkID == "0")
 					pWorkID = pkVal;
@@ -10513,8 +10513,8 @@ public class Dev2Interface {
 			dbUpload.setFileExts(exts);
 			dbUpload.setFileSize((float) info.length());
 			dbUpload.setRDT(DataType.getCurrentDataTimess());
-			dbUpload.setRec(BP.Web.WebUser.getNo());
-			dbUpload.setRecName(BP.Web.WebUser.getName());
+			dbUpload.setRec(WebUser.getNo());
+			dbUpload.setRecName(WebUser.getName());
 			if (fileEncrypt == true)
 				dbUpload.SetPara("IsEncrypt", 1);
 
@@ -10549,7 +10549,7 @@ public class Dev2Interface {
 
 				if (SystemConfig.getFTPServerType().equals("FTP")) {
 
-					FtpUtil ftpUtil = BP.WF.Glo.getFtpUtil();
+					FtpUtil ftpUtil = Glo.getFtpUtil();
 
 					ftpUtil.changeWorkingDirectory(workDir, true);
 
@@ -10561,7 +10561,7 @@ public class Dev2Interface {
 
 				if (SystemConfig.getFTPServerType().equals("SFTP")) {
 
-					SftpUtil ftpUtil = BP.WF.Glo.getSftpUtil();
+					SftpUtil ftpUtil = Glo.getSftpUtil();
 
 					ftpUtil.changeWorkingDirectory(workDir, true);
 					// 把文件放在FTP服务器上去.
@@ -10596,7 +10596,7 @@ public class Dev2Interface {
 	 * @throws Exception
 	 */
 	public static String SDK_Page_Init(long workid) throws Exception {
-		return BP.WF.AppClass.SDK_Page_Init(workid);
+		return AppClass.SDK_Page_Init(workid);
 	}
 
 	/**
@@ -10726,32 +10726,32 @@ public class Dev2Interface {
 		case MSSQL:
 		case Access:
 			sql = "SELECT TOP 1 NDTo FROM ND" + Integer.parseInt(flowNo) + "Track WHERE EmpFrom='"
-					+ BP.Web.WebUser.getNo() + "' AND NDFrom=" + nodeID + " AND (ActionType="
+					+ WebUser.getNo() + "' AND NDFrom=" + nodeID + " AND (ActionType="
 					+ ActionType.Forward.getValue() + " OR ActionType=" + ActionType.ForwardFL.getValue()
 					+ " OR ActionType=" + ActionType.SubThreadForward.getValue() + ")  ORDER BY RDT DESC";
 			break;
 		case Oracle:
 			sql = "SELECT NDTo FROM ND" + Integer.parseInt(flowNo) + "Track WHERE  RowNum=1 AND EmpFrom='"
-					+ BP.Web.WebUser.getNo() + "' AND NDFrom=" + nodeID + " AND (ActionType="
+					+ WebUser.getNo() + "' AND NDFrom=" + nodeID + " AND (ActionType="
 					+ ActionType.Forward.getValue() + " OR ActionType=" + ActionType.ForwardFL.getValue()
 					+ " OR ActionType=" + ActionType.SubThreadForward.getValue() + ")  ORDER BY RDT DESC";
 			break;
 		case MySQL:
-			sql = "SELECT NDTo FROM ND" + Integer.parseInt(flowNo) + "Track WHERE EmpFrom='" + BP.Web.WebUser.getNo()
+			sql = "SELECT NDTo FROM ND" + Integer.parseInt(flowNo) + "Track WHERE EmpFrom='" + WebUser.getNo()
 					+ "' AND NDFrom=" + nodeID + " AND (ActionType=" + ActionType.Forward.getValue() + " OR ActionType="
 					+ ActionType.ForwardFL.getValue() + " OR ActionType=" + ActionType.SubThreadForward.getValue()
 					+ ") limit 0,1";
 			break;
 		case Informix:
 			sql = "SELECT first 1 NDTo FROM ND" + Integer.parseInt(flowNo) + "Track WHERE EmpFrom='"
-					+ BP.Web.WebUser.getNo() + "' AND NDFrom=" + nodeID + " AND (ActionType="
+					+ WebUser.getNo() + "' AND NDFrom=" + nodeID + " AND (ActionType="
 					+ ActionType.Forward.getValue() + " OR ActionType=" + ActionType.ForwardFL.getValue()
 					+ " OR ActionType=" + ActionType.SubThreadForward.getValue() + ")  ORDER BY RDT DESC";
 			break;
 		default:
 			throw new RuntimeException("@没有实现该类型的数据库支持.");
 		}
-		return BP.DA.DBAccess.RunSQLReturnValInt(sql, 0);
+		return DBAccess.RunSQLReturnValInt(sql, 0);
 	}
 
 	/**
@@ -10869,12 +10869,12 @@ public class Dev2Interface {
 
 		NodeStations stas = new NodeStations(nodeID);
 		if (stas.size() == 0) {
-			BP.WF.Node toNd = new BP.WF.Node(nodeID);
+			Node toNd = new Node(nodeID);
 			throw new RuntimeException("@流程设计错误：设计员没有设计节点[" + toNd.getName() + "]，接受人的岗位范围。");
 		}
 		// 优先解决本部门的问题。
 		String sql = "";
-		if (BP.WF.Glo.getOSModel() == OSModel.OneMore) {
+		if (Glo.getOSModel() == OSModel.OneMore) {
 			sql = "SELECT A.No,A.Name, A.FK_Dept, B.Name as DeptName FROM Port_Emp A,Port_Dept B WHERE A.FK_Dept=B.No AND a.NO IN ( ";
 			sql += "SELECT FK_EMP FROM Port_DeptEmpStation WHERE FK_STATION ";
 			sql += "IN (SELECT FK_STATION FROM WF_NodeStation WHERE FK_Node=" + nodeID + ") ";
@@ -10882,23 +10882,23 @@ public class Dev2Interface {
 			sql += " ORDER BY B.Idx,B.No,A.Idx,A.No ";
 		} else {
 			sql = "SELECT A.No,A.Name, A.FK_Dept, B.Name as DeptName FROM Port_Emp A,Port_Dept B WHERE A.FK_Dept=B.No AND a.NO IN ( ";
-			sql += "SELECT FK_EMP FROM " + BP.WF.Glo.getEmpStation() + " WHERE FK_STATION ";
+			sql += "SELECT FK_EMP FROM " + Glo.getEmpStation() + " WHERE FK_STATION ";
 			sql += "IN (SELECT FK_STATION FROM WF_NodeStation WHERE FK_Node=" + nodeID + ") ";
 			sql += ") AND a.No IN (SELECT No FROM Port_Emp WHERE FK_Dept ='" + WebUser.getFK_Dept() + "')";
 			sql += " ORDER BY A.FK_DEPT,A.No ";
 		}
 
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 		if (dt.Rows.size() != 0) {
 			return dt;
 		}
 
 		// 组织结构中所有岗位人员
 		sql = "SELECT A.No,A.Name, A.FK_Dept, B.Name as DeptName FROM Port_Emp A,Port_Dept B WHERE A.FK_Dept=B.No AND a.NO IN ( ";
-		sql += "SELECT FK_EMP FROM " + BP.WF.Glo.getEmpStation() + " WHERE FK_STATION ";
+		sql += "SELECT FK_EMP FROM " + Glo.getEmpStation() + " WHERE FK_STATION ";
 		sql += "IN (SELECT FK_STATION FROM WF_NodeStation WHERE FK_Node=" + nodeID + ") ";
 		sql += ") ORDER BY A.FK_DEPT,A.No ";
-		return BP.DA.DBAccess.RunSQLReturnTable(sql);
+		return DBAccess.RunSQLReturnTable(sql);
 	}
 
 	/**
@@ -10938,7 +10938,7 @@ public class Dev2Interface {
 	 */
 	private static DataSet WorkOpt_Accepter_ByDept(int nodeID) {
 		DataSet ds = new DataSet();
-		String orderByIdx = BP.WF.Glo.getOSModel() == OSModel.OneMore ? "Idx," : "";
+		String orderByIdx = Glo.getOSModel() == OSModel.OneMore ? "Idx," : "";
 		String sqlGroup = "SELECT No,Name FROM Port_Dept WHERE No IN (SELECT FK_Dept FROM WF_NodeDept WHERE FK_Node='"
 				+ nodeID + "') ORDER BY " + orderByIdx + "No";
 		String sqlDB = "SELECT No,Name, FK_Dept FROM Port_Emp WHERE FK_Dept IN (SELECT FK_Dept FROM WF_NodeDept WHERE FK_Node='"
@@ -10960,7 +10960,7 @@ public class Dev2Interface {
 	 * 
 	 */
 	private static DataSet WorkOpt_Accepter_ByEmp(int nodeID) {
-		String orderByIdx = BP.WF.Glo.getOSModel() == OSModel.OneMore ? "Idx," : "";
+		String orderByIdx = Glo.getOSModel() == OSModel.OneMore ? "Idx," : "";
 		String sqlGroup = "SELECT No,Name FROM Port_Dept WHERE No IN (SELECT FK_Dept FROM Port_Emp WHERE No in(SELECT FK_EMP FROM WF_NodeEmp WHERE FK_Node='"
 				+ nodeID + "')) ORDER BY " + orderByIdx + "No";
 		String sqlDB = "SELECT No,Name,FK_Dept FROM Port_Emp WHERE No in (SELECT FK_EMP FROM WF_NodeEmp WHERE FK_Node='"
@@ -11000,7 +11000,7 @@ public class Dev2Interface {
 		// 下次是否记忆选择，清空掉。
 		String sql = "UPDATE WF_SelectAccper SET " + SelectAccperAttr.IsRemember + " = 0 WHERE Rec='" + WebUser.getNo()
 				+ "' AND IsRemember=1 AND FK_Node=" + nodeID;
-		BP.DA.DBAccess.RunSQL(sql);
+		DBAccess.RunSQL(sql);
 
 		// 开始执行保存.
 		String[] strs = emps.split("[,]", -1);
@@ -11093,12 +11093,12 @@ public class Dev2Interface {
 		// "\\DataUser\\UploadFile";
 		String path = ContextHolderUtils.getRequest().getSession().getServletContext().getRealPath("/")
 				+ "/DataUser/UploadFile";
-		if (!(new java.io.File(path)).isDirectory()) {
-			(new java.io.File(path)).mkdirs();
+		if (!(new File(path)).isDirectory()) {
+			(new File(path)).mkdirs();
 		}
 		String filePath = path + "/" + fileName;
-		if ((new java.io.File(filePath)).isFile()) {
-			(new java.io.File(filePath)).delete();
+		if ((new File(filePath)).isFile()) {
+			(new File(filePath)).delete();
 		}
 
 		// 这里使用绝对路径来索引
@@ -11122,7 +11122,7 @@ public class Dev2Interface {
 		/// #region 求出是否可以更新状态.
 		if (DateUtils.getHour(new Date()) >= 0 && DateUtils.getHour(new Date()) < 12) {
 			isPM = true;
-			String timeKey = "DTSTodoStaPM" + BP.Tools.DateUtils.getCurrentDate();
+			String timeKey = "DTSTodoStaPM" + DateUtils.getCurrentDate();
 			Paras ps = new Paras();
 			ps.SQL = "SELECT Val FROM Sys_GloVar WHERE No='" + timeKey + "'";
 			String time = DBAccess.RunSQLReturnStringIsNull(ps, null);
@@ -11143,7 +11143,7 @@ public class Dev2Interface {
 
 		// 下午时间段.
 		if (DateUtils.getHour(new Date()) >= 13 && DateUtils.getHour(new Date()) < 24) {
-			String timeKey = "DTSTodoStaAM" + BP.Tools.DateUtils.getCurrentDate();
+			String timeKey = "DTSTodoStaAM" + DateUtils.getCurrentDate();
 			Paras ps = new Paras();
 			ps.SQL = "SELECT Val FROM Sys_GloVar WHERE No='" + timeKey + "'";
 			String time = DBAccess.RunSQLReturnStringIsNull(ps, null);
@@ -11233,7 +11233,7 @@ public class Dev2Interface {
 					+ "' AND a.SDT <'" + timeDT + "' AND A.IsPass=0 ) ";
 			sql += " AND WF_GenerWorkFlow.WFState!=3 ";
 			sql += " AND WF_GenerWorkFlow.TodoSta=0 ";
-			int i = BP.DA.DBAccess.RunSQL(sql);
+			int i = DBAccess.RunSQL(sql);
 		}
 		// 更新逾期期状态.
 		sql = "UPDATE WF_GenerWorkFlow  SET TodoSta=2 ";
@@ -11241,7 +11241,7 @@ public class Dev2Interface {
 				+ "' AND a.SDT <'" + timeDT + "' AND A.IsPass=0 ) ";
 		sql += " AND WF_GenerWorkFlow.WFState!=3 ";
 		sql += " AND WF_GenerWorkFlow.TodoSta=1 ";
-		BP.DA.DBAccess.RunSQL(sql);
+		DBAccess.RunSQL(sql);
 	}
 
 	/**
@@ -11252,7 +11252,7 @@ public class Dev2Interface {
 	private static void DTS_SendMsgToWorker() throws Exception {
 		if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 0
 				&& Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 12) {
-			String timeKey = "DTSWarningPM" + BP.Tools.DateUtils.getCurrentDate();
+			String timeKey = "DTSWarningPM" + DateUtils.getCurrentDate();
 			Paras ps = new Paras();
 			ps.SQL = "SELECT Val FROM Sys_GloVar WHERE No='" + timeKey + "'";
 			String time = DBAccess.RunSQLReturnStringIsNull(ps, null);
@@ -11277,7 +11277,7 @@ public class Dev2Interface {
 					String empNo = dr.getValue("FK_Emp").toString();
 					String empName = dr.getValue("FK_EmpText").toString();
 
-					BP.WF.Port.WFEmp emp = new BP.WF.Port.WFEmp(empNo);
+					WFEmp emp = new WFEmp(empNo);
 					if (way == CHAlertWay.ByEmail) {
 						String titleMail = "";
 						String docMail = "";
@@ -11320,7 +11320,7 @@ public class Dev2Interface {
 		String sql = "UPDATE WF_GenerWorkFlow SET TSpan=" + TSpan.NextWeek.getValue() + " WHERE RDT >= '"
 				+ DateUtils.format(dtBegin, DataType.getSysDataFormat()) + " 00:00' AND RDT <= '"
 				+ DateUtils.format(dtEnd, DataType.getSysDataFormat()) + " 00:00' AND TSpan=0";
-		BP.DA.DBAccess.RunSQL(sql);
+		DBAccess.RunSQL(sql);
 
 		dtBegin = DateUtils.addDay(dtBegin, 7);
 		dtEnd = DateUtils.addDay(dtEnd, 7);
@@ -11329,12 +11329,12 @@ public class Dev2Interface {
 		sql = "UPDATE WF_GenerWorkFlow SET TSpan=" + TSpan.TowWeekAgo.getValue() + " WHERE RDT >= '"
 				+ DateUtils.format(dtBegin, DataType.getSysDataFormat()) + " 00:00' AND RDT <= '"
 				+ DateUtils.format(dtEnd, DataType.getSysDataFormat()) + " 00:00' AND (TSpan=1 OR TSpan=0) ";
-		BP.DA.DBAccess.RunSQL(sql);
+		DBAccess.RunSQL(sql);
 
 		// 把上周的，设置为更早.
 		sql = "UPDATE WF_GenerWorkFlow SET TSpan=" + TSpan.More.getValue() + " WHERE RDT <= '"
 				+ DateUtils.format(dtBegin, DataType.getSysDataFormat()) + " 00:00' AND (TSpan=2 OR TSpan=0)";
-		BP.DA.DBAccess.RunSQL(sql);
+		DBAccess.RunSQL(sql);
 	}
 
 	public static void Flow_Confirm(long workid) throws Exception {
@@ -11452,11 +11452,11 @@ public class Dev2Interface {
 	 */
 	public static int getTodolist_HuiQian() throws Exception {
 		// 获取数据.
-		String dbStr = BP.Sys.SystemConfig.getAppCenterDBVarStr();
-		BP.DA.Paras ps = new BP.DA.Paras();
+		String dbStr = SystemConfig.getAppCenterDBVarStr();
+		Paras ps = new Paras();
 		ps.SQL = "SELECT COUNT(workid) as Num FROM WF_GenerWorkerlist WHERE FK_Emp=" + dbStr + "FK_Emp AND IsPass=90";
-		ps.Add(GenerWorkerListAttr.FK_Emp, BP.Web.WebUser.getNo());
-		return BP.DA.DBAccess.RunSQLReturnValInt(ps);
+		ps.Add(GenerWorkerListAttr.FK_Emp, WebUser.getNo());
+		return DBAccess.RunSQLReturnValInt(ps);
 	}
 
 	/**
@@ -11498,7 +11498,7 @@ public class Dev2Interface {
 		}
 		pas.Add("WorkID", WorkID);
 		pas.Add("NDTo", FK_Node);
-		return BP.DA.DBAccess.RunSQLReturnTable(pas);
+		return DBAccess.RunSQLReturnTable(pas);
 	}
 	
 	/**
@@ -11589,7 +11589,7 @@ public class Dev2Interface {
 		if (isReadonly == true)
 			isCanDo = false;
 		else
-			isCanDo = BP.WF.Dev2Interface.Flow_IsCanDoCurrentWork(workId, WebUser.getNo());
+			isCanDo = Dev2Interface.Flow_IsCanDoCurrentWork(workId, WebUser.getNo());
 
 		// 如果是查看状态, 为了屏蔽掉正在审批的节点, 在查看审批意见中.
 		Boolean isShowCurrNodeInfo = true;
@@ -11628,7 +11628,7 @@ public class Dev2Interface {
 			// 已走过节点
 			int empIdx = 0;
 			int lastNodeId = 0;
-			for (BP.WF.Track tk : tks.ToJavaList()) {
+			for (Track tk : tks.ToJavaList()) {
 				if (tk.getHisActionType() == ActionType.FlowBBS)
 					continue;
 
@@ -11721,7 +11721,7 @@ public class Dev2Interface {
 				row.setValue("NodeName", tk.getNDFromT());
 				isDoc = false;
 				// zhoupeng 增加了判断，在会签的时候最后会签人发送前不能填写意见.
-				if (tk.getNDFrom() == fk_node && tk.getEmpFrom() == BP.Web.WebUser.getNo() && isCanDo
+				if (tk.getNDFrom() == fk_node && tk.getEmpFrom() == WebUser.getNo() && isCanDo
 						&& isDoc == false)
 					isDoc = true;
 
@@ -11929,7 +11929,7 @@ public class Dev2Interface {
 
              //是否已审核.
              Boolean isHave = false;
-             for (BP.WF.Track tk : tks.ToJavaList())
+             for (Track tk : tks.ToJavaList())
              {
                  //翻译.
                  if (tk.getNDFrom() == fk_node && tk.getHisActionType() == ActionType.WorkCheck)
@@ -12023,7 +12023,7 @@ public class Dev2Interface {
 		ds.Tables.add(md.ToDataTableField("Sys_MapData"));
 
 		// 取出来查询条件.
-		BP.Sys.UserRegedit ur = new UserRegedit();
+		UserRegedit ur = new UserRegedit();
 		ur.setMyPK(WebUser.getNo() + "_" + ensName + "_SearchAttrs");
 		ur.RetrieveFromDBSources();
 
@@ -12077,7 +12077,7 @@ public class Dev2Interface {
 						SimpleDateFormat sdf = new SimpleDateFormat(DataType.getSysDataFormat());
 						date = sdf.format(dBefore);
 					}
-				} catch (java.lang.Exception e) {
+				} catch (Exception e) {
 				}
 
 				qo.AddWhere(attr.getRefAttrKey(), opkey, date);

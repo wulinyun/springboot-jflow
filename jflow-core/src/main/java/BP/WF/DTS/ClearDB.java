@@ -94,7 +94,7 @@ public class ClearDB extends Method
 			{
 				DBAccess.RunSQL("DELETE FROM ND" + Integer.parseInt(item.getNo()) + "Track");
 			}
-			catch (java.lang.Exception e)
+			catch (Exception e)
 			{
 			}
 		}
@@ -107,7 +107,7 @@ public class ClearDB extends Method
 				Work wk = nd.getHisWork();
 				DBAccess.RunSQL("DELETE FROM " + wk.getEnMap().getPhysicsTable());
 			}
-			catch (java.lang.Exception e2)
+			catch (Exception e2)
 			{
 			}
 		}
@@ -120,7 +120,7 @@ public class ClearDB extends Method
 			{
 				DBAccess.RunSQL("DELETE FROM " + nd.getPTable());
 			}
-			catch (java.lang.Exception e3)
+			catch (Exception e3)
 			{
 			}
 		}
@@ -133,7 +133,7 @@ public class ClearDB extends Method
 			{
 				DBAccess.RunSQL("DELETE FROM " + dtl.getPTable());
 			}
-			catch (java.lang.Exception e4)
+			catch (Exception e4)
 			{
 			}
 		}

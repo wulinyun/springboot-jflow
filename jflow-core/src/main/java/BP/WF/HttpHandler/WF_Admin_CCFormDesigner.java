@@ -72,7 +72,7 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 		float x = this.GetRequestValFloat("x");
 		float y = this.GetRequestValFloat("y");
 
-		BP.Sys.CCFormAPI.NewEnumField(fk_mapdata, keyOfEn, fieldDesc, enumKeyOfBind, ctrl, x, y, 1);
+		CCFormAPI.NewEnumField(fk_mapdata, keyOfEn, fieldDesc, enumKeyOfBind, ctrl, x, y, 1);
 		return "绑定成功.";
 	}
 
@@ -93,7 +93,7 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 
 			// 调用接口,执行保存.
 			try {
-				BP.Sys.CCFormAPI.SaveFieldSFTable(fk_mapdata, keyOfEn, fieldDesc, sftable, x, y, 0);
+				CCFormAPI.SaveFieldSFTable(fk_mapdata, keyOfEn, fieldDesc, sftable, x, y, 0);
 			} catch (Exception e) {
 				return "设置失败";
 			}
@@ -113,9 +113,9 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 		String name = GetRequestVal("name");
 		String flag = GetRequestVal("flag");
 		if (flag.equals("true")) {
-			return BP.Sys.CCFormAPI.ParseStringToPinyinField(name, true);
+			return CCFormAPI.ParseStringToPinyinField(name, true);
 		} else {
-			return BP.Sys.CCFormAPI.ParseStringToPinyinField(name, false);
+			return CCFormAPI.ParseStringToPinyinField(name, false);
 		}
 	}
 
@@ -126,7 +126,7 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 	 * @throws Exception 
 	 */
 	public final String Hiddenfielddata() throws Exception {
-		return BP.Sys.CCFormAPI.DB_Hiddenfielddata(this.getFK_MapData());
+		return CCFormAPI.DB_Hiddenfielddata(this.getFK_MapData());
 	}
 
 	public final String HiddenFieldDelete() {
@@ -191,9 +191,9 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 
 		String str = "";
 		if (isQuanPin.equals("1")) {
-			str = BP.Sys.CCFormAPI.ParseStringToPinyinField(name, true);
+			str = CCFormAPI.ParseStringToPinyinField(name, true);
 		} else {
-			str = BP.Sys.CCFormAPI.ParseStringToPinyinField(name, false);
+			str = CCFormAPI.ParseStringToPinyinField(name, false);
 		}
 
 		MapData md = new MapData();
@@ -235,7 +235,7 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 		
 		md.setPTable(this.GetRequestVal("TB_PTable"));
 		//表单的物理表.
-        if(md.getHisFrmType() == BP.Sys.FrmType.Url ||  md.getHisFrmType() == BP.Sys.FrmType.Entity)
+        if(md.getHisFrmType() == FrmType.Url ||  md.getHisFrmType() == FrmType.Entity)
             md.setPTable(this.GetRequestVal("TB_PTable"));
         else
             md.setPTable(DataType.ParseStringForNo(this.GetRequestVal("TB_PTable"), 100));
@@ -274,18 +274,18 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 		md.Insert();
 
 		//增加上OID字段.
-        BP.Sys.CCFormAPI.RepareCCForm(md.getNo());
+        CCFormAPI.RepareCCForm(md.getNo());
 		
-		if (md.getHisFrmType() == BP.Sys.FrmType.WordFrm || md.getHisFrmType() == BP.Sys.FrmType.ExcelFrm) {
+		if (md.getHisFrmType() == FrmType.WordFrm || md.getHisFrmType() == FrmType.ExcelFrm) {
 			/* 把表单模版存储到数据库里 */
 			return "url@../../Comm/En.htm?EnName=BP.WF.Template.MapFrmExcel&PK=" + md.getNo();
 		}
 
-		if (md.getHisFrmType() == BP.Sys.FrmType.FreeFrm) {
+		if (md.getHisFrmType() == FrmType.FreeFrm) {
 			return "url@FormDesigner.htm?FK_MapData=" + md.getNo();
 		}
 		
-		if (md.getHisFrmType() == BP.Sys.FrmType.Entity)
+		if (md.getHisFrmType() == FrmType.Entity)
             return "url@../../Comm/Ens.htm?EnsName=" + md.getPTable();
 
 		return "url@../FoolFormDesigner/Designer.htm?IsFirst=1&FK_MapData=" + md.getNo();
@@ -303,18 +303,18 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 
 	public final String GoToFrmDesigner_Init() throws Exception {
 		// 根据不同的表单类型转入不同的表单设计器上去.
-		BP.Sys.MapData md = new BP.Sys.MapData(this.getFK_MapData());
-		if (md.getHisFrmType() == BP.Sys.FrmType.FoolForm) {
+		MapData md = new MapData(this.getFK_MapData());
+		if (md.getHisFrmType() == FrmType.FoolForm) {
 			/* 傻瓜表单 */
 			return "url@../FoolFormDesigner/Designer.htm?IsFirst=1&FK_MapData=" + this.getFK_MapData();
 		}
 
-		if (md.getHisFrmType() == BP.Sys.FrmType.FreeFrm) {
+		if (md.getHisFrmType() == FrmType.FreeFrm) {
 			/* 自由表单 */
 			return "url@FormDesigner.htm?FK_MapData=" + this.getFK_MapData();
 		}
 
-		if (md.getHisFrmType() == BP.Sys.FrmType.VSTOForExcel) {
+		if (md.getHisFrmType() == FrmType.VSTOForExcel) {
 			/* 自由表单 */
 			return "url@FormDesigner.htm?FK_MapData=" + this.getFK_MapData();
 
@@ -326,12 +326,12 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 			// this.FK_MapData;
 		}
 		
-		   if (md.getHisFrmType() == BP.Sys.FrmType.Url)
+		   if (md.getHisFrmType() == FrmType.Url)
            {
                /* 自由表单 */
                return "url@../../Comm/EnOnly.htm?EnName=BP.WF.Template.MapDataURL&No=" + this.getFK_MapData();
            }
-		   if (md.getHisFrmType() == BP.Sys.FrmType.Entity)
+		   if (md.getHisFrmType() == FrmType.Entity)
 			   return "url@../../Comm/Ens.htm?EnsName=" + md.getPTable();
 		   
 		return "err@没有判断的表单转入类型" + md.getHisFrmType().toString();
@@ -341,7 +341,7 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 		try {
 			float x = Float.parseFloat(this.GetRequestVal("x"));
 			float y = Float.parseFloat(this.GetRequestVal("y"));
-			BP.Sys.CCFormAPI.CreatePublicNoNameCtrl(this.getFrmID(), this.GetRequestVal("CtrlType"),
+			CCFormAPI.CreatePublicNoNameCtrl(this.getFrmID(), this.GetRequestVal("CtrlType"),
 					this.GetRequestVal("No"), this.GetRequestVal("Name"), x, y);
 			return "true";
 		} catch (RuntimeException ex) {
@@ -358,7 +358,7 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 
          try
          {
-             BP.Sys.CCFormAPI.NewImage(this.GetRequestVal("FrmID"),
+             CCFormAPI.NewImage(this.GetRequestVal("FrmID"),
                  this.GetRequestVal("KeyOfEn"), this.GetRequestVal("Name"),
                 
                  Float.parseFloat(this.GetRequestVal("x")),
@@ -381,7 +381,7 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 	 */
 	public String NewField() throws Exception {
 		try {
-			BP.Sys.CCFormAPI.NewField(this.GetRequestVal("FrmID"), this.GetRequestVal("KeyOfEn"),
+			CCFormAPI.NewField(this.GetRequestVal("FrmID"), this.GetRequestVal("KeyOfEn"),
 					this.GetRequestVal("Name"), Integer.parseInt(this.GetRequestVal("FieldType")),
 					Float.parseFloat(this.GetRequestVal("x")), Float.parseFloat(this.GetRequestVal("y")), 1);
 			return "true";
@@ -483,9 +483,9 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 	public final String SaveForm() throws Exception {
 		
 		  //清缓存
-        BP.Sys.CCFormAPI.AfterFrmEditAction(this.getFK_MapData());
+        CCFormAPI.AfterFrmEditAction(this.getFK_MapData());
         
-		BP.Sys.CCFormAPI.SaveFrm(this.getFK_MapData(), this.GetRequestVal("diagram"));
+		CCFormAPI.SaveFrm(this.getFK_MapData(), this.GetRequestVal("diagram"));
 
 		// 一直没有找到设置3列，自动回到四列的情况.
 		DBAccess.RunSQL("UPDATE Sys_MapAttr SET ColSpan=3 WHERE  UIHeight<=23 AND ColSpan=4");
@@ -508,14 +508,14 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 	}
 	
 	public final String Tables_Init() throws Exception {
-		BP.Sys.SFTables tabs = new BP.Sys.SFTables();
+		SFTables tabs = new SFTables();
 		tabs.RetrieveAll();
 		DataTable dt = tabs.ToDataTableField();
 		dt.Columns.Add("RefNum", Integer.class);
 
 		for (DataRow dr : dt.Rows) {
 			// 求引用数量.
-			int refNum = BP.DA.DBAccess.RunSQLReturnValInt(
+			int refNum = DBAccess.RunSQLReturnValInt(
 					"SELECT COUNT(KeyOfEn) FROM Sys_MapAttr WHERE UIBindKey='" + dr.getValue("No") + "'", 0);
 			dr.setValue("RefNum", refNum);
 		}
@@ -524,7 +524,7 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 
 	public final String Tables_Delete() throws Exception {
 		try {
-			BP.Sys.SFTable tab = new BP.Sys.SFTable();
+			SFTable tab = new SFTable();
 			tab.setNo(this.getNo());
 			tab.Delete();
 			return "删除成功.";
@@ -534,8 +534,8 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 	}
 
 	public final String TableRef_Init() throws Exception {
-		BP.Sys.MapAttrs mapAttrs = new BP.Sys.MapAttrs();
-		mapAttrs.RetrieveByAttr(BP.Sys.MapAttrAttr.UIBindKey, this.getFK_SFTable());
+		MapAttrs mapAttrs = new MapAttrs();
+		mapAttrs.RetrieveByAttr(MapAttrAttr.UIBindKey, this.getFK_SFTable());
 
 		DataTable dt = mapAttrs.ToDataTableField();
 		return BP.Tools.Json.ToJson(dt);
@@ -573,7 +573,7 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 		ht.put("MapFrmExcels", "../../Comm/En.htm?EnName=BP.WF.Template.MapFrmExcel&PKVal=" + no); // Excel表单属性.
 		ht.put("MapDataURLs", "../../Comm/En.htm?EnName=BP.WF.Template.MapDataURL&PKVal=" + no); // 嵌入式表单属性.
 
-		return BP.DA.DataType.ToJsonEntityModel(ht);
+		return DataType.ToJsonEntityModel(ht);
 	}
 
 	/**
@@ -634,7 +634,7 @@ public class WF_Admin_CCFormDesigner extends WebContralBase {
 				continue;
 			}
 
-			GEDtl gedtl = new BP.Sys.GEDtl(this.getFK_MapDtl());
+			GEDtl gedtl = new GEDtl(this.getFK_MapDtl());
 			String sql = dtl.getImpSQLFull();
 			sql = sql.replace("@Key", str);
 

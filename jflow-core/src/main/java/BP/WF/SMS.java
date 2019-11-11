@@ -48,8 +48,8 @@ public class SMS extends EntityMyPK
 		sms.setTitle(msgTitle);
 		sms.setDocOfEmail(msgDoc);
 
-		sms.setSender(BP.Web.WebUser.getNo());
-		sms.setRDT(BP.DA.DataType.getCurrentDataTime());
+		sms.setSender(WebUser.getNo());
+		sms.setRDT(DataType.getCurrentDataTime());
 
 		sms.setMsgFlag(msgFlag); // 消息标志.
 		sms.setMsgType(msgType); // 消息类型.'
@@ -73,7 +73,7 @@ public class SMS extends EntityMyPK
 	{
 		SMS sms = new SMS();
 		sms.setSender(WebUser.getNo());
-		sms.setRDT(BP.DA.DataType.getCurrentDataTimess());
+		sms.setRDT(DataType.getCurrentDataTimess());
 		sms.setSendToEmpNo(guestNo);
 
 		// 邮件信息
@@ -100,7 +100,7 @@ public class SMS extends EntityMyPK
 				sms.setMyPK(msgFlag);
 				sms.Insert();
 			}
-			catch (java.lang.Exception e)
+			catch (Exception e)
 			{
 			}
 		}
@@ -433,7 +433,7 @@ public class SMS extends EntityMyPK
 	protected void afterInsert() throws Exception
 	{
 		/* 发送消息开关 */
-		if (BP.WF.Glo.getIsEnableSysMessage() == false)		
+		if (Glo.getIsEnableSysMessage() == false)
 			return;
 		
 		
@@ -450,9 +450,9 @@ public class SMS extends EntityMyPK
 
 			if (this.getHisMobileSta() == MsgSta.UnRun)
 			{
-				String tag = "@MsgFlag=" + this.getMsgFlag() + "@MsgType=" + this.getMsgType() + this.getatPara() + "@Sender=" + this.getSender() + "@SenderName=" + BP.Web.WebUser.getName();
+				String tag = "@MsgFlag=" + this.getMsgFlag() + "@MsgType=" + this.getMsgType() + this.getatPara() + "@Sender=" + this.getSender() + "@SenderName=" + WebUser.getName();
 				PortalWebService service = new PortalWebService();
-				switch (BP.WF.Glo.getShortMessageWriteTo())
+				switch (Glo.getShortMessageWriteTo())
 				{
 					case ToSMSTable: //写入消息表。
 						break;

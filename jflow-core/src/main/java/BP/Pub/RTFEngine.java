@@ -79,11 +79,11 @@ public class RTFEngine {
 		return rtn.replace("\n", " \\par ");
 	}
 
-	private java.util.ArrayList _EnsDataDtls = null;
+	private ArrayList _EnsDataDtls = null;
 
-	public final java.util.ArrayList getEnsDataDtls() {
+	public final ArrayList getEnsDataDtls() {
 		if (_EnsDataDtls == null) {
-			_EnsDataDtls = new java.util.ArrayList();
+			_EnsDataDtls = new ArrayList();
 		}
 		return _EnsDataDtls;
 	}
@@ -159,7 +159,7 @@ public class RTFEngine {
 					DecimalFormat fnum = new DecimalFormat("##0.00");
 					return fnum.format(val);
 				} else if (strs[3].equals("RMBDX")) {
-					return BP.DA.DataType.ParseFloatToCash(Float.parseFloat(val));
+					return DataType.ParseFloatToCash(Float.parseFloat(val));
 				} else {
 					throw new RuntimeException("step2参数设置错误" + strs);
 				}
@@ -365,7 +365,7 @@ public class RTFEngine {
 			if (filePath == null) {
 				return "";
 			}
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return "";
 		}
 
@@ -456,7 +456,7 @@ public class RTFEngine {
 			String[] strs = key.split("[.]", -1);
 			if (strs.length == 2) {
 				if (strs[1].trim().equals("ImgAth")) {
-					String path1 = BP.Sys.SystemConfig.getPathOfDataUser() + "\\ImgAth\\Data\\" + strs[0].trim() + "_"
+					String path1 = SystemConfig.getPathOfDataUser() + "\\ImgAth\\Data\\" + strs[0].trim() + "_"
 							+ en.getPKVal() + ".png";
 					// 定义rtf中图片字符串.
 					StringBuilder mypict = new StringBuilder();
@@ -508,7 +508,7 @@ public class RTFEngine {
 				} else if (strs[1].trim().equals("RMBDX")) {
 					return DataType.ParseFloatToCash(Float.parseFloat(val));
 				} else if (strs[1].trim().equals("ImgAth")) {
-					String path1 = BP.Sys.SystemConfig.getPathOfDataUser() + "\\ImgAth\\Data\\" + strs[0].trim() + "_"
+					String path1 = SystemConfig.getPathOfDataUser() + "\\ImgAth\\Data\\" + strs[0].trim() + "_"
 							+ this.HisGEEntity.getPKVal() + ".png";
 
 					// 定义rtf中图片字符串.
@@ -539,7 +539,7 @@ public class RTFEngine {
 					mypict.append("\n");
 					return mypict.toString();
 				} else if (strs[1].trim().equals("Siganture")) {
-					String path = BP.Sys.SystemConfig.getPathOfDataUser() + "\\Siganture\\" + val + ".jpg";
+					String path = SystemConfig.getPathOfDataUser() + "\\Siganture\\" + val + ".jpg";
 					// 定义rtf中图片字符串.
 					StringBuilder pict = new StringBuilder();
 					// 获取要插入的图片
@@ -602,7 +602,7 @@ public class RTFEngine {
 			}
 
 			if (strs[1].trim().equals("ImgAth")) {
-				String path1 = BP.Sys.SystemConfig.getPathOfDataUser() + "\\ImgAth\\Data\\" + strs[0].trim() + "_"
+				String path1 = SystemConfig.getPathOfDataUser() + "\\ImgAth\\Data\\" + strs[0].trim() + "_"
 						+ this.HisGEEntity.getPKVal() + ".png";
 
 				// 定义rtf中图片字符串.
@@ -693,7 +693,7 @@ public class RTFEngine {
 				} else if (strs[1].trim().equals("RMBDX")) {
 					return DataType.ParseFloatToCash(Float.parseFloat(val));
 				} else if (strs[1].trim().equals("Siganture")) {
-					String path = BP.Sys.SystemConfig.getPathOfDataUser() + "\\Siganture\\" + val + ".jpg";
+					String path = SystemConfig.getPathOfDataUser() + "\\Siganture\\" + val + ".jpg";
 					// 定义rtf中图片字符串
 					StringBuilder pict = new StringBuilder();
 					// 获取要插入的图片
@@ -1144,7 +1144,7 @@ public class RTFEngine {
 			return row.getValue("RDT").toString(); // 审核日期.
 		case "RDT-NYR":
 			String rdt = row.getValue("RDT").toString(); // 审核日期.
-			return BP.DA.DataType.ParseSysDate2DateTimeFriendly(rdt);
+			return DataType.ParseSysDate2DateTimeFriendly(rdt);
 		case "Rec":
 			return row.getValue("EmpFrom").toString(); // 记录人.
 		case "RecName":

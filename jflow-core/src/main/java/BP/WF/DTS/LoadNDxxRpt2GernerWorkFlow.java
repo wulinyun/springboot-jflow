@@ -57,7 +57,7 @@ public class LoadNDxxRpt2GernerWorkFlow extends Method
 	@Override
 	public Object Do() throws Exception
 	{
-		BP.WF.Flows ens = new Flows();
+		Flows ens = new Flows();
 		for (BP.WF.Flow en : ens.ToJavaList())
 		{
 			String sql = "SELECT * FROM "+en.getPTable()+" WHERE OID NOT IN (SELECT WorkID FROM WF_GenerWorkFlow WHERE FK_Flow='"+en.getNo()+"')";
@@ -90,7 +90,7 @@ public class LoadNDxxRpt2GernerWorkFlow extends Method
 					dept = new Dept(gwf.getFK_Dept());
 					gwf.setDeptName(dept.getName());
 				}
-				catch (java.lang.Exception e)
+				catch (Exception e)
 				{
 					gwf.setDeptName(gwf.getFK_Dept());
 				}
@@ -99,7 +99,7 @@ public class LoadNDxxRpt2GernerWorkFlow extends Method
 				{
 					gwf.setPRI(Integer.parseInt(dr.get(NDXRptBaseAttr.PRI).toString()));
 				}
-				catch (java.lang.Exception e2)
+				catch (Exception e2)
 				{
 
 				}

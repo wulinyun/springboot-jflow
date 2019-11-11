@@ -57,7 +57,7 @@ public class GenerCH extends Method
 			BP.DA.DBAccess.RunSQL("DELETE FROM WF_CH");
 
 			//查询全部的数据.
-			BP.WF.Nodes nds = new Nodes();
+			Nodes nds = new Nodes();
 			nds.RetrieveAll();
 
 			for (Node nd : nds.ToJavaList())
@@ -69,7 +69,7 @@ public class GenerCH extends Method
 				for (DataRow dr : dt.Rows)
 				{
 					//向下发送.
-					int atInt = (Integer) dr.get(BP.WF.TrackAttr.ActionType);
+					int atInt = (Integer) dr.get(TrackAttr.ActionType);
 					ActionType at = ActionType.forValue(atInt);
 					switch (at)
 					{

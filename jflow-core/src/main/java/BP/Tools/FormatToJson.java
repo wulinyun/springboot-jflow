@@ -127,7 +127,7 @@ public class FormatToJson {
 	 * @param list
 	 * @return
 	 */
-	public static <T> String ListToJson(java.util.List<T> list, String jsonName) {
+	public static <T> String ListToJson(List<T> list, String jsonName) {
 		StringBuilder Json = new StringBuilder();
 		if (StringHelper.isNullOrEmpty(jsonName)) {
 			jsonName = list.get(0).getClass().getName();
@@ -170,7 +170,7 @@ public class FormatToJson {
 	 * @param list
 	 * @return
 	 */
-	public static <T> String ListToJson(java.util.List<T> list) {
+	public static <T> String ListToJson(List<T> list) {
 		Object obj = list.get(0);
 		return ListToJson(list, obj.getClass().getName());
 	}

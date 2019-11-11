@@ -75,7 +75,7 @@ public class DealString
 		try
 		{
 			number = Double.parseDouble(this.inputString);
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			this.noteMessage = "传入参数非数字！";
 			return;

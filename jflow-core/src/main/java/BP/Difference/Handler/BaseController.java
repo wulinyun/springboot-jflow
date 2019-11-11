@@ -37,7 +37,7 @@ public class BaseController {
 			} else {
 				return i;
 			}
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return 0;
 		}
 	}
@@ -175,7 +175,7 @@ public class BaseController {
 		try {
 			i = Integer.parseInt(ContextHolderUtils.getRequest().getParameter(
 					"rowCount"));
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return 0;
 		}
 		return i;

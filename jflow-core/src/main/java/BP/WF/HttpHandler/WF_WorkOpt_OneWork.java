@@ -164,11 +164,11 @@ public class WF_WorkOpt_OneWork extends WebContralBase {
         {
             boolean isFlowEnd = false;
             //前提，流程结束后才可以看到打印权限
-            if (gwf.getWFState() == BP.WF.WFState.Complete)
+            if (gwf.getWFState() == WFState.Complete)
                 isFlowEnd = true;
 
             boolean isAdmin = false;
-            if (BP.Web.WebUser.getNo() == "admin")
+            if (WebUser.getNo() == "admin")
                 isAdmin = true;
 
             // 判断是否可以打印.
@@ -183,7 +183,7 @@ public class WF_WorkOpt_OneWork extends WebContralBase {
                 if (btn.getPrintPDFEnable() == true || btn.getPrintZipEnable() == true)
                 {
                     String empFrom = dr.get(1).toString();
-                    if (isFlowEnd==true && (isAdmin == true || BP.Web.WebUser.getNo() == empFrom || gwf.getStarter() == WebUser.getNo()))
+                    if (isFlowEnd==true && (isAdmin == true || WebUser.getNo() == empFrom || gwf.getStarter() == WebUser.getNo()))
                     {
                         CanPackUp = true;
                         break;
@@ -522,25 +522,25 @@ public class WF_WorkOpt_OneWork extends WebContralBase {
 	public final String FlowBBSList()
 	{
 		Paras ps = new Paras();
-		ps.SQL = "SELECT * FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track WHERE ActionType=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "ActionType AND WorkID=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "WorkID";
-		ps.Add("ActionType", BP.WF.ActionType.FlowBBS.getValue());
+		ps.SQL = "SELECT * FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track WHERE ActionType=" + SystemConfig.getAppCenterDBVarStr() + "ActionType AND WorkID=" + SystemConfig.getAppCenterDBVarStr() + "WorkID";
+		ps.Add("ActionType", ActionType.FlowBBS.getValue());
 		ps.Add("WorkID", this.getWorkID());
 
 		//转化成json
-		return BP.Tools.Json.ToJson(BP.DA.DBAccess.RunSQLReturnTable(ps));
+		return BP.Tools.Json.ToJson(DBAccess.RunSQLReturnTable(ps));
 	}
 
 	public final String FlowBBSUser() throws Exception
 	{
 		String name = "";
-		name = BP.Web.WebUser.getNo();
+		name = WebUser.getNo();
 		return name;
 
 	}
 	public final String FlowBBSUserName()
 	{
 		String name = "";
-		name = BP.Web.WebUser.getName();
+		name = WebUser.getName();
 		return name;
 	}
 
@@ -548,7 +548,7 @@ public class WF_WorkOpt_OneWork extends WebContralBase {
 	{
 		Paras ps = new Paras();
 		ps.SQL = "select a.name from port_dept a INNER join port_emp b on b.FK_Dept=a.no and b.No='" + this.getUserName() + "'";
-		return BP.Tools.Json.ToJson(BP.DA.DBAccess.RunSQLReturnString(ps));
+		return BP.Tools.Json.ToJson(DBAccess.RunSQLReturnString(ps));
 	}
 
 	/** 查看某一用户的评论.
@@ -556,10 +556,10 @@ public class WF_WorkOpt_OneWork extends WebContralBase {
 	public final String FlowBBS_Check()
 	{
 		Paras pss = new Paras();
-		pss.SQL = "SELECT * FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track WHERE ActionType=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "ActionType AND WorkID=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "WorkID AND  EMPFROMT='" + this.getUserName() + "'";
-		pss.Add("ActionType", BP.WF.ActionType.FlowBBS.getValue());
+		pss.SQL = "SELECT * FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track WHERE ActionType=" + SystemConfig.getAppCenterDBVarStr() + "ActionType AND WorkID=" + SystemConfig.getAppCenterDBVarStr() + "WorkID AND  EMPFROMT='" + this.getUserName() + "'";
+		pss.Add("ActionType", ActionType.FlowBBS.getValue());
 		pss.Add("WorkID", this.getWorkID());
-		return BP.Tools.Json.ToJson(BP.DA.DBAccess.RunSQLReturnTable(pss));
+		return BP.Tools.Json.ToJson(DBAccess.RunSQLReturnTable(pss));
 
 	}
 	/** 
@@ -573,9 +573,9 @@ public class WF_WorkOpt_OneWork extends WebContralBase {
 		String msg = this.GetValFromFrmByKey("TB_Msg");
 		String mypk = BP.WF.Dev2Interface.Flow_BBSAdd(this.getFK_Flow(), this.getWorkID(), this.getFID(), msg, WebUser.getNo(), WebUser.getName());
 		Paras ps = new Paras();
-		ps.SQL = "SELECT * FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track WHERE MyPK=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "MyPK";
+		ps.SQL = "SELECT * FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track WHERE MyPK=" + SystemConfig.getAppCenterDBVarStr() + "MyPK";
 		ps.Add("MyPK", mypk);
-		return BP.Tools.Json.ToJson(BP.DA.DBAccess.RunSQLReturnTable(ps));
+		return BP.Tools.Json.ToJson(DBAccess.RunSQLReturnTable(ps));
 	}
 
 	/** 
@@ -606,10 +606,10 @@ public class WF_WorkOpt_OneWork extends WebContralBase {
 	{
 
 		Paras ps = new Paras();
-		ps.SQL = "SELECT COUNT(ActionType) FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track WHERE ActionType=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "ActionType AND WorkID=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "WorkID";
-		ps.Add("ActionType", BP.WF.ActionType.FlowBBS.getValue());
+		ps.SQL = "SELECT COUNT(ActionType) FROM ND" + Integer.parseInt(this.getFK_Flow()) + "Track WHERE ActionType=" + SystemConfig.getAppCenterDBVarStr() + "ActionType AND WorkID=" + SystemConfig.getAppCenterDBVarStr() + "WorkID";
+		ps.Add("ActionType", ActionType.FlowBBS.getValue());
 		ps.Add("WorkID", this.getWorkID());
-		String count = BP.DA.DBAccess.RunSQLReturnValInt(ps) + "";
+		String count = DBAccess.RunSQLReturnValInt(ps) + "";
 		return count;
 	}
 
@@ -846,7 +846,7 @@ public class WF_WorkOpt_OneWork extends WebContralBase {
 
 		///#region  父子流程数据存储到这里.
 
-		java.util.Hashtable ht = new java.util.Hashtable();
+		Hashtable ht = new Hashtable();
 		for (DataRow dr : dt.Rows)
 		{
 			ActionType at =  ActionType.forValue( Integer.parseInt( dr.getValue(TrackAttr.ActionType ).toString() ));
@@ -939,7 +939,7 @@ public class WF_WorkOpt_OneWork extends WebContralBase {
 	
 	public final String Runing_OpenFrm() throws Exception
     {
-        BP.WF.HttpHandler.WF wf = new WF();
+        WF wf = new WF();
         return wf.Runing_OpenFrm();
     }
 }

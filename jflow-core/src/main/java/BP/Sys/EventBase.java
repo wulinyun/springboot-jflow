@@ -116,7 +116,7 @@ public abstract class EventBase
 		try
 		{
 			return this.GetValInt("FK_Node");
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			return 0;
 		}

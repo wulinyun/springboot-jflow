@@ -851,7 +851,7 @@ public class DateUtils
 	 */
 	public static int getDayOfMonth(final Date date)
 	{
-		java.util.Calendar calendarDate = java.util.Calendar.getInstance();
+		Calendar calendarDate = Calendar.getInstance();
 		calendarDate.setTime(date);
 		return calendarDate.getActualMaximum(calendarDate.DAY_OF_MONTH);
 	}

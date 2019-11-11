@@ -1068,9 +1068,9 @@ public class MapDtlExt extends EntityNoName {
 	 */
 	public final String DtlImp() throws Exception {
 		String url = "../../Admin/FoolFormDesigner/DtlSetting/DtlImp.htm?FK_MapData=" + this.getNo()
-				+ "&FromDtl=1&IsFirst=1&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + WebUser.getSID()
-				+ "&AppCenterDBType=" + BP.DA.DBAccess.getAppCenterDBType() + "&CustomerNo="
-				+ BP.Sys.SystemConfig.getCustomerNo();
+				+ "&FromDtl=1&IsFirst=1&UserNo=" + WebUser.getNo() + "&SID=" + WebUser.getSID()
+				+ "&AppCenterDBType=" + DBAccess.getAppCenterDBType() + "&CustomerNo="
+				+ SystemConfig.getCustomerNo();
 		return url;
 	}
 
@@ -1082,9 +1082,9 @@ public class MapDtlExt extends EntityNoName {
 
 	public String ColAutoExp() throws Exception {
 		String url = "../../Admin/FoolFormDesigner/DtlSetting/ColAutoExp.htm?FK_MapData=" + this.getNo()
-				+ "&FromDtl=1&IsFirst=1&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID()
-				+ "&AppCenterDBType=" + BP.DA.DBAccess.getAppCenterDBType() + "&CustomerNo="
-				+ BP.Sys.SystemConfig.getCustomerNo();
+				+ "&FromDtl=1&IsFirst=1&UserNo=" + WebUser.getNo() + "&SID=" + WebUser.getSID()
+				+ "&AppCenterDBType=" + DBAccess.getAppCenterDBType() + "&CustomerNo="
+				+ SystemConfig.getCustomerNo();
 		return url;
 	}
 
@@ -1096,9 +1096,9 @@ public class MapDtlExt extends EntityNoName {
 	 */
 	public final String ImpFields() throws Exception {
 		String url = "../../Admin/FoolFormDesigner/ImpTableField.htm?FK_MapData=" + this.getNo()
-				+ "&FromDtl=1&IsFirst=1&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID()
-				+ "&AppCenterDBType=" + BP.DA.DBAccess.getAppCenterDBType() + "&CustomerNo="
-				+ BP.Sys.SystemConfig.getCustomerNo();
+				+ "&FromDtl=1&IsFirst=1&UserNo=" + WebUser.getNo() + "&SID=" + WebUser.getSID()
+				+ "&AppCenterDBType=" + DBAccess.getAppCenterDBType() + "&CustomerNo="
+				+ SystemConfig.getCustomerNo();
 		return url;
 	}
 
@@ -1110,9 +1110,9 @@ public class MapDtlExt extends EntityNoName {
 	 */
 	public final String DFoolFrm() throws Exception {
 		String url = "../../Admin/FoolFormDesigner/Designer.htm?FK_MapData=" + this.getNo()
-				+ "&FromDtl=1&IsFirst=1&UserNo=" + BP.Web.WebUser.getNo() + "&SID=" + BP.Web.WebUser.getSID()
-				+ "&AppCenterDBType=" + BP.DA.DBAccess.getAppCenterDBType() + "&CustomerNo="
-				+ BP.Sys.SystemConfig.getCustomerNo();
+				+ "&FromDtl=1&IsFirst=1&UserNo=" + WebUser.getNo() + "&SID=" + WebUser.getSID()
+				+ "&AppCenterDBType=" + DBAccess.getAppCenterDBType() + "&CustomerNo="
+				+ SystemConfig.getCustomerNo();
 		return url;
 	}
 
@@ -1142,7 +1142,7 @@ public class MapDtlExt extends EntityNoName {
 					maxEnd = maxEnd + 40;
 					/* 是否是左边 */
 					lab = new FrmLab();
-					lab.setMyPK(BP.DA.DBAccess.GenerGUID());
+					lab.setMyPK(DBAccess.GenerGUID());
 					lab.setFK_MapData(attr.getFK_MapData());
 					lab.setText(attr.getName());
 					lab.setFontName("Arial");
@@ -1155,7 +1155,7 @@ public class MapDtlExt extends EntityNoName {
 					attr.Update();
 				} else {
 					lab = new FrmLab();
-					lab.setMyPK(BP.DA.DBAccess.GenerGUID());
+					lab.setMyPK(DBAccess.GenerGUID());
 					lab.setFK_MapData(attr.getFK_MapData());
 					lab.setText(attr.getName());
 					lab.setFontName("Arial");
@@ -1177,7 +1177,7 @@ public class MapDtlExt extends EntityNoName {
 				maxEnd = maxEnd + 40;
 				/* 是否是左边 */
 				FrmLab lab = new FrmLab();
-				lab.setMyPK(BP.DA.DBAccess.GenerGUID());
+				lab.setMyPK(DBAccess.GenerGUID());
 				lab.setFK_MapData(dtl.getFK_MapData());
 				lab.setText(dtl.getName());
 				lab.setFontName("Arial");
@@ -1195,8 +1195,8 @@ public class MapDtlExt extends EntityNoName {
 			md.ResetMaxMinXY();
 		}
 		String url = "../../Admin/CCFormDesigner/FormDesigner.htm?FK_MapData=" + this.getNo() + "&FromDtl=1&UserNo="
-				+ BP.Web.WebUser.getNo() + "&SID=" + WebUser.getSID() + "&AppCenterDBType="
-				+ BP.DA.DBAccess.getAppCenterDBType() + "&CustomerNo=" + BP.Sys.SystemConfig.getCustomerNo();
+				+ WebUser.getNo() + "&SID=" + WebUser.getSID() + "&AppCenterDBType="
+				+ DBAccess.getAppCenterDBType() + "&CustomerNo=" + SystemConfig.getCustomerNo();
 		return url;
 	}
 
@@ -1300,13 +1300,13 @@ public class MapDtlExt extends EntityNoName {
 		// 处理附件问题
 		/* 如果启用了多附件 */
 		if (this.getIsEnableAthM() == true) {
-			BP.Sys.FrmAttachment athDesc = new BP.Sys.FrmAttachment();
+			FrmAttachment athDesc = new FrmAttachment();
 			// 获取原始附件的属性
 
 			athDesc.setMyPK(this.getNo() + "_AthMDtl");
 			if (athDesc.RetrieveFromDBSources() == 0) {
 				// 获取原来附件的属性
-				BP.Sys.FrmAttachment oldAthDesc = new BP.Sys.FrmAttachment();
+				FrmAttachment oldAthDesc = new FrmAttachment();
 				oldAthDesc.setMyPK(refDtl + "_AthMDtl");
 				if (oldAthDesc.RetrieveFromDBSources() == 0)
 					return "原始从表的附件属性不存在，请联系管理员";
@@ -1372,7 +1372,7 @@ public class MapDtlExt extends EntityNoName {
 		
 	
 		// 更新分组标签.
-		BP.Sys.GroupField gf = new GroupField();
+		GroupField gf = new GroupField();
 		int i = gf.Retrieve(GroupFieldAttr.CtrlType, "Dtl", GroupFieldAttr.CtrlID, this.getNo());
 		if (i == 0)
         {
@@ -1400,7 +1400,7 @@ public class MapDtlExt extends EntityNoName {
 	@Override
 	protected void afterInsertUpdateAction() throws Exception {
 		// 调用frmEditAction, 完成其他的操作.
-		BP.Sys.CCFormAPI.AfterFrmEditAction(this.getFK_MapData());
+		CCFormAPI.AfterFrmEditAction(this.getFK_MapData());
 
 		super.afterInsertUpdateAction();
 	}
@@ -1421,22 +1421,22 @@ public class MapDtlExt extends EntityNoName {
 	 * @return
 	 */
 	public final int GetCountByFK(int workID) {
-		return BP.DA.DBAccess
+		return DBAccess
 				.RunSQLReturnValInt("select COUNT(OID) from " + this.getPTable() + " WHERE WorkID=" + workID);
 	}
 
 	public final int GetCountByFK(String field, String val) {
-		return BP.DA.DBAccess.RunSQLReturnValInt(
+		return DBAccess.RunSQLReturnValInt(
 				"select COUNT(OID) from " + this.getPTable() + " WHERE " + field + "='" + val + "'");
 	}
 
 	public final int GetCountByFK(String field, long val) {
-		return BP.DA.DBAccess
+		return DBAccess
 				.RunSQLReturnValInt("select COUNT(OID) from " + this.getPTable() + " WHERE " + field + "=" + val);
 	}
 
 	public final int GetCountByFK(String f1, long val1, String f2, String val2) {
-		return BP.DA.DBAccess.RunSQLReturnValInt("SELECT COUNT(OID) from " + this.getPTable() + " WHERE " + f1 + "="
+		return DBAccess.RunSQLReturnValInt("SELECT COUNT(OID) from " + this.getPTable() + " WHERE " + f1 + "="
 				+ val1 + " AND " + f2 + "='" + val2 + "'");
 	}
 

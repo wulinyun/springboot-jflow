@@ -25,7 +25,7 @@ public class RefMethod
 	/**
 	 * 功能
 	 */
-	public RefMethodType refMethodType= BP.En.RefMethodType.Func;
+	public RefMethodType refMethodType= RefMethodType.Func;
 	/*
 	 * warning public RefMethodType RefMethodType = RefMethodType.Func;
 	 */

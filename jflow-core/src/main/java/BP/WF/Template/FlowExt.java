@@ -1003,7 +1003,7 @@ public class FlowExt extends EntityNoName
 	*/
 	public final String DoDelFlows(String dtFrom, String dtTo, String isDelCurrFlow) throws Exception
 	{
-		if ( ! BP.Web.WebUser.getNo().equals("admin"))
+		if ( ! WebUser.getNo().equals("admin"))
 		{
 			return "非admin用户，不能删除。";
 		}
@@ -1018,7 +1018,7 @@ public class FlowExt extends EntityNoName
 			sql = "SELECT WorkID, FK_Flow FROM WF_GenerWorkFlow  WHERE RDT >= '" + dtFrom + "' AND RDT <= '" + dtTo + "' ";
 		}
 
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+		DataTable dt = DBAccess.RunSQLReturnTable(sql);
 
 		String msg = "如下流程ID被删除:";
 		for (DataRow dr : dt.Rows)
@@ -1342,7 +1342,7 @@ public class FlowExt extends EntityNoName
 			rw.setBeiZhu(note);
 			rw.setRDT(DataType.getCurrentDataTime());
 			rw.setIsBackTracking(false);
-			rw.setMyPK(BP.DA.DBAccess.GenerGUID());
+			rw.setMyPK(DBAccess.GenerGUID());
 
 				///#endregion   加入退回信息, 让接受人能够看到退回原因.
 
@@ -1396,7 +1396,7 @@ public class FlowExt extends EntityNoName
 			String emps = "";
 			String sql = "SELECT EmpFrom FROM ND" + Integer.parseInt(this.getNo()) + "Track  WHERE WorkID=" + gwf.getWorkID();
 
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			DataTable dt = DBAccess.RunSQLReturnTable(sql);
 			for (DataRow dr : dt.Rows)
 			{
 				if (emps.contains("," + dr.getValue(0).toString() + ","))
@@ -1422,13 +1422,13 @@ public class FlowExt extends EntityNoName
 		{
 			if (!wk.getRec().equals(WebUser.getNo()))
 			{
-				BP.Web.WebUser.Exit();
+				WebUser.Exit();
 				try
 				{
 					Emp emp = new Emp(wk.getRec());
-					BP.Web.WebUser.SignInOfGener(emp);
+					WebUser.SignInOfGener(emp);
 				}
-				catch (java.lang.Exception e)
+				catch (Exception e)
 				{
 					continue;
 				}
@@ -1450,7 +1450,7 @@ public class FlowExt extends EntityNoName
 			 
 		}
 		Emp emp1 = new Emp("admin");
-		BP.Web.WebUser.SignInOfGener(emp1);
+		WebUser.SignInOfGener(emp1);
 
 		return "全部生成成功,影响数据(" + wks.size() + ")条";
 	}
@@ -1478,13 +1478,13 @@ public class FlowExt extends EntityNoName
 
 			if (!wk.getRec().equals(WebUser.getNo()))
 			{
-				BP.Web.WebUser.Exit();
+				WebUser.Exit();
 				try
 				{
 					Emp emp = new Emp(wk.getRec());
-					BP.Web.WebUser.SignInOfGener(emp);
+					WebUser.SignInOfGener(emp);
 				}
-				catch (java.lang.Exception e)
+				catch (Exception e)
 				{
 					continue;
 				}
@@ -1506,7 +1506,7 @@ public class FlowExt extends EntityNoName
 		 
 		}
 		Emp emp1 = new Emp("admin");
-		BP.Web.WebUser.SignInOfGener(emp1);
+		WebUser.SignInOfGener(emp1);
 
 		return "全部生成成功,影响数据(" + wks.size() + ")条";
 	}
@@ -1694,7 +1694,7 @@ public class FlowExt extends EntityNoName
 		// fl.RetrieveFromDBSources();
 		//fl.Update();
 
-		if (BP.WF.Glo.getOSModel() == OSModel.OneMore)
+		if (Glo.getOSModel() == OSModel.OneMore)
 		{
 		   // DBAccess.RunSQL("UPDATE  GPM_Menu SET Name='" + this.Name + "' WHERE Flag='Flow" + this.getNo() + "' AND FK_App='" + Glo.getCCFlowAppPath() + "'");
 		}
@@ -1735,12 +1735,12 @@ public class FlowExt extends EntityNoName
 		try
 		{
 			
-			String fee=BP.WF.Glo.GetFlowEventEntityStringByFlowMark(this.getFlowMark(), this.getNo());
+			String fee=Glo.GetFlowEventEntityStringByFlowMark(this.getFlowMark(), this.getNo());
 			
 			this.setFlowEventEntity(fee);
 			
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 			this.setFlowEventEntity("");
 		}
@@ -1799,7 +1799,7 @@ public class FlowExt extends EntityNoName
 						continue;
 					}
 
-					if (BP.DA.DataType.IsNumStr(str) == false)
+					if (DataType.IsNumStr(str) == false)
 					{
 						throw new RuntimeException("@业务数据同步数据配置错误，您设置了按照指定的节点配置，但是节点格式错误[" + nodes + "]。正确的格式如下：101,102,103");
 					}
@@ -1852,7 +1852,7 @@ public class FlowExt extends EntityNoName
 		
 		if (!fl.getPTable().equals("ND" + Integer.parseInt(this.getNo()) + "Rpt"))
 		{
-			BP.Sys.MapData md = new MapData(ndxxRpt);
+			MapData md = new MapData(ndxxRpt);
 			if (!fl.getPTable().equals(md.getPTable()))
 			{
 				md.Update();
@@ -1919,7 +1919,7 @@ public class FlowExt extends EntityNoName
 				continue;
 			}
 
-			BP.WF.Template.FrmNodeComponent fnd = new FrmNodeComponent(nd.getNodeID());
+			FrmNodeComponent fnd = new FrmNodeComponent(nd.getNodeID());
 
 			if (nd.getIsEndNode() == true)
 			{

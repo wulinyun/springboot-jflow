@@ -43,9 +43,9 @@ public class StationTypes extends EntitiesNoName
 	 转化成list
 	 @return List
 	*/
-	public final java.util.ArrayList<StationType> Tolist()
+	public final ArrayList<StationType> Tolist()
 	{
-		java.util.ArrayList<StationType> list = new java.util.ArrayList<StationType>();
+		ArrayList<StationType> list = new ArrayList<StationType>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((StationType)this.get(i));

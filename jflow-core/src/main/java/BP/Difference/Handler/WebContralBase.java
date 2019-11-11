@@ -134,7 +134,7 @@ public abstract class WebContralBase {
 	 */
 	public final String DoMethod(WebContralBase myEn, String methodName) throws Exception {
 
-		java.lang.Class tp = myEn.getClass();
+		Class tp = myEn.getClass();
 		java.lang.reflect.Method mp = null;
 
 		 
@@ -251,7 +251,7 @@ public abstract class WebContralBase {
 		}
 		try {
 			return Integer.parseInt(str);
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return 0;
 		}
 	}
@@ -269,7 +269,7 @@ public abstract class WebContralBase {
 		}
 		try {
 			return Long.parseLong(str);
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return 0;
 		}
 	}
@@ -287,7 +287,7 @@ public abstract class WebContralBase {
 		}
 		try {
 			return Float.parseFloat(str);
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return 0;
 		}
 	}
@@ -753,8 +753,8 @@ public abstract class WebContralBase {
 		DataTable AttrsOfGroup = ds.GetTableByName("AttrsOfGroup"); 		
 
 		String fileName = title+"Ep" + title + ".xls";
-		String fileDir = BP.Sys.SystemConfig.getPathOfTemp();
-		String filePth = BP.Sys.SystemConfig.getPathOfTemp();
+		String fileDir = SystemConfig.getPathOfTemp();
+		String filePth = SystemConfig.getPathOfTemp();
 		// 参数及变量设置
 		// 如果导出目录没有建立，则建立.
 		File file = new File(fileDir);
@@ -912,7 +912,7 @@ public abstract class WebContralBase {
 
 		sheet.addMergedRegion(new Region(creatorRowIndex, (short) 0, creatorRowIndex, (short) (countCell - 1)));
 		cell = row.createCell(0);
-		cell.setCellValue("制表人：" + WebUser.getName() + "日期：" + BP.DA.DataType.getCurrentDataTimeCNOfShort());
+		cell.setCellValue("制表人：" + WebUser.getName() + "日期：" + DataType.getCurrentDataTimeCNOfShort());
 		cell.setCellStyle(userStyle);
 		// 第六步，将文件存到指定位置
 		try {
@@ -930,9 +930,9 @@ public abstract class WebContralBase {
 	
 	protected String ExportDGToExcel(DataTable dt, Entity en, String title, Attrs mapAttrs) throws Exception {
 
-		String fileName = title + "_" + BP.DA.DataType.getCurrentDataCNOfLong() + "_" + WebUser.getNo() + ".xls";
-		String fileDir = BP.Sys.SystemConfig.getPathOfTemp();
-		String filePth = BP.Sys.SystemConfig.getPathOfTemp();
+		String fileName = title + "_" + DataType.getCurrentDataCNOfLong() + "_" + WebUser.getNo() + ".xls";
+		String fileDir = SystemConfig.getPathOfTemp();
+		String filePth = SystemConfig.getPathOfTemp();
 		// 参数及变量设置
 		// 如果导出目录没有建立，则建立.
 		File file = new File(fileDir);
@@ -1112,7 +1112,7 @@ public abstract class WebContralBase {
 
 		sheet.addMergedRegion(new Region(creatorRowIndex, (short) 0, creatorRowIndex, (short) (countCell - 1)));
 		cell = row.createCell(0);
-		cell.setCellValue("制表人：" + WebUser.getName() + "日期：" + BP.DA.DataType.getCurrentDataTimeCNOfShort());
+		cell.setCellValue("制表人：" + WebUser.getName() + "日期：" + DataType.getCurrentDataTimeCNOfShort());
 		cell.setCellStyle(userStyle);
 		// 第六步，将文件存到指定位置
 		try {
@@ -1388,7 +1388,7 @@ public abstract class WebContralBase {
 			} else {
 				return i;
 			}
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return 0;
 		}
 	}
@@ -1495,7 +1495,7 @@ public abstract class WebContralBase {
 		try {
 			i = Integer.parseInt(ContextHolderUtils.getRequest().getParameter(
 					"rowCount"));
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return 0;
 		}
 		return i;

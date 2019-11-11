@@ -217,7 +217,7 @@ public class Cash {
 			Entities tempVar = (Entities) getEnsData_Cash_Ext().get(clName);
 			ens = (Entities) ((tempVar instanceof Entities) ? tempVar : null);
 			return ens;
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
@@ -249,7 +249,7 @@ public class Cash {
 		try {
 			Map tempVar = (Map) getMap_Cash().get(clName);
 			return (Map) ((tempVar instanceof Map) ? tempVar : null);
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
@@ -376,7 +376,7 @@ public class Cash {
 				 * warning return BP.Glo.getHttpContextCurrent().Session(key);
 				 */
 				return ContextHolderUtils.getSession().getAttribute(key);
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 				return null;
 			}
 		} else {

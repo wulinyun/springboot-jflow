@@ -151,7 +151,7 @@ public class WF_CCForm extends WebContralBase {
 		/// #region 执行装载模版.
 		if (dbs.size() == 0 && athDesc.getIsWoEnableTemplete() == true) {
 			/* 如果数量为0,就检查一下是否有模版如果有就加载模版文件. */
-			String templetePath = BP.Sys.SystemConfig.getPathOfDataUser() + "AthTemplete/"
+			String templetePath = SystemConfig.getPathOfDataUser() + "AthTemplete/"
 					+ athDesc.getNoOfObj().trim();
 			File file = new File(templetePath);
 			if (file.exists() == false)
@@ -168,7 +168,7 @@ public class WF_CCForm extends WebContralBase {
 				if (saveToFile.exists() == false)
 					saveToFile.mkdirs();
 
-				int oid = BP.DA.DBAccess.GenerOID();
+				int oid = DBAccess.GenerOID();
 				String saveTo = athDesc.getSaveTo() + "\\" + oid + "."
 						+ fl.getName().substring(fl.getName().lastIndexOf('.') + 1);
 				if (saveTo.contains("@") == true || saveTo.contains("*") == true) {
@@ -219,7 +219,7 @@ public class WF_CCForm extends WebContralBase {
 
 				if (athDesc.getAthUploadWay() == AthUploadWay.Interwork) {
 					/* 如果是协同，就让他是PWorkID. */
-					String pWorkID = String.valueOf(BP.DA.DBAccess.RunSQLReturnValInt(
+					String pWorkID = String.valueOf(DBAccess.RunSQLReturnValInt(
 							"SELECT PWorkID FROM WF_GenerWorkFlow WHERE WorkID=" + this.getPKVal(), 0));
 					if (pWorkID == null || pWorkID == "0")
 
@@ -236,8 +236,8 @@ public class WF_CCForm extends WebContralBase {
 				dbUpload.setFileSize((float) info.length());
 
 				dbUpload.setRDT(DataType.getCurrentDataTime());
-				dbUpload.setRec(BP.Web.WebUser.getNo());
-				dbUpload.setRecName(BP.Web.WebUser.getName());
+				dbUpload.setRec(WebUser.getNo());
+				dbUpload.setRecName(WebUser.getName());
 
 				dbUpload.Insert();
 
@@ -279,7 +279,7 @@ public class WF_CCForm extends WebContralBase {
 	/// 生成描述
 	/// </summary>
 	/// <returns></returns>
-	public BP.Sys.FrmAttachment GenerAthDesc() throws Exception {
+	public FrmAttachment GenerAthDesc() throws Exception {
 		// #region 为累加表单做的特殊判断.
 		if (this.GetRequestValInt("FormType") == 10 && this.GetRequestValBoolen("IsStartNode") == false) {
 
@@ -288,7 +288,7 @@ public class WF_CCForm extends WebContralBase {
 
 		}
 		// #endregion
-		BP.Sys.FrmAttachment athDesc = new BP.Sys.FrmAttachment();
+		FrmAttachment athDesc = new FrmAttachment();
 		athDesc.setMyPK(this.getFK_FrmAttachment());
 		if (this.getFK_Node() == 0 || this.getFK_Flow() == null) {
 			athDesc.RetrieveFromDBSources();
@@ -337,7 +337,7 @@ public class WF_CCForm extends WebContralBase {
 
 			// 有可能在其其它的节点上没有这个附件，所以也要循环增加上它.
 			BP.WF.Nodes nds = new BP.WF.Nodes(this.getFK_Flow());
-			for (BP.WF.Node nd : nds.ToJavaList()) {
+			for (Node nd : nds.ToJavaList()) {
 				athDesc.setFK_MapData("ND" + nd.getNodeID());
 				athDesc.setMyPK(athDesc.getFK_MapData() + "_" + athDesc.getNoOfObj());
 				if (athDesc.getIsExits() == true)
@@ -399,13 +399,13 @@ public class WF_CCForm extends WebContralBase {
 
 	}
 
-	public BP.Sys.FrmAttachment GenerAthDescOfFoolTruck() throws Exception {
+	public FrmAttachment GenerAthDescOfFoolTruck() throws Exception {
 
 		FoolTruckNodeFrm sln = new FoolTruckNodeFrm();
 		String fromFrm = this.GetRequestVal("FromFrm");
 		sln.setMyPK(fromFrm + "_" + this.getFK_Node() + "_" + this.getFK_Flow());
 		int result = sln.RetrieveFromDBSources();
-		BP.Sys.FrmAttachment athDesc = new BP.Sys.FrmAttachment();
+		FrmAttachment athDesc = new FrmAttachment();
 		athDesc.setMyPK(this.getFK_FrmAttachment());
 		athDesc.RetrieveFromDBSources();
 
@@ -422,7 +422,7 @@ public class WF_CCForm extends WebContralBase {
 
 		// 如果是自定义方案,就查询自定义方案信息.
 		if (sln.getFrmSln() == 2) {
-			BP.Sys.FrmAttachment athDescNode = new BP.Sys.FrmAttachment();
+			FrmAttachment athDescNode = new FrmAttachment();
 			athDescNode.setMyPK("ND" + this.getFK_Node() + "_" + athDesc.getNoOfObj() + "_" + this.getFK_Node());
 			if (athDescNode.RetrieveFromDBSources() == 0) {
 				// 没有设定附件权限，保持原来的附件权限模式
@@ -569,7 +569,7 @@ public class WF_CCForm extends WebContralBase {
 	public String AttachmentUpload_DownZip() throws Exception {
 		String zipName = this.getWorkID() + "_" + this.getFK_FrmAttachment();
 		/// #region 处理权限控制.
-		BP.Sys.FrmAttachment athDesc = this.GenerAthDesc();
+		FrmAttachment athDesc = this.GenerAthDesc();
 
 		// 查询出来数据实体.
 		BP.Sys.FrmAttachmentDBs dbs = BP.WF.Glo.GenerFrmAttachmentDBs(athDesc, this.getPKVal(),
@@ -682,7 +682,7 @@ public class WF_CCForm extends WebContralBase {
 		String oid = getRequest().getParameter("OID");
 		String kvs = getRequest().getParameter("KVs");
 
-		BP.Sys.MapExt me = new BP.Sys.MapExt(fk_mapExt);
+		MapExt me = new MapExt(fk_mapExt);
 		DataTable dt = null;
 		String sql = "";
 		String key = getRequest().getParameter("Key");
@@ -690,7 +690,7 @@ public class WF_CCForm extends WebContralBase {
 		key = key.trim();
 
 		// key = "周";
-		if (me.getExtType().equals(BP.Sys.MapExtXmlList.ActiveDDL)) { // 动态填充ddl。
+		if (me.getExtType().equals(MapExtXmlList.ActiveDDL)) { // 动态填充ddl。
 			sql = this.DealSQL(me.getDocOfSQLDeal(), key);
 			if (sql.contains("@") == true) {
 				Enumeration keys = this.getRequest().getAttributeNames();
@@ -701,15 +701,15 @@ public class WF_CCForm extends WebContralBase {
 
 			}
 
-			dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			dt = DBAccess.RunSQLReturnTable(sql);
 
 			return JSONTODT(dt);
 		}
 
-		if (me.getExtType().equals(BP.Sys.MapExtXmlList.AutoFullDLL)//// 填充下拉框
-				|| me.getExtType().equals(BP.Sys.MapExtXmlList.TBFullCtrl)// 自动完成。
-				|| me.getExtType().equals(BP.Sys.MapExtXmlList.DDLFullCtrl)
-				|| me.getExtType().equals(BP.Sys.MapExtXmlList.FullData)) { // 级连ddl.
+		if (me.getExtType().equals(MapExtXmlList.AutoFullDLL)//// 填充下拉框
+				|| me.getExtType().equals(MapExtXmlList.TBFullCtrl)// 自动完成。
+				|| me.getExtType().equals(MapExtXmlList.DDLFullCtrl)
+				|| me.getExtType().equals(MapExtXmlList.FullData)) { // 级连ddl.
 			String doTypeExt = this.GetRequestVal("DoTypeExt");
 			if (DataType.IsNullOrEmpty(doTypeExt) == true)
 				return "err@填充类型不能为空";
@@ -719,7 +719,7 @@ public class WF_CCForm extends WebContralBase {
 				sql = this.DealSQL(me.getDocOfSQLDeal(), key);
 				HttpSession session = getRequest().getSession();
 				session.setAttribute("DtlKey", key);
-				dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				dt = DBAccess.RunSQLReturnTable(sql);
 
 				return JSONTODT(dt);
 			}
@@ -750,9 +750,9 @@ public class WF_CCForm extends WebContralBase {
 					MapDtl dtl = new MapDtl(fk_dtl);
 
 					DataTable dtDtlFull = DBAccess.RunSQLReturnTable(mysql);
-					BP.DA.DBAccess.RunSQL("DELETE FROM " + dtl.getPTable() + " WHERE RefPK=" + oid);
+					DBAccess.RunSQL("DELETE FROM " + dtl.getPTable() + " WHERE RefPK=" + oid);
 					for (DataRow dr : dtDtlFull.Rows) {
-						BP.Sys.GEDtl mydtl = new GEDtl(fk_dtl);
+						GEDtl mydtl = new GEDtl(fk_dtl);
 						// mydtl.OID = dtls.Count + 1;
 						dtls.AddEntity(mydtl);
 						for (DataColumn dc : dtDtlFull.Columns) {
@@ -811,14 +811,14 @@ public class WF_CCForm extends WebContralBase {
 						break;
 					}
 				}
-				dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				dt = DBAccess.RunSQLReturnTable(sql);
 				return JSONTODT(dt);
 			}
 
 			key = key.replace("'", "");
 
 			sql = this.DealSQL(me.getDocOfSQLDeal(), key);
-			dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			dt = DBAccess.RunSQLReturnTable(sql);
 			return JSONTODT(dt);
 
 		}
@@ -832,7 +832,7 @@ public class WF_CCForm extends WebContralBase {
 		if (this.GetRequestVal("IsTest") != null) {
 			MapData mymd = new MapData(this.getEnsName());
 			mymd.RepairMap();
-			BP.Sys.SystemConfig.DoClearCash();
+			SystemConfig.DoClearCash();
 		}
 
 		MapData md = new MapData(this.getEnsName());
@@ -859,9 +859,9 @@ public class WF_CCForm extends WebContralBase {
 			String urlParas = "OID=" + this.getRefOID() + "&NO=" + no + "&WorkID=" + this.getWorkID() + "&FK_Node="
 					+ this.getFK_Node() + "&UserNo=" + WebUser.getNo() + "&SID=" + this.getSID();
 
-			BP.En.Entities ens = BP.En.ClassFactory.GetEns(md.getPTable());
+			Entities ens = ClassFactory.GetEns(md.getPTable());
 
-			BP.En.Entity en = ens.getGetNewEntity();
+			Entity en = ens.getGetNewEntity();
 
 			if (en.getIsOIDEntity() == true) {
 				BP.En.EntityOID enOID = null;
@@ -930,7 +930,7 @@ public class WF_CCForm extends WebContralBase {
 
 		// 非流程的独立运行的表单.
 		if (this.getFK_Node() != 0 && this.getFK_Node() != 999999) {
-			BP.WF.Template.FrmNode fn = new FrmNode();
+			FrmNode fn = new FrmNode();
 			fn = new FrmNode(this.getFK_Flow(), this.getFK_Node(), this.getFK_MapData());
 
 			if (fn != null && fn.getWhoIsPK() != WhoIsPK.OID) {
@@ -1201,7 +1201,7 @@ public class WF_CCForm extends WebContralBase {
 
 		MapDtl dtl = new MapDtl(this.getEnsName());
 		GEEntity en = new GEEntity(this.getEnsName());
-		if (BP.Sys.SystemConfig.getIsBSsystem() == true) {
+		if (SystemConfig.getIsBSsystem() == true) {
 
 			// 处理传递过来的参数。
 			for (String k : BP.Sys.Glo.getQueryStringKeys()) {
@@ -1290,7 +1290,7 @@ public class WF_CCForm extends WebContralBase {
 				}
 			}
 
-			if (BP.Sys.SystemConfig.getIsBSsystem() == true) {
+			if (SystemConfig.getIsBSsystem() == true) {
 				// 处理传递过来的参数。
 				Enumeration<?> keys = this.getRequest().getParameterNames();
 				while (keys.hasMoreElements()) {
@@ -1379,7 +1379,7 @@ public class WF_CCForm extends WebContralBase {
 				if (ds.Tables.contains(uiBindKey) == true)
 					continue;
 
-				DataTable dataTable = BP.Sys.PubClass.GetDataTableByUIBineKey(uiBindKey);
+				DataTable dataTable = PubClass.GetDataTableByUIBineKey(uiBindKey);
 				if (dataTable != null)
 					ds.Tables.add(dataTable);
 				else {
@@ -1435,7 +1435,7 @@ public class WF_CCForm extends WebContralBase {
 			// 如果是累加表单.
 			if (nd.getHisFormType() == NodeFormType.FoolTruck) {
 				DataSet myds = BP.WF.CCFlowAPI.GenerWorkNode(this.getFK_Flow(), this.getFK_Node(), this.getWorkID(),
-						this.getFID(), BP.Web.WebUser.getNo(), this.GetRequestVal("FromWorkOpt"));
+						this.getFID(), WebUser.getNo(), this.GetRequestVal("FromWorkOpt"));
 
 				return BP.Tools.Json.ToJson(myds);
 			}
@@ -1492,7 +1492,7 @@ public class WF_CCForm extends WebContralBase {
 			}
 		}
 
-		if (BP.Sys.SystemConfig.getIsBSsystem() == true) {
+		if (SystemConfig.getIsBSsystem() == true) {
 
 			String strs = "OID,DoType,E,";
 			// 处理传递过来的参数。
@@ -1603,7 +1603,7 @@ public class WF_CCForm extends WebContralBase {
 				continue;
 			}
 			// @浙商银行
-			DataTable dt = BP.Sys.PubClass.GetDataTableByUIBineKey(uiBindKey);
+			DataTable dt = PubClass.GetDataTableByUIBineKey(uiBindKey);
 			if (dt != null)
 				ds.Tables.add(dt);
 			else {
@@ -1619,7 +1619,7 @@ public class WF_CCForm extends WebContralBase {
 		// #region 加入组件的状态信息, 在解析表单的时候使用.
 		if (this.getFK_Node() != 0 && this.getFK_Node() != 999999
 				&& (fn.getIsEnableFWC() == true || nd.getFrmWorkCheckSta() != FrmWorkCheckSta.Disable)) {
-			BP.WF.Template.FrmNodeComponent fnc = new FrmNodeComponent(nd.getNodeID());
+			FrmNodeComponent fnc = new FrmNodeComponent(nd.getNodeID());
 			nd = new Node(this.getFK_Node());
 			nd.WorkID = this.getWorkID(); // 为求当前表单ID获得参数，而赋值.
 			if (nd.getNodeFrmID().equals("ND" + nd.getNodeID()) == false
@@ -1628,7 +1628,7 @@ public class WF_CCForm extends WebContralBase {
 				/* 说明这是引用到了其他节点的表单，就需要把一些位置元素修改掉. */
 				int refNodeID = Integer.parseInt(nd.getNodeFrmID().replace("ND", ""));
 
-				BP.WF.Template.FrmNodeComponent refFnc = new FrmNodeComponent(refNodeID);
+				FrmNodeComponent refFnc = new FrmNodeComponent(refNodeID);
 
 				fnc.SetValByKey(FrmWorkCheckAttr.FWC_H, refFnc.GetValFloatByKey(FrmWorkCheckAttr.FWC_H));
 				fnc.SetValByKey(FrmWorkCheckAttr.FWC_W, refFnc.GetValFloatByKey(FrmWorkCheckAttr.FWC_W));
@@ -1719,7 +1719,7 @@ public class WF_CCForm extends WebContralBase {
 						ds.Tables.add(gf);
 
 						// 更新,为了让其表单上自动增加审核分组.
-						BP.WF.Template.FrmNodeComponent refFnc = new FrmNodeComponent(nd.getNodeID());
+						FrmNodeComponent refFnc = new FrmNodeComponent(nd.getNodeID());
 						FrmWorkCheck fwc = new FrmWorkCheck(nd.getNodeID());
 						refFnc.Update();
 
@@ -1928,7 +1928,7 @@ public class WF_CCForm extends WebContralBase {
 
 		en.ResetDefaultVal();
 
-		Object tempVar = BP.Sys.PubClass.CopyFromRequest(en, this.getRequest());
+		Object tempVar = PubClass.CopyFromRequest(en, this.getRequest());
 		en = (GEEntity) ((tempVar instanceof GEEntity) ? tempVar : null);
 
 		en.setOID(pk);
@@ -2015,7 +2015,7 @@ public class WF_CCForm extends WebContralBase {
 
 		/// #region 检查是否是测试.
 		if (this.GetRequestVal("IsTest") != null) {
-			BP.Sys.GEDtl dtl = new GEDtl(this.getEnsName());
+			GEDtl dtl = new GEDtl(this.getEnsName());
 			dtl.CheckPhysicsTable();
 		}
 
@@ -2030,14 +2030,14 @@ public class WF_CCForm extends WebContralBase {
 
 		if (this.getFK_Node() != 0 && !mdtl.getFK_MapData().equals("Temp")
 				&& this.getEnsName().contains("ND" + this.getFK_Node()) == false && this.getFK_Node() != 999999) {
-			Node nd = new BP.WF.Node(this.getFK_Node());
+			Node nd = new Node(this.getFK_Node());
 			if (nd.getHisFormType() == NodeFormType.SheetTree || nd.getHisFormType() == NodeFormType.RefOneFrmTree
 					|| nd.getHisFormType() == NodeFormType.FoolTruck) {
 				// 如果
 				// * 1,传来节点ID, 不等于0.
 				// * 2,不是节点表单. 就要判断是否是独立表单，如果是就要处理权限方案。
 
-				BP.WF.Template.FrmNode fn = new BP.WF.Template.FrmNode(nd.getFK_Flow(), nd.getNodeID(), frmID);
+				FrmNode fn = new FrmNode(nd.getFK_Flow(), nd.getNodeID(), frmID);
 
 				if (fn.getFrmSln() == FrmSln.Readonly) {
 
@@ -2135,8 +2135,8 @@ public class WF_CCForm extends WebContralBase {
 				dtl.RetrieveFromDBSources();
 			}
 			/// #region 给实体循环赋值/并保存.
-			BP.En.Attrs attrs = dtl.getEnMap().getAttrs();
-			for (BP.En.Attr attr : attrs.ToJavaList()) {
+			Attrs attrs = dtl.getEnMap().getAttrs();
+			for (Attr attr : attrs.ToJavaList()) {
 				dtl.SetValByKey(attr.getKey(), this.GetRequestVal(attr.getKey()));
 			}
 
@@ -2229,7 +2229,7 @@ public class WF_CCForm extends WebContralBase {
 	 */
 	public final String Dtl_ReloadDdl() {
 		String Doc = this.GetRequestVal("Doc");
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(Doc);
+		DataTable dt = DBAccess.RunSQLReturnTable(Doc);
 		dt.TableName = "ReloadDdl";
 		return BP.Tools.Json.ToJson(dt);
 	}
@@ -2243,8 +2243,8 @@ public class WF_CCForm extends WebContralBase {
 		me.Retrieve();
 
 		// 获得配置信息.
-		java.util.Hashtable ht = me.PopValToHashtable();
-		DataTable dtcfg = BP.Sys.PubClass.HashtableToDataTable(ht);
+		Hashtable ht = me.PopValToHashtable();
+		DataTable dtcfg = PubClass.HashtableToDataTable(ht);
 
 		String parentNo = getRequest().getParameter("ParentNo");
 		if (parentNo == null) {
@@ -2253,13 +2253,13 @@ public class WF_CCForm extends WebContralBase {
 
 		DataSet resultDs = new DataSet();
 		String sqlObjs = me.getPopValTreeSQL();
-		sqlObjs = sqlObjs.replace("@WebUser.getNo()", BP.Web.WebUser.getNo());
-		sqlObjs = sqlObjs.replace("@WebUser.Name", BP.Web.WebUser.getName());
-		sqlObjs = sqlObjs.replace("@WebUser.getFK_Dept()", BP.Web.WebUser.getFK_Dept());
+		sqlObjs = sqlObjs.replace("@WebUser.getNo()", WebUser.getNo());
+		sqlObjs = sqlObjs.replace("@WebUser.Name", WebUser.getName());
+		sqlObjs = sqlObjs.replace("@WebUser.getFK_Dept()", WebUser.getFK_Dept());
 		sqlObjs = sqlObjs.replace("@ParentNo", parentNo);
 		sqlObjs = this.DealExpByFromVals(sqlObjs);
 
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sqlObjs);
+		DataTable dt = DBAccess.RunSQLReturnTable(sqlObjs);
 		dt.TableName = "DTObjs";
 		resultDs.Tables.add(dt);
 
@@ -2267,13 +2267,13 @@ public class WF_CCForm extends WebContralBase {
 		if (me.getPopValWorkModel() == PopValWorkModel.TreeDouble.getValue()
 				&& !parentNo.equals(me.getPopValTreeParentNo())) {
 			sqlObjs = me.getPopValDoubleTreeEntitySQL();
-			sqlObjs = sqlObjs.replace("@WebUser.getNo()", BP.Web.WebUser.getNo());
-			sqlObjs = sqlObjs.replace("@WebUser.Name", BP.Web.WebUser.getName());
-			sqlObjs = sqlObjs.replace("@WebUser.getFK_Dept()", BP.Web.WebUser.getFK_Dept());
+			sqlObjs = sqlObjs.replace("@WebUser.getNo()", WebUser.getNo());
+			sqlObjs = sqlObjs.replace("@WebUser.Name", WebUser.getName());
+			sqlObjs = sqlObjs.replace("@WebUser.getFK_Dept()", WebUser.getFK_Dept());
 			sqlObjs = sqlObjs.replace("@ParentNo", parentNo);
 			sqlObjs = this.DealExpByFromVals(sqlObjs);
 
-			DataTable entityDt = BP.DA.DBAccess.RunSQLReturnTable(sqlObjs);
+			DataTable entityDt = DBAccess.RunSQLReturnTable(sqlObjs);
 			entityDt.TableName = "DTEntitys";
 			resultDs.Tables.add(entityDt);
 		}
@@ -2291,8 +2291,8 @@ public class WF_CCForm extends WebContralBase {
 		DataSet ds = new DataSet();
 
 		// 获得配置信息.
-		java.util.Hashtable ht = me.PopValToHashtable();
-		DataTable dtcfg = BP.Sys.PubClass.HashtableToDataTable(ht);
+		Hashtable ht = me.PopValToHashtable();
+		DataTable dtcfg = PubClass.HashtableToDataTable(ht);
 
 		// 增加到数据源.
 		ds.Tables.add(dtcfg);
@@ -2303,13 +2303,13 @@ public class WF_CCForm extends WebContralBase {
 
 		if (me.getPopValWorkModel() == PopValWorkModel.TableOnly.getValue()) {
 			String sqlObjs = me.getPopValEntitySQL();
-			sqlObjs = sqlObjs.replace("@WebUser.getNo()", BP.Web.WebUser.getNo());
-			sqlObjs = sqlObjs.replace("@WebUser.Name", BP.Web.WebUser.getName());
-			sqlObjs = sqlObjs.replace("@WebUser.getFK_Dept()", BP.Web.WebUser.getFK_Dept());
+			sqlObjs = sqlObjs.replace("@WebUser.getNo()", WebUser.getNo());
+			sqlObjs = sqlObjs.replace("@WebUser.Name", WebUser.getName());
+			sqlObjs = sqlObjs.replace("@WebUser.getFK_Dept()", WebUser.getFK_Dept());
 
 			sqlObjs = this.DealExpByFromVals(sqlObjs);
 
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sqlObjs);
+			DataTable dt = DBAccess.RunSQLReturnTable(sqlObjs);
 			dt.TableName = "DTObjs";
 			ds.Tables.add(dt);
 			return BP.Tools.Json.ToJson(ds);
@@ -2329,9 +2329,9 @@ public class WF_CCForm extends WebContralBase {
 			String countSQL = me.getPopValTablePageSQLCount();
 
 			// 固定参数.
-			countSQL = countSQL.replace("@WebUser.getNo()", BP.Web.WebUser.getNo());
-			countSQL = countSQL.replace("@WebUser.Name", BP.Web.WebUser.getName());
-			countSQL = countSQL.replace("@WebUser.getFK_Dept()", BP.Web.WebUser.getFK_Dept());
+			countSQL = countSQL.replace("@WebUser.getNo()", WebUser.getNo());
+			countSQL = countSQL.replace("@WebUser.Name", WebUser.getName());
+			countSQL = countSQL.replace("@WebUser.getFK_Dept()", WebUser.getFK_Dept());
 			countSQL = countSQL.replace("@Key", key);
 			countSQL = this.DealExpByFromVals(countSQL);
 
@@ -2377,7 +2377,7 @@ public class WF_CCForm extends WebContralBase {
 				}
 			}
 
-			String count = BP.DA.DBAccess.RunSQLReturnValInt(countSQL, 0) + "";
+			String count = DBAccess.RunSQLReturnValInt(countSQL, 0) + "";
 
 			// pageSize
 			String pageSize = getRequest().getParameter("pageSize");
@@ -2392,9 +2392,9 @@ public class WF_CCForm extends WebContralBase {
 			}
 
 			String sqlObjs = me.getPopValTablePageSQL();
-			sqlObjs = sqlObjs.replace("@WebUser.getNo()", BP.Web.WebUser.getNo());
-			sqlObjs = sqlObjs.replace("@WebUser.Name", BP.Web.WebUser.getName());
-			sqlObjs = sqlObjs.replace("@WebUser.getFK_Dept()", BP.Web.WebUser.getFK_Dept());
+			sqlObjs = sqlObjs.replace("@WebUser.getNo()", WebUser.getNo());
+			sqlObjs = sqlObjs.replace("@WebUser.Name", WebUser.getName());
+			sqlObjs = sqlObjs.replace("@WebUser.getFK_Dept()", WebUser.getFK_Dept());
 			sqlObjs = sqlObjs.replace("@Key", key);
 
 			// 三个固定参数.
@@ -2444,7 +2444,7 @@ public class WF_CCForm extends WebContralBase {
 				}
 			}
 
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sqlObjs);
+			DataTable dt = DBAccess.RunSQLReturnTable(sqlObjs);
 			dt.TableName = "DTObjs";
 			ds.Tables.add(dt);
 
@@ -2512,7 +2512,7 @@ public class WF_CCForm extends WebContralBase {
 				}
 
 				// 查询出来数据，就把他放入到dataset里面.
-				DataTable dtPara = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				DataTable dtPara = DBAccess.RunSQLReturnTable(sql);
 				dtPara.TableName = para;
 				ds.Tables.add(dtPara); // 加入到参数集合.
 			}
@@ -2527,24 +2527,24 @@ public class WF_CCForm extends WebContralBase {
 
 			String sqlObjs = me.getPopValGroupSQL();
 			if (sqlObjs.length() > 10) {
-				sqlObjs = sqlObjs.replace("@WebUser.getNo()", BP.Web.WebUser.getNo());
-				sqlObjs = sqlObjs.replace("@WebUser.Name", BP.Web.WebUser.getName());
-				sqlObjs = sqlObjs.replace("@WebUser.getFK_Dept()", BP.Web.WebUser.getFK_Dept());
+				sqlObjs = sqlObjs.replace("@WebUser.getNo()", WebUser.getNo());
+				sqlObjs = sqlObjs.replace("@WebUser.Name", WebUser.getName());
+				sqlObjs = sqlObjs.replace("@WebUser.getFK_Dept()", WebUser.getFK_Dept());
 				sqlObjs = this.DealExpByFromVals(sqlObjs);
 
-				DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sqlObjs);
+				DataTable dt = DBAccess.RunSQLReturnTable(sqlObjs);
 				dt.TableName = "DTGroup";
 				ds.Tables.add(dt);
 			}
 
 			sqlObjs = me.getPopValEntitySQL();
 			if (sqlObjs.length() > 10) {
-				sqlObjs = sqlObjs.replace("@WebUser.getNo()", BP.Web.WebUser.getNo());
-				sqlObjs = sqlObjs.replace("@WebUser.Name", BP.Web.WebUser.getName());
-				sqlObjs = sqlObjs.replace("@WebUser.getFK_Dept()", BP.Web.WebUser.getFK_Dept());
+				sqlObjs = sqlObjs.replace("@WebUser.getNo()", WebUser.getNo());
+				sqlObjs = sqlObjs.replace("@WebUser.Name", WebUser.getName());
+				sqlObjs = sqlObjs.replace("@WebUser.getFK_Dept()", WebUser.getFK_Dept());
 				sqlObjs = this.DealExpByFromVals(sqlObjs);
 
-				DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sqlObjs);
+				DataTable dt = DBAccess.RunSQLReturnTable(sqlObjs);
 				dt.TableName = "DTEntity";
 				ds.Tables.add(dt);
 			}
@@ -2569,7 +2569,7 @@ public class WF_CCForm extends WebContralBase {
 
 		// 获得配置信息.
 		Hashtable ht = me.PopValToHashtable();
-		DataTable dtcfg = BP.Sys.PubClass.HashtableToDataTable(ht);
+		DataTable dtcfg = PubClass.HashtableToDataTable(ht);
 
 		String parentNo = this.GetRequestVal("ParentNo");
 		if (parentNo == null)
@@ -2577,13 +2577,13 @@ public class WF_CCForm extends WebContralBase {
 
 		DataSet resultDs = new DataSet();
 		String sqlObjs = me.getPopValTreeSQL();
-		sqlObjs = sqlObjs.replace("@WebUser.No", BP.Web.WebUser.getNo());
-		sqlObjs = sqlObjs.replace("@WebUser.Name", BP.Web.WebUser.getName());
-		sqlObjs = sqlObjs.replace("@WebUser.FK_Dept", BP.Web.WebUser.getFK_Dept());
+		sqlObjs = sqlObjs.replace("@WebUser.No", WebUser.getNo());
+		sqlObjs = sqlObjs.replace("@WebUser.Name", WebUser.getName());
+		sqlObjs = sqlObjs.replace("@WebUser.FK_Dept", WebUser.getFK_Dept());
 		sqlObjs = sqlObjs.replace("@ParentNo", parentNo);
 		sqlObjs = this.DealExpByFromVals(sqlObjs);
 
-		DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sqlObjs);
+		DataTable dt = DBAccess.RunSQLReturnTable(sqlObjs);
 		dt.TableName = "DTObjs";
 		resultDs.Tables.add(dt);
 
@@ -2591,13 +2591,13 @@ public class WF_CCForm extends WebContralBase {
 		if (me.getPopValWorkModel() == PopValWorkModel.TreeDouble.getValue()
 				&& parentNo != me.getPopValTreeParentNo()) {
 			sqlObjs = me.getPopValDoubleTreeEntitySQL();
-			sqlObjs = sqlObjs.replace("@WebUser.No", BP.Web.WebUser.getNo());
-			sqlObjs = sqlObjs.replace("@WebUser.Name", BP.Web.WebUser.getName());
-			sqlObjs = sqlObjs.replace("@WebUser.FK_Dept", BP.Web.WebUser.getFK_Dept());
+			sqlObjs = sqlObjs.replace("@WebUser.No", WebUser.getNo());
+			sqlObjs = sqlObjs.replace("@WebUser.Name", WebUser.getName());
+			sqlObjs = sqlObjs.replace("@WebUser.FK_Dept", WebUser.getFK_Dept());
 			sqlObjs = sqlObjs.replace("@ParentNo", parentNo);
 			sqlObjs = this.DealExpByFromVals(sqlObjs);
 
-			DataTable entityDt = BP.DA.DBAccess.RunSQLReturnTable(sqlObjs);
+			DataTable entityDt = DBAccess.RunSQLReturnTable(sqlObjs);
 			entityDt.TableName = "DTEntitys";
 			resultDs.Tables.add(entityDt);
 		}
@@ -2635,7 +2635,7 @@ public class WF_CCForm extends WebContralBase {
 
 		// 获得配置信息.
 		Hashtable ht = me.PopValToHashtable();
-		DataTable dtcfg = BP.Sys.PubClass.HashtableToDataTable(ht);
+		DataTable dtcfg = PubClass.HashtableToDataTable(ht);
 
 		// 增加到数据源.
 		ds.Tables.add(dtcfg);
@@ -2645,13 +2645,13 @@ public class WF_CCForm extends WebContralBase {
 
 		if (me.getPopValWorkModel() == PopValWorkModel.TableOnly.getValue()) {
 			String sqlObjs = me.getPopValEntitySQL();
-			sqlObjs = sqlObjs.replace("@WebUser.No", BP.Web.WebUser.getNo());
-			sqlObjs = sqlObjs.replace("@WebUser.Name", BP.Web.WebUser.getName());
-			sqlObjs = sqlObjs.replace("@WebUser.FK_Dept", BP.Web.WebUser.getFK_Dept());
+			sqlObjs = sqlObjs.replace("@WebUser.No", WebUser.getNo());
+			sqlObjs = sqlObjs.replace("@WebUser.Name", WebUser.getName());
+			sqlObjs = sqlObjs.replace("@WebUser.FK_Dept", WebUser.getFK_Dept());
 
 			sqlObjs = this.DealExpByFromVals(sqlObjs);
 
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sqlObjs);
+			DataTable dt = DBAccess.RunSQLReturnTable(sqlObjs);
 			dt.TableName = "DTObjs";
 			DoCheckTableColumnNameCase(dt);
 			ds.Tables.add(dt);
@@ -2664,12 +2664,12 @@ public class WF_CCForm extends WebContralBase {
 			 */
 			String sqlObjs = me.getPopValGroupSQL();
 			if (sqlObjs.length() > 10) {
-				sqlObjs = sqlObjs.replace("@WebUser.No", BP.Web.WebUser.getNo());
-				sqlObjs = sqlObjs.replace("@WebUser.Name", BP.Web.WebUser.getName());
-				sqlObjs = sqlObjs.replace("@WebUser.FK_Dept", BP.Web.WebUser.getFK_Dept());
+				sqlObjs = sqlObjs.replace("@WebUser.No", WebUser.getNo());
+				sqlObjs = sqlObjs.replace("@WebUser.Name", WebUser.getName());
+				sqlObjs = sqlObjs.replace("@WebUser.FK_Dept", WebUser.getFK_Dept());
 				sqlObjs = this.DealExpByFromVals(sqlObjs);
 
-				DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sqlObjs);
+				DataTable dt = DBAccess.RunSQLReturnTable(sqlObjs);
 				dt.TableName = "DTGroup";
 				DoCheckTableColumnNameCase(dt);
 				ds.Tables.add(dt);
@@ -2677,12 +2677,12 @@ public class WF_CCForm extends WebContralBase {
 
 			sqlObjs = me.getPopValEntitySQL();
 			if (sqlObjs.length() > 10) {
-				sqlObjs = sqlObjs.replace("@WebUser.No", BP.Web.WebUser.getNo());
-				sqlObjs = sqlObjs.replace("@WebUser.Name", BP.Web.WebUser.getName());
-				sqlObjs = sqlObjs.replace("@WebUser.FK_Dept", BP.Web.WebUser.getFK_Dept());
+				sqlObjs = sqlObjs.replace("@WebUser.No", WebUser.getNo());
+				sqlObjs = sqlObjs.replace("@WebUser.Name", WebUser.getName());
+				sqlObjs = sqlObjs.replace("@WebUser.FK_Dept", WebUser.getFK_Dept());
 				sqlObjs = this.DealExpByFromVals(sqlObjs);
 
-				DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sqlObjs);
+				DataTable dt = DBAccess.RunSQLReturnTable(sqlObjs);
 				dt.TableName = "DTEntity";
 				DoCheckTableColumnNameCase(dt);
 				ds.Tables.add(dt);
@@ -2711,9 +2711,9 @@ public class WF_CCForm extends WebContralBase {
 				pageIndex = "1";
 
 			String sqlObjs = me.getPopValTablePageSQL();
-			sqlObjs = sqlObjs.replace("@WebUser.No", BP.Web.WebUser.getNo());
-			sqlObjs = sqlObjs.replace("@WebUser.Name", BP.Web.WebUser.getName());
-			sqlObjs = sqlObjs.replace("@WebUser.FK_Dept", BP.Web.WebUser.getFK_Dept());
+			sqlObjs = sqlObjs.replace("@WebUser.No", WebUser.getNo());
+			sqlObjs = sqlObjs.replace("@WebUser.Name", WebUser.getName());
+			sqlObjs = sqlObjs.replace("@WebUser.FK_Dept", WebUser.getFK_Dept());
 			sqlObjs = sqlObjs.replace("@Key", key);
 
 			// 三个固定参数.
@@ -2763,7 +2763,7 @@ public class WF_CCForm extends WebContralBase {
 				}
 			}
 
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sqlObjs);
+			DataTable dt = DBAccess.RunSQLReturnTable(sqlObjs);
 			dt.TableName = "DTObjs";
 			DoCheckTableColumnNameCase(dt);
 			ds.Tables.add(dt);
@@ -2794,7 +2794,7 @@ public class WF_CCForm extends WebContralBase {
 					throw new Exception("@配置的查询,参数名有冲突不能命名为:" + para);
 
 				// 查询出来数据，就把他放入到dataset里面.
-				DataTable dtPara = BP.DA.DBAccess.RunSQLReturnTable(sql);
+				DataTable dtPara = DBAccess.RunSQLReturnTable(sql);
 				dtPara.TableName = para;
 				DoCheckTableColumnNameCase(dt);
 				ds.Tables.add(dtPara); // 加入到参数集合.
@@ -2892,8 +2892,8 @@ public class WF_CCForm extends WebContralBase {
 	private String dealSQL = "";
 
 	public final String JSONTODT(DataTable dt) {
-		if ((BP.Sys.SystemConfig.getAppCenterDBType() == DBType.Informix
-				|| BP.Sys.SystemConfig.getAppCenterDBType() == DBType.Oracle) && dealSQL != null) {
+		if ((SystemConfig.getAppCenterDBType() == DBType.Informix
+				|| SystemConfig.getAppCenterDBType() == DBType.Oracle) && dealSQL != null) {
 			// 如果数据库不区分大小写, 就要按用户输入的sql进行二次处理。
 			String mysql = dealSQL.trim();
 			mysql = mysql.substring(6, mysql.toLowerCase().indexOf("from"));
@@ -3011,7 +3011,7 @@ public class WF_CCForm extends WebContralBase {
 				continue;
 			}
 
-			GEDtl gedtl = new BP.Sys.GEDtl(this.getFK_MapDtl());
+			GEDtl gedtl = new GEDtl(this.getFK_MapDtl());
 			String sql = dtl.getImpSQLFullOneRow();
 			sql = sql.replace("@Key", str);
 
@@ -3053,7 +3053,7 @@ public class WF_CCForm extends WebContralBase {
 	// #region SQL从表导入.
 	public String DtlImpBySQL_Delete() throws Exception {
 		MapDtl dtl = new MapDtl(this.getEnsName());
-		BP.DA.DBAccess.RunSQL("DELETE FROM " + dtl.getPTable() + " WHERE RefPK='" + this.getRefPKVal() + "'");
+		DBAccess.RunSQL("DELETE FROM " + dtl.getPTable() + " WHERE RefPK='" + this.getRefPKVal() + "'");
 		return "";
 	}
 
@@ -3154,7 +3154,7 @@ public class WF_CCForm extends WebContralBase {
 				dtlEn.SetValByKey("FID", fid);
 				break;
 			}
-			dtlEn.SetValByKey("RDT", BP.DA.DataType.getCurrentDate());
+			dtlEn.SetValByKey("RDT", DataType.getCurrentDate());
 			dtlEn.SetValByKey("Rec", this.GetRequestVal("UserNo"));
 
 			dtlEn.InsertAsOID((int) DBAccess.GenerOID(ensName));
@@ -3187,7 +3187,7 @@ public class WF_CCForm extends WebContralBase {
 			// 保存临时文件
 			String userNo = "";
 			try {
-				userNo = BP.Web.WebUser.getNo();
+				userNo = WebUser.getNo();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -3212,7 +3212,7 @@ public class WF_CCForm extends WebContralBase {
 
 			/// #region 检查两个文件是否一致。 生成要导入的属性
 			Attrs attrs = dtls.getGetNewEntity().getEnMap().getAttrs();
-			Attrs attrsExp = new BP.En.Attrs();
+			Attrs attrsExp = new Attrs();
 
 			boolean isHave = false;
 			for (DataColumn dc : dt.Columns) {
@@ -3237,11 +3237,11 @@ public class WF_CCForm extends WebContralBase {
 			/// #region 执行导入数据.
 
 			if (this.GetRequestValInt("DDL_ImpWay") == 0)
-				BP.DA.DBAccess.RunSQL("DELETE FROM " + dtl.getPTable() + " WHERE RefPK='" + this.getWorkID() + "'");
+				DBAccess.RunSQL("DELETE FROM " + dtl.getPTable() + " WHERE RefPK='" + this.getWorkID() + "'");
 
 			int i = 0;
-			int oid = (int) BP.DA.DBAccess.GenerOID("Dtl", dt.Rows.size());
-			String rdt = BP.DA.DataType.getCurrentDate();
+			int oid = (int) DBAccess.GenerOID("Dtl", dt.Rows.size());
+			String rdt = DataType.getCurrentDate();
 
 			String errMsg = "";
 			for (DataRow dr : dt.Rows) {
@@ -3277,7 +3277,7 @@ public class WF_CCForm extends WebContralBase {
 					case PKFK:
 						Entities ens = null;
 						if (attr.getUIBindKey().contains("."))
-							ens = BP.En.ClassFactory.GetEns(attr.getUIBindKey());
+							ens = ClassFactory.GetEns(attr.getUIBindKey());
 						else
 							ens = new GENoNames(attr.getUIBindKey(), "desc");
 
@@ -3298,7 +3298,7 @@ public class WF_CCForm extends WebContralBase {
 						break;
 					}
 
-					if (attr.getMyDataType() == BP.DA.DataType.AppBoolean) {
+					if (attr.getMyDataType() == DataType.AppBoolean) {
 						if (val.trim() == "是" || val.trim().toLowerCase() == "yes")
 							val = "1";
 
@@ -3357,13 +3357,13 @@ public class WF_CCForm extends WebContralBase {
 		MapDtl md = new MapDtl(this.getEnsName());
 		if (this.getFK_Node() != 0 && md.getFK_MapData() != "Temp"
 				&& this.getEnsName().contains("ND" + this.getFK_Node()) == false && this.getFK_Node() != 999999) {
-			Node nd = new BP.WF.Node(this.getFK_Node());
+			Node nd = new Node(this.getFK_Node());
 
 			if (nd.getHisFormType() == NodeFormType.SheetTree) {
 				/*
 				 * 如果 1,传来节点ID, 不等于0. 2,不是节点表单. 就要判断是否是独立表单，如果是就要处理权限方案。
 				 */
-				BP.WF.Template.FrmNode fn = new BP.WF.Template.FrmNode(nd.getFK_Flow(), nd.getNodeID(),
+				FrmNode fn = new FrmNode(nd.getFK_Flow(), nd.getNodeID(),
 						this.getFK_MapData());
 				/// 自定义权限.
 				if (fn.getFrmSln() == FrmSln.Self) {

@@ -215,7 +215,7 @@ public class RptTemplate extends Entity
 		try
 		{
 			this.Retrieve();
-		} catch (java.lang.Exception e)
+		} catch (Exception e)
 		{
 			this.Insert();
 		}

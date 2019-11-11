@@ -60,7 +60,7 @@ public class SysFormTree extends EntitySimpleTree
 			formSorts.RetrieveByAttr(SysFormTreeAttr.ParentNo, this.getNo());
 			return formSorts;
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 		}
 		return null;
@@ -76,7 +76,7 @@ public class SysFormTree extends EntitySimpleTree
 			flowSorts.RetrieveByAttr(SysFormTreeAttr.FK_FormSort, this.getNo());
 			return flowSorts;
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 		}
 		return null;

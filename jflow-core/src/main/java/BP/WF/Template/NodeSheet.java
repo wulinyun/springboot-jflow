@@ -193,21 +193,21 @@ public class NodeSheet extends Entity
 		map.AddDtl(new NodeToolbars(), NodeToolbarAttr.FK_Node);
 
  
-		map.getAttrsOfOneVSM().Add(new BP.WF.Template.NodeStations(), new BP.Port.Stations(), BP.WF.Template.NodeStationAttr.FK_Node, BP.WF.Template.NodeStationAttr.FK_Station, DeptAttr.Name, DeptAttr.No, 
+		map.getAttrsOfOneVSM().Add(new NodeStations(), new BP.Port.Stations(), NodeStationAttr.FK_Node, NodeStationAttr.FK_Station, DeptAttr.Name, DeptAttr.No,
 				"节点绑定岗位", Dot2DotModel.Default,null,null);
 		
-	   map.getAttrsOfOneVSM().AddGroupListModel(new BP.WF.Template.NodeStations(), new BP.WF.Port.Stations(),BP.WF.Template.NodeStationAttr.FK_Node, BP.WF.Template.NodeStationAttr.FK_Station,
+	   map.getAttrsOfOneVSM().AddGroupListModel(new NodeStations(), new BP.WF.Port.Stations(),NodeStationAttr.FK_Node, NodeStationAttr.FK_Station,
 			   "节点绑定岗位AddGroupListModel", StationAttr.FK_StationType, DeptAttr.Name,DeptAttr.No);
 	   
 		
-	   map.getAttrsOfOneVSM().Add(new BP.WF.Template.NodeDepts(), new BP.Port.Depts(), NodeDeptAttr.FK_Node, NodeDeptAttr.FK_Dept, DeptAttr.Name, DeptAttr.No, 
+	   map.getAttrsOfOneVSM().Add(new NodeDepts(), new BP.Port.Depts(), NodeDeptAttr.FK_Node, NodeDeptAttr.FK_Dept, DeptAttr.Name, DeptAttr.No,
 			   "节点绑定部门", Dot2DotModel.TreeDept,null,null); 
 	    
 
        //节点绑定人员. 使用树杆与叶子的模式绑定.
-       map.getAttrsOfOneVSM().AddBranchesAndLeaf(new BP.WF.Template.NodeEmps(), new BP.Port.Emps(),
-          BP.WF.Template.NodeEmpAttr.FK_Node,
-          BP.WF.Template.NodeEmpAttr.FK_Emp, "节点绑定接受人", EmpAttr.FK_Dept, EmpAttr.Name, EmpAttr.No, "@WebUser.FK_Dept");
+       map.getAttrsOfOneVSM().AddBranchesAndLeaf(new NodeEmps(), new BP.Port.Emps(),
+          NodeEmpAttr.FK_Node,
+          NodeEmpAttr.FK_Emp, "节点绑定接受人", EmpAttr.FK_Dept, EmpAttr.Name, EmpAttr.No, "@WebUser.FK_Dept");
 
        
 	   
@@ -230,7 +230,7 @@ public class NodeSheet extends Entity
 		{
 			te.Update();
 		}
-		catch (java.lang.Exception e)
+		catch (Exception e)
 		{
 		}
 

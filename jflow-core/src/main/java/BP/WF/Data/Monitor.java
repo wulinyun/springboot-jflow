@@ -406,7 +406,7 @@ public class Monitor extends Entity
 	}
 	public final String getWFStateText()
 	{
-		BP.WF.WFState ws = (WFState)this.getWFState();
+		WFState ws = (WFState)this.getWFState();
 		switch(ws)
 		{
 			case Complete:
@@ -502,7 +502,7 @@ public class Monitor extends Entity
 		rm.Icon = Glo.getCCFlowAppPath() + "WF/Img/Btn/CC.gif";
 		rm.Title = "移交";
 		rm.ClassMethodName = this.toString() + ".DoShift";
-		rm.getHisAttrs().AddDDLEntities("ToEmp", null, "移交给:", new BP.WF.Data.MyDeptEmps(),true);
+		rm.getHisAttrs().AddDDLEntities("ToEmp", null, "移交给:", new MyDeptEmps(),true);
 		rm.getHisAttrs().AddTBString("Note", null, "移交原因", true, false, 0, 300, 100);
 		map.AddRefMethod(rm);
 
@@ -610,7 +610,7 @@ public class Monitor extends Entity
 	*/
 	public final String DoComeBack(int nodeid, String note) throws Exception
 	{
-		BP.WF.Template.FlowExt fl = new FlowExt(this.getFK_Flow());
+		FlowExt fl = new FlowExt(this.getFK_Flow());
 		
 		return fl.DoRebackFlowData(this.getWorkID(), nodeid, note);
 	}

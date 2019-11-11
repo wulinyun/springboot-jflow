@@ -271,9 +271,9 @@ public class Emp extends EntityNoName
          map.AddRefMethod(rm);
 
          //节点绑定部门. 节点绑定部门.
-         map.getAttrsOfOneVSM().AddBranches(new DeptEmps(), new BP.GPM.Depts(),
-            BP.GPM.DeptEmpAttr.FK_Emp,
-            BP.GPM.DeptEmpAttr.FK_Dept, "部门维护", EmpAttr.Name, EmpAttr.No, "@WebUser.FK_Dept");
+         map.getAttrsOfOneVSM().AddBranches(new DeptEmps(), new Depts(),
+            DeptEmpAttr.FK_Emp,
+            DeptEmpAttr.FK_Dept, "部门维护", EmpAttr.Name, EmpAttr.No, "@WebUser.FK_Dept");
         
         rm = new RefMethod();
 		rm.Title = "修改密码";
@@ -313,7 +313,7 @@ public class Emp extends EntityNoName
 
          for (DeptEmpStation item : des.ToJavaList())
          {
-             BP.GPM.Dept dept = new BP.GPM.Dept();
+             Dept dept = new Dept();
              dept.setNo(item.getFK_Dept());
              if (dept.RetrieveFromDBSources() == 0)
              {

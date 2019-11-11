@@ -556,32 +556,32 @@ public class WF_Admin_Cond extends WebContralBase {
 		// 执行同步
 		String sqls = "UPDATE WF_Node SET IsCCFlow=0";
 		sqls += "@UPDATE WF_Node  SET IsCCFlow=1 WHERE NodeID IN (SELECT NODEID FROM WF_Cond a WHERE a.NodeID= NodeID AND CondType=1 )";
-		BP.DA.DBAccess.RunSQLs(sqls);
+		DBAccess.RunSQLs(sqls);
 
 		String sql = "UPDATE WF_Cond SET DataFrom=" + ConnDataFrom.NodeForm.getValue() + " WHERE NodeID="
 				+ cond.getNodeID() + "  AND FK_Node=" + cond.getFK_Node() + " AND ToNodeID=" + toNodeID;
 		switch (condTypeEnum) {
 		case Flow:
 		case Node:
-			cond.setMyPK(BP.DA.DBAccess.GenerOID() + "");
+			cond.setMyPK(DBAccess.GenerOID() + "");
 
 			cond.Insert();
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			break;
 		case Dir:
 
-			cond.setMyPK(BP.DA.DBAccess.GenerOID() + "");
+			cond.setMyPK(DBAccess.GenerOID() + "");
 
 			cond.setToNodeID(toNodeID);
 			cond.Insert();
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			break;
 		case SubFlow: // 启动子流程.
-			cond.setMyPK(BP.DA.DBAccess.GenerOID() + "");
+			cond.setMyPK(DBAccess.GenerOID() + "");
 
 			cond.setToNodeID(toNodeID);
 			cond.Insert();
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			break;
 		default:
 			throw new RuntimeException("未设计的情况。" + condTypeEnum.toString());
@@ -1088,7 +1088,7 @@ public class WF_Admin_Cond extends WebContralBase {
 		/* 执行同步 */
 		String sqls = "UPDATE WF_Node SET IsCCFlow=0";
 		sqls += "@UPDATE WF_Node  SET IsCCFlow=1 WHERE NodeID IN (SELECT NODEID FROM WF_Cond a WHERE a.NodeID= NodeID AND CondType=1 )";
-		BP.DA.DBAccess.RunSQLs(sqls);
+		DBAccess.RunSQLs(sqls);
 
 		String sql = "UPDATE WF_Cond SET DataFrom=" + ConnDataFrom.StandAloneFrm.getValue() + " WHERE NodeID="
 				+ cond.getNodeID() + "  AND FK_Node=" + cond.getFK_Node() + " AND ToNodeID=" + toNodeID;
@@ -1096,21 +1096,21 @@ public class WF_Admin_Cond extends WebContralBase {
 		switch (condTypeEnum) {
 		case Flow:
 		case Node:
-			cond.setMyPK(BP.DA.DBAccess.GenerOID() + "");
+			cond.setMyPK(DBAccess.GenerOID() + "");
 			cond.Insert();
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			break;
 		case Dir:
-			cond.setMyPK(BP.DA.DBAccess.GenerOID() + "");
+			cond.setMyPK(DBAccess.GenerOID() + "");
 			cond.setToNodeID(toNodeID);
 			cond.Insert();
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			break;
 		case SubFlow: // 启动子流程.
-			cond.setMyPK(BP.DA.DBAccess.GenerOID() + "");
+			cond.setMyPK(DBAccess.GenerOID() + "");
 			cond.setToNodeID(toNodeID);
 			cond.Insert();
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			break;
 		default:
 			throw new RuntimeException("未设计的情况。" + condTypeEnum.toString());

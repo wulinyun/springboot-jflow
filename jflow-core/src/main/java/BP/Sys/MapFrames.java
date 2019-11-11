@@ -58,9 +58,9 @@ public class MapFrames extends EntitiesMyPK
 	 
 	 @return List
 	*/
-	public final java.util.ArrayList<MapFrame> Tolist()
+	public final ArrayList<MapFrame> Tolist()
 	{
-		java.util.ArrayList<MapFrame> list = new java.util.ArrayList<MapFrame>();
+		ArrayList<MapFrame> list = new ArrayList<MapFrame>();
 		for (int i = 0; i < this.size(); i++)
 		{
 			list.add((MapFrame)this.get(i));

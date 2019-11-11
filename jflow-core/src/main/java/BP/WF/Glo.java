@@ -203,7 +203,7 @@ public class Glo {
 	 * 短消息写入类型
 	 */
 	public static ShortMessageWriteTo getShortMessageWriteTo() {
-		return ShortMessageWriteTo.forValue(BP.Sys.SystemConfig.GetValByKeyInt("ShortMessageWriteTo", 0));
+		return ShortMessageWriteTo.forValue(SystemConfig.GetValByKeyInt("ShortMessageWriteTo", 0));
 	}
 
 	public static void setCurrFlow(String value) {
@@ -235,9 +235,9 @@ public class Glo {
 		int currVer = DBAccess.RunSQLReturnValInt(sql, 0);
 		
 		 //检查子流程表.
-        if (BP.DA.DBAccess.IsExitsObject("WF_NodeSubFlow") == true)
+        if (DBAccess.IsExitsObject("WF_NodeSubFlow") == true)
         {
-            if (BP.DA.DBAccess.IsExitsTableCol("WF_NodeSubFlow", "OID") == true)
+            if (DBAccess.IsExitsTableCol("WF_NodeSubFlow", "OID") == true)
             {
                 DBAccess.RunSQL("DROP TABLE WF_NodeSubFlow");
                 SubFlowYanXu sub = new SubFlowYanXu();
@@ -383,7 +383,7 @@ public class Glo {
 
 			// #region 升级事件.
 			if (DBAccess.IsExitsTableCol("Sys_FrmEvent", "DoType") == true) {
-				BP.Sys.FrmEvent fe = new FrmEvent();
+				FrmEvent fe = new FrmEvent();
 				fe.CheckPhysicsTable();
 
 				DBAccess.RunSQL("UPDATE Sys_FrmEvent SET EventDoType=DoType  ");
@@ -402,21 +402,21 @@ public class Glo {
 			BP.Sys.Serial se = new BP.Sys.Serial();
 			se.CheckPhysicsTable();
 
-			BP.WF.Template.NodeExt ext = new BP.WF.Template.NodeExt();
+			NodeExt ext = new NodeExt();
 			ext.CheckPhysicsTable();
 
 			BP.Sys.EnCfg cfg = new BP.Sys.EnCfg();
 			cfg.CheckPhysicsTable();
 
 			// 执行升级 2016.04.08
-			BP.WF.Template.Cond cnd = new Cond();
+			Cond cnd = new Cond();
 			cnd.CheckPhysicsTable();
 			
 			 //增加列FlowStars
-            BP.WF.Port.WFEmp wfemp = new BP.WF.Port.WFEmp();
+            WFEmp wfemp = new WFEmp();
             wfemp.CheckPhysicsTable();
             //#region 更新wf_emp. 的字段类型. 2019.06.19
-            DBType dbType = BP.Sys.SystemConfig.getAppCenterDBType();
+            DBType dbType = SystemConfig.getAppCenterDBType();
             if (dbType == DBType.Oracle)
             {
                 DBAccess.RunSQL("ALTER TABLE  WF_EMP add startFlows_temp BLOB");
@@ -443,7 +443,7 @@ public class Glo {
 
 			// /#region 标签Ext
 			sql = "DELETE FROM Sys_EnCfg WHERE No='BP.WF.Template.NodeExt'";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			sql = "INSERT INTO Sys_EnCfg(No,GroupTitle) VALUES ('BP.WF.Template.NodeExt','";
 			sql += "@NodeID=基本配置";
 			sql += "@FWCSta=审核组件,适用于sdk表单审核组件与ccform上的审核组件属性设置.";
@@ -454,22 +454,22 @@ public class Glo {
 			sql += "@TSpanDay=考核,时效考核,质量考核.";
 			// sql += "@OfficeOpen=公文按钮,只有当该节点是公文流程时候有效";
 			sql += "')";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 
 			sql = "DELETE FROM Sys_EnCfg WHERE No='BP.WF.Template.FlowExt'";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			sql = "INSERT INTO Sys_EnCfg(No,GroupTitle) VALUES ('BP.WF.Template.FlowExt','";
 			sql += "@No=基本配置";
 			sql += "')";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 
 			sql = "DELETE FROM Sys_EnCfg WHERE No='BP.WF.Template.MapDataExt'";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			sql = "INSERT INTO Sys_EnCfg(No,GroupTitle) VALUES ('BP.WF.Template.MapDataExt','";
 			sql += "@No=基本属性";
 			sql += "@Designer=设计者信息";
 			sql += "')";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 
 			// 更新表单应用类型，注意会涉及到其他问题.
 			sql = "UPDATE Sys_MapData SET AppType=0 WHERE No NOT LIKE 'ND%'";
@@ -478,7 +478,7 @@ public class Glo {
 
 			// /#region 标签
 			sql = "DELETE FROM Sys_EnCfg WHERE No='BP.WF.Template.NodeSheet'";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			sql = "INSERT INTO Sys_EnCfg(No,GroupTitle) VALUES ('BP.WF.Template.NodeSheet','";
 			sql += "@NodeID=基本配置";
 			sql += "@FormType=表单";
@@ -492,10 +492,10 @@ public class Glo {
 			// sql += "@MsgCtrl=消息,流程消息信息.";
 			sql += "@OfficeOpen=公文按钮,只有当该节点是公文流程时候有效";
 			sql += "')";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 
 			sql = "DELETE FROM Sys_EnCfg WHERE No='BP.WF.Template.FlowSheet'";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			sql = "INSERT INTO Sys_EnCfg(No,GroupTitle) VALUES ('BP.WF.Template.FlowSheet','";
 			sql += "@No=基本配置";
 			sql += "@FlowRunWay=启动方式,配置工作流程如何自动发起，该选项要与流程服务一起工作才有效.";
@@ -504,22 +504,22 @@ public class Glo {
 			sql += "@DTSWay=流程数据与业务数据同步";
 			sql += "@PStarter=轨迹查看权限";
 			sql += "')";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			// /#endregion
 
 			// /#region 增加week字段,方便按周统计.
-			BP.WF.GenerWorkFlow gwf = new GenerWorkFlow();
+			GenerWorkFlow gwf = new GenerWorkFlow();
 			gwf.CheckPhysicsTable();
 			sql = "SELECT WorkID,RDT FROM WF_GenerWorkFlow WHERE WeekNum=0 or WeekNum is null ";
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			DataTable dt = DBAccess.RunSQLReturnTable(sql);
 			for (DataRow dr : dt.Rows) {
 				sql = "UPDATE WF_GenerWorkFlow SET WeekNum="
-						+ BP.DA.DataType.WeekOfYear(DataType.ParseSysDateTime2DateTime(dr.getValue(1).toString()))
+						+ DataType.WeekOfYear(DataType.ParseSysDateTime2DateTime(dr.getValue(1).toString()))
 						+ " WHERE WorkID=" + dr.getValue(0).toString();
-				BP.DA.DBAccess.RunSQL(sql);
+				DBAccess.RunSQL(sql);
 			}
 			// 查询.
-			BP.WF.Data.CH ch = new CH();
+			CH ch = new CH();
 			ch.CheckPhysicsTable();
 
 			// /#region 检查数据源.
@@ -540,13 +540,13 @@ public class Glo {
 			sql += ",'CCRole','FWCType','SelectAccepterEnable','NodeFormType','StartGuideWay','"
 					+ FlowAttr.StartLimitRole
 					+ "','BillFileType','EventDoType','FormType','BatchRole','StartGuideWay','NodeFormType','FormRunType')";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			// /#endregion 更新枚举类型.
 
 			// /#region 其他.
 			// 更新 PassRate.
 			sql = "UPDATE WF_Node SET PassRate=100 WHERE PassRate IS NULL";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 			// /#endregion 其他.
 
 			// /#region 升级统一规则.
@@ -555,7 +555,7 @@ public class Glo {
 				// sunxd 20170714
 				// oracle数据库无法识别“+”
 				// 增加oracle数据库判断
-				if (SystemConfig.getAppCenterDBType() == BP.DA.DBType.Oracle) {
+				if (SystemConfig.getAppCenterDBType() == DBType.Oracle) {
 					sqls += "UPDATE Sys_MapExt SET MyPK= ExtType || '_' ||FK_Mapdata || '_' ||AttrOfOper WHERE ExtType='"
 							+ MapExtXmlList.TBFullCtrl + "'";
 					sqls += "@UPDATE Sys_MapExt SET MyPK= ExtType || '_' || FK_Mapdata || '_' || AttrOfOper WHERE ExtType='"
@@ -564,7 +564,7 @@ public class Glo {
 							+ MapExtXmlList.DDLFullCtrl + "'";
 					sqls += "@UPDATE Sys_MapExt SET MyPK= ExtType || '_' || FK_Mapdata || '_' || AttrOfOper WHERE ExtType='"
 							+ MapExtXmlList.ActiveDDL + "'";
-				} else if (SystemConfig.getAppCenterDBType() == BP.DA.DBType.MySQL) {
+				} else if (SystemConfig.getAppCenterDBType() == DBType.MySQL) {
 					sqls += "UPDATE Sys_MapExt SET MyPK= CONCAT(ExtType,'_',FK_Mapdata,'_',AttrOfOper) WHERE ExtType='"
 							+ MapExtXmlList.TBFullCtrl + "'";
 					sqls += "@UPDATE Sys_MapExt SET MyPK= CONCAT(ExtType,'_',FK_Mapdata,'_',AttrOfOper) WHERE ExtType='"
@@ -584,8 +584,8 @@ public class Glo {
 							+ MapExtXmlList.ActiveDDL + "'";
 				}
 
-				BP.DA.DBAccess.RunSQLs(sqls);
-			} catch (java.lang.Exception e) {
+				DBAccess.RunSQLs(sqls);
+			} catch (Exception e) {
 			}
 			// /#region 更新CA签名(2015-03-03)。
 			// 升级表单树. 2015.10.05
@@ -608,13 +608,13 @@ public class Glo {
 
 			// /#region 升级sys_sftable
 			// 升级
-			BP.Sys.SFTable tab = new SFTable();
+			SFTable tab = new SFTable();
 			tab.CheckPhysicsTable();
 			Node wf_Node = new Node();
 			wf_Node.CheckPhysicsTable();
 			// 设置节点ICON.
 			sql = "UPDATE WF_Node SET ICON='审核.png' WHERE ICON IS NULL";
-			BP.DA.DBAccess.RunSQL(sql);
+			DBAccess.RunSQL(sql);
 
 			BP.WF.Template.NodeSheet nodeSheet = new BP.WF.Template.NodeSheet();
 			nodeSheet.CheckPhysicsTable();
@@ -667,7 +667,7 @@ public class Glo {
 			FrmTransferCustom ftc = new FrmTransferCustom();
 			ftc.CheckPhysicsTable();
 			// /#region 执行sql．
-			BP.DA.DBAccess.RunSQL(
+			DBAccess.RunSQL(
 					"delete  from Sys_Enum WHERE EnumKey in ('BillFileType','EventDoType','FormType','BatchRole','StartGuideWay','NodeFormType')");
 			DBAccess.RunSQL(
 					"UPDATE Sys_FrmSln SET FK_Flow =(SELECT FK_FLOW FROM WF_Node WHERE NODEID=Sys_FrmSln.FK_Node) WHERE FK_Flow IS NULL");
@@ -698,65 +698,65 @@ public class Glo {
 			sql += "@UPDATE WF_Node SET FWC_Y=0 WHERE FWC_Y IS NULL";
 			sql += "@UPDATE WF_Node SET FWC_W=0 WHERE FWC_W IS NULL";
 			sql += "@UPDATE WF_Node SET FWC_H=0 WHERE FWC_H IS NULL";
-			BP.DA.DBAccess.RunSQLs(sql);
+			DBAccess.RunSQLs(sql);
 
 			sql = "UPDATE WF_Node SET SFSta=0 WHERE SFSta IS NULL";
 			sql += "@UPDATE WF_Node SET SF_X=0 WHERE SF_X IS NULL";
 			sql += "@UPDATE WF_Node SET SF_Y=0 WHERE SF_Y IS NULL";
 			sql += "@UPDATE WF_Node SET SF_W=0 WHERE SF_W IS NULL";
 			sql += "@UPDATE WF_Node SET SF_H=0 WHERE SF_H IS NULL";
-			BP.DA.DBAccess.RunSQLs(sql);
+			DBAccess.RunSQLs(sql);
 			// /#region 执行报表设计。
 			Flows fls = new Flows();
 			fls.RetrieveAll();
 			for (Flow fl : fls.ToJavaList()) {
 				try {
 					MapRpts rpts = new MapRpts();
-				} catch (java.lang.Exception e3) {
+				} catch (Exception e3) {
 					fl.DoCheck();
 				}
 			}
 			// /#region 升级站内消息表 2013-10-20
-			BP.WF.SMS sms = new SMS();
+			SMS sms = new SMS();
 			sms.CheckPhysicsTable();
 			// /#region 重新生成view WF_EmpWorks, 2013-08-06.
 			try {
 
 				if (DBAccess.IsExitsObject("WF_EmpWorks") == true)
-					BP.DA.DBAccess.RunSQL("DROP VIEW WF_EmpWorks");
+					DBAccess.RunSQL("DROP VIEW WF_EmpWorks");
 
 				if (DBAccess.IsExitsObject("V_FlowStarter") == true)
-					BP.DA.DBAccess.RunSQL("DROP VIEW V_FlowStarter");
+					DBAccess.RunSQL("DROP VIEW V_FlowStarter");
 
 				if (DBAccess.IsExitsObject("V_FlowStarterBPM") == true)
-					BP.DA.DBAccess.RunSQL("DROP VIEW V_FlowStarterBPM");
+					DBAccess.RunSQL("DROP VIEW V_FlowStarterBPM");
 
 				if (DBAccess.IsExitsObject("V_TOTALCH") == true)
-					BP.DA.DBAccess.RunSQL("DROP VIEW V_TOTALCH");
+					DBAccess.RunSQL("DROP VIEW V_TOTALCH");
 
 				if (DBAccess.IsExitsObject("V_TOTALCHYF") == true)
-					BP.DA.DBAccess.RunSQL("DROP VIEW V_TOTALCHYF");
+					DBAccess.RunSQL("DROP VIEW V_TOTALCHYF");
 
 				if (DBAccess.IsExitsObject("V_TOTALCHWeek") == true)
-					BP.DA.DBAccess.RunSQL("DROP VIEW V_TOTALCHWeek");
+					DBAccess.RunSQL("DROP VIEW V_TOTALCHWeek");
 				
 				if (DBAccess.IsExitsObject("V_WF_Delay") == true)
-					BP.DA.DBAccess.RunSQL("DROP VIEW V_WF_Delay");
-			} catch (java.lang.Exception e4) {
+					DBAccess.RunSQL("DROP VIEW V_WF_Delay");
+			} catch (Exception e4) {
 			}
 
 			String sqlscript = "";
 			// 执行必须的sql.
-			switch (BP.Sys.SystemConfig.getAppCenterDBType()) {
+			switch (SystemConfig.getAppCenterDBType()) {
 			case Oracle:
-				sqlscript = BP.Sys.SystemConfig.getCCFlowAppPath() + "/WF/Data/Install/SQLScript/InitView_Ora.sql";
+				sqlscript = SystemConfig.getCCFlowAppPath() + "/WF/Data/Install/SQLScript/InitView_Ora.sql";
 				break;
 			case MSSQL:
 			case Informix:
-				sqlscript = BP.Sys.SystemConfig.getCCFlowAppPath() + "/WF/Data/Install/SQLScript/InitView_SQL.sql";
+				sqlscript = SystemConfig.getCCFlowAppPath() + "/WF/Data/Install/SQLScript/InitView_SQL.sql";
 				break;
 			case MySQL:
-				sqlscript = BP.Sys.SystemConfig.getCCFlowAppPath() + "/WF/Data/Install/SQLScript/InitView_MySQL.sql";
+				sqlscript = SystemConfig.getCCFlowAppPath() + "/WF/Data/Install/SQLScript/InitView_MySQL.sql";
 				break;
 			default:
 				break;
@@ -765,7 +765,7 @@ public class Glo {
 			 
 		
 
-			BP.DA.DBAccess.RunSQLScript(sqlscript);
+			DBAccess.RunSQLScript(sqlscript);
 			// /#region 更新表单的边界.2014-10-18
 			MapDatas mds = new MapDatas();
 			mds.RetrieveAll();
@@ -775,7 +775,7 @@ public class Glo {
 			}
 			FrmImg img = new FrmImg();
 			img.CheckPhysicsTable();
-			switch (BP.Sys.SystemConfig.getAppCenterDBType()) {
+			switch (SystemConfig.getAppCenterDBType()) {
 			case Oracle:
 				msg = "@Sys_MapAttr 修改字段";
 				break;
@@ -788,7 +788,7 @@ public class Glo {
 				break;
 			}
 			// /#region 升级常用词汇
-			switch (BP.Sys.SystemConfig.getAppCenterDBType()) {
+			switch (SystemConfig.getAppCenterDBType()) {
 			case Oracle:
 				int i = DBAccess.RunSQLReturnCOUNT(
 						"SELECT * FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'SYS_DEFVAL' AND COLUMN_NAME = 'PARENTNO'");
@@ -836,7 +836,7 @@ public class Glo {
 
 				try {
 					formTree.DirectInsert();
-				} catch (java.lang.Exception e5) {
+				} catch (Exception e5) {
 				}
 				// 将表单库中的数据转入表单树
 				SysFormTrees formSorts = new SysFormTrees();
@@ -860,18 +860,18 @@ public class Glo {
 			Emp emp = new Emp();
 			emp.setNo("admin");
 			if (emp.RetrieveFromDBSources() == 1) {
-				BP.Web.WebUser.SignInOfGener(emp, true);
+				WebUser.SignInOfGener(emp, true);
 			} else {
 				emp.setNo("admin");
 				emp.setName("admin");
 				emp.setFK_Dept("01");
 				emp.setPass("123");
 				emp.Insert();
-				BP.Web.WebUser.SignInOfGener(emp, true);
+				WebUser.SignInOfGener(emp, true);
 				// throw new Exception("admin 用户丢失，请注意大小写。");
 			}
 			// /#region 修复 Sys_FrmImg 表字段 ImgAppType Tag0
-			switch (BP.Sys.SystemConfig.getAppCenterDBType()) {
+			switch (SystemConfig.getAppCenterDBType()) {
 			case Oracle:
 				int i = DBAccess.RunSQLReturnCOUNT(
 						"SELECT * FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'SYS_FRMIMG' AND COLUMN_NAME = 'TAG0'");
@@ -928,7 +928,7 @@ public class Glo {
 		String myVer = sdf.format(cal.getTime());
 		// String myVer = fi.getLastWriteTime.ToString("MMddHHmmss");
 		if ("".equals(currDBVer) || Integer.parseInt(currDBVer) != Integer.parseInt(myVer)) {
-			BP.DA.DBAccess.RunSQLScript(SystemConfig.getPathOfData() + "/UpdataCCFlowVer.sql");
+			DBAccess.RunSQLScript(SystemConfig.getPathOfData() + "/UpdataCCFlowVer.sql");
 			sql = "UPDATE Sys_Serial SET IntVal=" + myVer + " WHERE CfgKey='UpdataCCFlowVer'";
 
 			if (DBAccess.RunSQL(sql) == 0) {
@@ -945,7 +945,7 @@ public class Glo {
 		HttpServletRequest request = ContextHolderUtils.getRequest();
 		String basePath = "";
 		if (request == null || request.getServerName() == null) {
-			basePath = BP.WF.Glo.getHostURL();
+			basePath = Glo.getHostURL();
 		} else if (request.getServerPort() == 80) {
 			basePath = request.getScheme() + "://" + request.getServerName() + request.getContextPath() + "/";
 		} else {
@@ -972,24 +972,24 @@ public class Glo {
              {
                  errInfo = " 当前用户没有[删除表]的权限. ";
                  sql = "DROP TABLE AA";
-                 BP.DA.DBAccess.RunSQL(sql);
+                 DBAccess.RunSQL(sql);
              }
 
              errInfo = " 当前用户没有[创建表]的权限. ";
              sql = "CREATE TABLE AA (OID int NOT NULL)"; //检查是否可以创建表.
-             BP.DA.DBAccess.RunSQL(sql);
+             DBAccess.RunSQL(sql);
 
              errInfo = " 当前用户没有[插入数据]的权限. ";
              sql = "INSERT INTO AA (OID) VALUES(100 )"; 
-             BP.DA.DBAccess.RunSQL(sql);
+             DBAccess.RunSQL(sql);
 
              errInfo = " 当前用户没有[update 表数据]的权限. ";
              sql = "UPDATE AA SET OID=101";
-             BP.DA.DBAccess.RunSQL(sql);
+             DBAccess.RunSQL(sql);
 
              errInfo = " 当前用户没有[delete 表数据]的权限. ";
              sql = "DELETE FROM AA";
-             BP.DA.DBAccess.RunSQL(sql);
+             DBAccess.RunSQL(sql);
 
              errInfo = " 当前用户没有[创建表主键]的权限. ";
              DBAccess.CreatePK("AA", "OID", SystemConfig.getAppCenterDBType());
@@ -1000,30 +1000,30 @@ public class Glo {
 
              errInfo = " 当前用户没有[查询数据表]的权限. ";
              sql = "select * from AA"; //检查是否有查询的权限.
-             BP.DA.DBAccess.RunSQLReturnTable(sql);
+             DBAccess.RunSQLReturnTable(sql);
 
              errInfo = " 当前数据库设置区分了大小写，不能对大小写敏感，如果是mysql数据库请参考 https://blog.csdn.net/ccflow/article/details/100079825 ";
              sql = "select * from aa"; //检查是否区分大小写.
-             BP.DA.DBAccess.RunSQLReturnTable(sql);
+             DBAccess.RunSQLReturnTable(sql);
 
              if (DBAccess.IsExitsObject("AAVIEW"))
              {
             	 errInfo = " 当前用户没有[删除视图]的权限. ";
                  sql = "DROP VIEW AAVIEW";
-                 BP.DA.DBAccess.RunSQL(sql);
+                 DBAccess.RunSQL(sql);
              }
 
              errInfo = " 当前用户没有[创建视图]的权限. ";
              sql = "CREATE VIEW AAVIEW AS SELECT * FROM AA "; //检查是否可以创建视图.
-             BP.DA.DBAccess.RunSQL(sql);
+             DBAccess.RunSQL(sql);
 
              errInfo = " 当前用户没有[删除视图]的权限. ";
              sql = "DROP VIEW AAVIEW"; //检查是否可以删除视图.
-             BP.DA.DBAccess.RunSQL(sql);
+             DBAccess.RunSQL(sql);
 
              errInfo = " 当前用户没有[删除表]的权限. ";
              sql = "DROP TABLE AA"; //检查是否可以删除表.
-             BP.DA.DBAccess.RunSQL(sql);
+             DBAccess.RunSQL(sql);
              return true;
          }
          catch (Exception ex)
@@ -1031,13 +1031,13 @@ public class Glo {
              if (DBAccess.IsExitsObject("AA") == true)
              {
                  sql = "DROP TABLE AA";
-                 BP.DA.DBAccess.RunSQL(sql);
+                 DBAccess.RunSQL(sql);
              }
 
              if (DBAccess.IsExitsObject("AAVIEW") == true)
              {
                  sql = "DROP VIEW AAVIEW";
-                 BP.DA.DBAccess.RunSQL(sql);
+                 DBAccess.RunSQL(sql);
              }
 
              String info = "检查数据库安装权限出现错误:";
@@ -1090,10 +1090,10 @@ public class Glo {
 		NodeExt ne = new NodeExt();
 		ne.CheckPhysicsTable();
 
-		BP.WF.Port.WFEmp wfemp = new BP.WF.Port.WFEmp();
+		WFEmp wfemp = new WFEmp();
 		wfemp.CheckPhysicsTable();
 
-		if (BP.DA.DBAccess.IsExitsTableCol("WF_Emp", "StartFlows") == false)
+		if (DBAccess.IsExitsTableCol("WF_Emp", "StartFlows") == false)
 		{
 			String sql = "";
 			//增加StartFlows这个字段
@@ -1189,7 +1189,7 @@ public class Glo {
 				if (table == null || table.length() == 0) {
 					continue;
 				}
-			} catch (java.lang.Exception e) {
+			} catch (Exception e) {
 				continue;
 			}
 
@@ -1225,12 +1225,12 @@ public class Glo {
 		}
 
 		// 删除这个数据, 没有找到，初始化这些数据失败的原因.
-		BP.DA.DBAccess.RunSQL("DELETE FROM Port_DeptStation");
+		DBAccess.RunSQL("DELETE FROM Port_DeptStation");
 
 		String sqlscript = "";
 
-		sqlscript = BP.Sys.SystemConfig.getCCFlowAppPath() + "\\WF\\Data\\Install\\SQLScript\\Port_Inc_CH_BPM.sql";
-		BP.DA.DBAccess.RunSQLScript(sqlscript);
+		sqlscript = SystemConfig.getCCFlowAppPath() + "\\WF\\Data\\Install\\SQLScript\\Port_Inc_CH_BPM.sql";
+		DBAccess.RunSQLScript(sqlscript);
 
 		//删除视图.
 		if (DBAccess.IsExitsObject("WF_EmpWorks")==true)
@@ -1264,27 +1264,27 @@ public class Glo {
 		// 执行必须的sql.
 		sqlscript = "";
 		// 执行必须的sql.
-		switch (BP.Sys.SystemConfig.getAppCenterDBType()) {
+		switch (SystemConfig.getAppCenterDBType()) {
 		case Oracle:
-			sqlscript = BP.Sys.SystemConfig.getCCFlowAppPath() + "\\WF\\Data\\Install\\SQLScript\\InitView_Ora.sql";
+			sqlscript = SystemConfig.getCCFlowAppPath() + "\\WF\\Data\\Install\\SQLScript\\InitView_Ora.sql";
 			break;
 		case MSSQL:
 		case Informix:
-			sqlscript = BP.Sys.SystemConfig.getCCFlowAppPath() + "\\WF\\Data\\Install\\SQLScript\\InitView_SQL.sql";
+			sqlscript = SystemConfig.getCCFlowAppPath() + "\\WF\\Data\\Install\\SQLScript\\InitView_SQL.sql";
 			break;
 		case MySQL:
-			sqlscript = BP.Sys.SystemConfig.getCCFlowAppPath() + "\\WF\\Data\\Install\\SQLScript\\InitView_MySQL.sql";
+			sqlscript = SystemConfig.getCCFlowAppPath() + "\\WF\\Data\\Install\\SQLScript\\InitView_MySQL.sql";
 			break;
 		default:
 			break;
 		}
 
-		BP.DA.DBAccess.RunSQLScript(sqlscript);
+		DBAccess.RunSQLScript(sqlscript);
 		// 创建视图与数据
 		// 5, 初始化数据.
 		if (isInstallFlowDemo) {
 			sqlscript = SystemConfig.getPathOfData() + "/Install/SQLScript/InitPublicData.sql";
-			BP.DA.DBAccess.RunSQLScript(sqlscript);
+			DBAccess.RunSQLScript(sqlscript);
 		} else {
 			FlowSort fs = new FlowSort();
 			fs.setNo("02");
@@ -1297,9 +1297,9 @@ public class Glo {
 		BP.Port.Emps emps = new BP.Port.Emps();
 		emps.RetrieveAllFromDBSource();
 		int i = 0;
-		for (BP.Port.Emp emp : emps.ToJavaList()) {
+		for (Emp emp : emps.ToJavaList()) {
 			i++;
-			BP.WF.Port.WFEmp wfEmp = new BP.WF.Port.WFEmp();
+			WFEmp wfEmp = new WFEmp();
 			wfEmp.Copy(emp);
 			wfEmp.setNo(emp.getNo());
 
@@ -1324,14 +1324,14 @@ public class Glo {
 					+ DateUtils.format(new Date(), "yyyy-MM") + "')  ";
 			// dtNow = DateUtils.addMonth(dtNow, 1);
 		}
-		BP.DA.DBAccess.RunSQLs(sqls);
+		DBAccess.RunSQLs(sqls);
 
 		// 初始化数据
 		// 装载 demo.flow
 		if (isInstallFlowDemo == true) {
 
-			BP.Port.Emp emp = new BP.Port.Emp("admin");
-			BP.Web.WebUser.SignInOfGener(emp);
+			Emp emp = new Emp("admin");
+			WebUser.SignInOfGener(emp);
 			BP.Sys.Glo.WriteLineInfo("开始装载模板...");
 
 			// 装载数据模版.
@@ -1490,8 +1490,8 @@ public class Glo {
 
 		String sqlscript = "";		  
 			/* 如果是BPM模式 */
-			sqlscript = BP.Sys.SystemConfig.getCCFlowAppPath() + "WF/Data/Install/SQLScript/Port_Inc_CH_BPM.sql";
-			BP.DA.DBAccess.RunSQLScript(sqlscript);
+			sqlscript = SystemConfig.getCCFlowAppPath() + "WF/Data/Install/SQLScript/Port_Inc_CH_BPM.sql";
+			DBAccess.RunSQLScript(sqlscript);
 		 
 
 		// /#endregion 修复
@@ -1501,29 +1501,29 @@ public class Glo {
 
 		sqlscript = "";
 		// 执行必须的sql.
-		switch (BP.Sys.SystemConfig.getAppCenterDBType()) {
+		switch (SystemConfig.getAppCenterDBType()) {
 		case Oracle:
-			sqlscript = BP.Sys.SystemConfig.getCCFlowAppPath() + "WF/Data/Install/SQLScript/InitView_Ora.sql";
+			sqlscript = SystemConfig.getCCFlowAppPath() + "WF/Data/Install/SQLScript/InitView_Ora.sql";
 			break;
 		case MSSQL:
 		case Informix:
-			sqlscript = BP.Sys.SystemConfig.getCCFlowAppPath() + "WF/Data/Install/SQLScript/InitView_SQL.sql";
+			sqlscript = SystemConfig.getCCFlowAppPath() + "WF/Data/Install/SQLScript/InitView_SQL.sql";
 			break;
 		case MySQL:
-			sqlscript = BP.Sys.SystemConfig.getCCFlowAppPath() + "WF/Data/Install/SQLScript/InitView_MySQL.sql";
+			sqlscript = SystemConfig.getCCFlowAppPath() + "WF/Data/Install/SQLScript/InitView_MySQL.sql";
 			break;
 		default:
 			break;
 		}
 		 
 
-		BP.DA.DBAccess.RunSQLScript(sqlscript);
+		DBAccess.RunSQLScript(sqlscript);
 		// /#endregion 创建视图与数据.
 
 		// /#region 5, 初始化数据.
 		if (isInstallFlowDemo) {
 			sqlscript = SystemConfig.getPathOfData() + "Install/SQLScript/InitPublicData.sql";
-			BP.DA.DBAccess.RunSQLScript(sqlscript);
+			DBAccess.RunSQLScript(sqlscript);
 		} else {
 			FlowSort fs = new FlowSort();
 			fs.setNo("02");
@@ -1538,9 +1538,9 @@ public class Glo {
 			BP.Port.Emps emps = new BP.Port.Emps();
 			emps.RetrieveAllFromDBSource();
 			int i = 0;
-			for (BP.Port.Emp emp : emps.ToJavaList()) {
+			for (Emp emp : emps.ToJavaList()) {
 				i++;
-				BP.WF.Port.WFEmp wfEmp = new BP.WF.Port.WFEmp();
+				WFEmp wfEmp = new WFEmp();
 				wfEmp.Copy(emp);
 				wfEmp.setNo(emp.getNo());
 
@@ -1560,7 +1560,7 @@ public class Glo {
 			}
 
 			// 生成简历数据.
-			for (BP.Port.Emp emp : emps.ToJavaList()) {
+			for (Emp emp : emps.ToJavaList()) {
 				for (int myIdx = 0; myIdx < 6; myIdx++) {
 					String sql = "";
 					sql = "INSERT INTO Demo_Resume (OID,RefPK,NianYue,GongZuoDanWei,ZhengMingRen,BeiZhu,QT) ";
@@ -1570,7 +1570,7 @@ public class Glo {
 				}
 			}
 
-			DataTable dtStudent = BP.DA.DBAccess.RunSQLReturnTable("SELECT No FROM Demo_Student");
+			DataTable dtStudent = DBAccess.RunSQLReturnTable("SELECT No FROM Demo_Student");
 			for (DataRow dr : dtStudent.Rows) {
 				String no = dr.getValue(0).toString();
 				for (int myIdx = 0; myIdx < 6; myIdx++) {
@@ -1584,21 +1584,21 @@ public class Glo {
 
 			// 生成年度月份数据.
 			String sqls = "";
-			java.util.Date dtNow = new java.util.Date();
+			Date dtNow = new Date();
 			for (int num = 0; num < 12; num++) {
 				sqls = "@ INSERT INTO Pub_NY (No,Name) VALUES ('" + DateUtils.format(new Date(), "yyyy-MM") + "','"
 						+ DateUtils.format(new Date(), "yyyy-MM") + "')  ";
 				// dtNow = dtNow.plusMonths(1);
 				dtNow = DateUtils.addMonth(dtNow, 1);
 			}
-			BP.DA.DBAccess.RunSQLs(sqls);
+			DBAccess.RunSQLs(sqls);
 		}
 		// /#endregion 初始化数据
 
 		// /#region 装载 demo.flow
 		if (isInstallFlowDemo == true) {
-			BP.Port.Emp emp = new BP.Port.Emp("admin");
-			BP.Web.WebUser.SignInOfGener(emp);
+			Emp emp = new Emp("admin");
+			WebUser.SignInOfGener(emp);
 
 			// 装载数据模版.
 			BP.WF.DTS.LoadTemplete l = new BP.WF.DTS.LoadTemplete();
@@ -1636,7 +1636,7 @@ public class Glo {
 			 
 
             //创建一个空白的流程，不然，整个结构就出问题。
-            BP.Sys.FrmTrees frmTrees = new FrmTrees();
+            FrmTrees frmTrees = new FrmTrees();
             frmTrees.RetrieveAll();
             frmTrees.Delete();
 
@@ -1668,7 +1668,7 @@ public class Glo {
 				// 增加图片签名
 				BP.WF.DTS.GenerSiganture gs = new BP.WF.DTS.GenerSiganture();
 				gs.Do();
-			} catch (java.lang.Exception e4) {
+			} catch (Exception e4) {
 			}
 		}
 		// /#endregion 增加图片签名.
@@ -1718,7 +1718,7 @@ public class Glo {
 			throw new RuntimeException("@没有找到部门树为0个根节点, 有可能是因为您在集成cc的时候，没有遵守cc的规则，部门树的根节点必须是ParentNo=0。");
 		}
 
-		if (BP.WF.Glo.getOSModel() == getOSModel().OneOne) {
+		if (Glo.getOSModel() == getOSModel().OneOne) {
 			try {
 				BP.Port.Dept dept = new BP.Port.Dept();
 				dept.Retrieve(BP.Port.DeptAttr.ParentNo, "0");
@@ -1729,7 +1729,7 @@ public class Glo {
 			}
 		}
 
-		if (BP.WF.Glo.getOSModel() == getOSModel().OneMore) {
+		if (Glo.getOSModel() == getOSModel().OneMore) {
 			try {
 				// BP.GPM.Depts rootDepts = new BP.GPM.Depts("0");
 			} catch (RuntimeException ex) {
@@ -1901,7 +1901,7 @@ public class Glo {
 
 			if (str.contains("阅知") == true || str.contains("阅度") == true) {
 				// 抄送的.
-				for (BP.Port.Emp emp : emps.ToJavaList()) {
+				for (Emp emp : emps.ToJavaList()) {
 					if (str.contains(emp.getNo()) == false) {
 						continue;
 					}
@@ -1912,7 +1912,7 @@ public class Glo {
 
 			if (str.contains("阅处") == true || str.contains("阅办") == true) {
 				// 发送送的.
-				for (BP.Port.Emp emp : emps.ToJavaList()) {
+				for (Emp emp : emps.ToJavaList()) {
 					if (str.contains(emp.getNo()) == false) {
 						continue;
 					}
@@ -1924,7 +1924,7 @@ public class Glo {
 	}
 
 	// 与流程事件实体相关.
-	private static java.util.Hashtable Htable_FlowFEE = null;
+	private static Hashtable Htable_FlowFEE = null;
 
 	/**
 	 * 获得节点事件实体
@@ -1935,7 +1935,7 @@ public class Glo {
 	 */
 	public static FlowEventBase GetFlowEventEntityByEnName(String enName) {
 		if (Htable_FlowFEE == null || Htable_FlowFEE.isEmpty()) {
-			Htable_FlowFEE = new java.util.Hashtable();
+			Htable_FlowFEE = new Hashtable();
 			ArrayList<FlowEventBase> al = BP.En.ClassFactory.GetObjects("BP.WF.FlowEventBase");
 			for (FlowEventBase en : al) {
 				Htable_FlowFEE.put(en.toString().split("@")[0], en);
@@ -1979,7 +1979,7 @@ public class Glo {
 	 */
 	public static FlowEventBase GetFlowEventEntityByFlowMark(String flowMark, String flowNo) {
 		if (Htable_FlowFEE == null || Htable_FlowFEE.isEmpty()) {
-			Htable_FlowFEE = new java.util.Hashtable();
+			Htable_FlowFEE = new Hashtable();
 			ArrayList<FlowEventBase> al = BP.En.ClassFactory.GetObjects("BP.WF.FlowEventBase");
 			for (FlowEventBase en : al) {
 				Htable_FlowFEE.put(en.toString().split("@")[0], en);
@@ -2029,20 +2029,20 @@ public class Glo {
 				gwfSubFlow.RetrieveFromDBSources();
 
 				// 设置当前流程的ID
-				BP.WF.Dev2Interface.SetParentInfo(gwfSubFlow.getFK_Flow(), workidC, gwfParent.getFK_Flow(),
+				Dev2Interface.SetParentInfo(gwfSubFlow.getFK_Flow(), workidC, gwfParent.getFK_Flow(),
 						gwfParent.getWorkID(), gwfParent.getFK_Node(), WebUser.getNo());
 
 				// 是否可以执行？
-				if (BP.WF.Dev2Interface.Flow_IsCanDoCurrentWork(workidC, WebUser.getNo()) == true) {
+				if (Dev2Interface.Flow_IsCanDoCurrentWork(workidC, WebUser.getNo()) == true) {
 					// 执行向下发送.
 					try {
-						BP.WF.Dev2Interface.Node_SendWork(gwfSubFlow.getFK_Flow(), workidC);
+						Dev2Interface.Node_SendWork(gwfSubFlow.getFK_Flow(), workidC);
 						okworkids += workidC;
 					} catch (RuntimeException ex) {
 
 						// 如果有一个发送失败，就撤销子流程与父流程.
 						// 首先把主流程撤销发送.
-						BP.WF.Dev2Interface.Flow_DoUnSend(fk_flow, workid, 0);
+						Dev2Interface.Flow_DoUnSend(fk_flow, workid, 0);
 
 						// 把已经发送成功的子流程撤销发送.
 						String[] myokwokid = okworkids.split("[,]", -1);
@@ -2053,7 +2053,7 @@ public class Glo {
 
 							// 把数据copy到里面,让子流程也可以得到父流程的数据。
 							workidC = Long.parseLong(id);
-							BP.WF.Dev2Interface.Flow_DoUnSend(cFlowNo, workidC, 0);
+							Dev2Interface.Flow_DoUnSend(cFlowNo, workidC, 0);
 						}
 
 						// 如果有一个发送失败，就撤销子流程与父流程.
@@ -2078,7 +2078,7 @@ public class Glo {
 	}
 
 	public static String getEmpDept() {
-		if (BP.WF.Glo.getOSModel() == BP.Sys.OSModel.OneMore) {
+		if (Glo.getOSModel() == OSModel.OneMore) {
 			return "Port_DeptEmp";
 		} else {
 			return "Port_EmpDept";
@@ -2095,7 +2095,7 @@ public class Glo {
 		if (StringHelper.isNullOrEmpty(s)) {
 			s = "admin,";
 		}
-		return s.contains(BP.Web.WebUser.getNo());
+		return s.contains(WebUser.getNo());
 	}
 
 	/**
@@ -2125,7 +2125,7 @@ public class Glo {
 	 */
 	public static String MapDataLikeKeyV1(String flowNo, String colName) {
 		flowNo = String.valueOf(Integer.parseInt(flowNo));
-		String len = BP.Sys.SystemConfig.getAppCenterDBLengthStr();
+		String len = SystemConfig.getAppCenterDBLengthStr();
 		if (flowNo.length() == 1) {
 			return " " + colName + " LIKE 'ND" + flowNo + "%' AND " + len + "(" + colName + ")=5";
 		}
@@ -2141,7 +2141,7 @@ public class Glo {
 
 	public static String MapDataLikeKey(String flowNo, String colName) {
 		flowNo = String.valueOf(Integer.parseInt(flowNo));
-		String len = BP.Sys.SystemConfig.getAppCenterDBLengthStr();
+		String len = SystemConfig.getAppCenterDBLengthStr();
 
 		// edited by liuxc,2016-02-22,合并逻辑，原来分流程编号的位数，现在统一处理
 		return " (" + colName + " LIKE 'ND" + flowNo + "%' AND " + len + "(" + colName + ")="
@@ -2155,8 +2155,8 @@ public class Glo {
 	 */
 	public static int getSMSSendTimeFromHour() {
 		try {
-			return Integer.parseInt(BP.Sys.SystemConfig.getAppSettings().get("SMSSendTimeFromHour").toString());
-		} catch (java.lang.Exception e) {
+			return Integer.parseInt(SystemConfig.getAppSettings().get("SMSSendTimeFromHour").toString());
+		} catch (Exception e) {
 			return 8;
 		}
 	}
@@ -2167,8 +2167,8 @@ public class Glo {
 	 */
 	public static int getSMSSendTimeToHour() {
 		try {
-			return Integer.parseInt(BP.Sys.SystemConfig.getAppSettings().get("SMSSendTimeToHour").toString());
-		} catch (java.lang.Exception e) {
+			return Integer.parseInt(SystemConfig.getAppSettings().get("SMSSendTimeToHour").toString());
+		} catch (Exception e) {
 			return 8;
 		}
 	}
@@ -2177,7 +2177,7 @@ public class Glo {
 
 	// 常用方法
 	private static String html = "";
-	private static java.util.ArrayList htmlArr = new java.util.ArrayList();
+	private static ArrayList htmlArr = new ArrayList();
 	private static String backHtml = "";
 	private static long workid = 0;
 
@@ -2193,7 +2193,7 @@ public class Glo {
 	 */
 	public static String Simulation_RunOne(String flowNo, String empNo, String paras) throws Exception {
 		backHtml = ""; // 需要重新赋空值
-		java.util.Hashtable ht = null;
+		Hashtable ht = null;
 		if (StringHelper.isNullOrEmpty(paras) == false) {
 			AtPara ap = new AtPara(paras);
 			ht = ap.getHisHT();
@@ -2201,11 +2201,11 @@ public class Glo {
 
 		Emp emp = new Emp(empNo);
 		backHtml += " **** 开始使用:" + Glo.GenerUserImgSmallerHtml(emp.getNo(), emp.getName()) + "登录模拟执行工作流程";
-		BP.WF.Dev2Interface.Port_Login(empNo);
+		Dev2Interface.Port_Login(empNo);
 
-		workid = BP.WF.Dev2Interface.Node_CreateBlankWork(flowNo, ht, null, emp.getNo(), null, 0, 0, null, 0, null, 0,
+		workid = Dev2Interface.Node_CreateBlankWork(flowNo, ht, null, emp.getNo(), null, 0, 0, null, 0, null, 0,
 				null);
-		SendReturnObjs objs = BP.WF.Dev2Interface.Node_SendWork(flowNo, workid, ht, null);
+		SendReturnObjs objs = Dev2Interface.Node_SendWork(flowNo, workid, ht, null);
 		backHtml += objs.ToMsgOfHtml().replace("@", "<br>@"); // 记录消息.
 
 		String[] accepters = objs.getVarAcceptersID().split("[,]", -1);
@@ -2226,7 +2226,7 @@ public class Glo {
 
 	private static boolean isAdd = true;
 
-	private static void Simulation_Run_S1(String flowNo, long workid, String empNo, java.util.Hashtable ht,
+	private static void Simulation_Run_S1(String flowNo, long workid, String empNo, Hashtable ht,
 			String beginEmp) throws Exception {
 		// htmlArr.Add(html);
 		Emp emp = new Emp(empNo);
@@ -2234,10 +2234,10 @@ public class Glo {
 		backHtml += "empNo" + beginEmp;
 		backHtml += "<br> **** 让:" + Glo.GenerUserImgSmallerHtml(emp.getNo(), emp.getName()) + "执行模拟登录. ";
 		// 让其登录.
-		BP.WF.Dev2Interface.Port_Login(empNo);
+		Dev2Interface.Port_Login(empNo);
 
 		// 执行发送.
-		SendReturnObjs objs = BP.WF.Dev2Interface.Node_SendWork(flowNo, workid, ht, null);
+		SendReturnObjs objs = Dev2Interface.Node_SendWork(flowNo, workid, ht, null);
 		backHtml += "<br>" + objs.ToMsgOfHtml().replace("@", "<br>@");
 
 		if (objs.getVarAcceptersID() == null) {
@@ -2277,7 +2277,7 @@ public class Glo {
 	 */
 	public static String GenerBillNo(String billNo, long workid, Entity en, String flowPTable) throws Exception {
 
-		return BP.WF.WorkFlowBuessRole.GenerBillNo(billNo, workid, en, flowPTable);
+		return WorkFlowBuessRole.GenerBillNo(billNo, workid, en, flowPTable);
 	}
 
 	/**
@@ -2300,7 +2300,7 @@ public class Glo {
 	 * 是否启用草稿
 	 */
 	public static boolean getIsEnableDraft() {
-		return BP.Sys.SystemConfig.GetValByKeyBoolen("IsEnableDraft", false);
+		return SystemConfig.GetValByKeyBoolen("IsEnableDraft", false);
 	}
 
 	/**
@@ -2371,7 +2371,7 @@ public class Glo {
 
 		try {
 			t.Insert();
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			t.CheckPhysicsTable();
 			t.Insert();
 		}
@@ -2404,7 +2404,7 @@ public class Glo {
 		val = val.replace("'", "");
 		val = val.replace("%", "");
 		val = val.replace("~", "");
-		BP.En.Row row = en.getRow();
+		Row row = en.getRow();
 		for (String item : row.keySet()) {
 			if (!item.trim().equals(key)) {
 				continue;
@@ -2620,9 +2620,9 @@ public class Glo {
 	public static boolean CondExpSQL(String sqlExp, Hashtable ht,long myWorkID) throws Exception {
 		String sql = sqlExp;
 		sql = sql.replace("~", "'");
-		sql = sql.replace("@WebUser.No", BP.Web.WebUser.getNo());
-		sql = sql.replace("@WebUser.Name", BP.Web.WebUser.getName());
-		sql = sql.replace("@WebUser.FK_Dept", BP.Web.WebUser.getFK_Dept());
+		sql = sql.replace("@WebUser.No", WebUser.getNo());
+		sql = sql.replace("@WebUser.Name", WebUser.getName());
+		sql = sql.replace("@WebUser.FK_Dept", WebUser.getFK_Dept());
 		// 使用 Enumeration 遍历 HashTable
 		@SuppressWarnings("rawtypes")
 		Enumeration e = ht.keys();
@@ -2701,7 +2701,7 @@ public class Glo {
 				}
 			}
 			if (isHave == false) {
-				if (BP.WF.Glo.getSendHTOfTemp().containsKey(key) == false) {
+				if (Glo.getSendHTOfTemp().containsKey(key) == false) {
 					try {
 						throw new Exception("@判断条件时错误,请确认参数是否拼写错误,没有找到对应的表达式:" + exp + " Key=(" + key + ") oper=("
 								+ oper + ")Val=(" + val + ")");
@@ -2711,7 +2711,7 @@ public class Glo {
 					// 有可能是常量.
 					valPara = key;
 				}else
-				valPara = BP.WF.Glo.getSendHTOfTemp().get(key).toString().trim();
+				valPara = Glo.getSendHTOfTemp().get(key).toString().trim();
 			}
 
 		} else {
@@ -2988,7 +2988,7 @@ public class Glo {
 	 * @param s
 	 * @return
 	 */
-	public static String GenerMD5(BP.WF.Work wk) {
+	public static String GenerMD5(Work wk) {
 		String s = null;
 		for (Attr attr : wk.getEnMap().getAttrs()) {
 			String key = attr.getKey();
@@ -3045,7 +3045,7 @@ public class Glo {
 			}
 
 			// /#region 检查数据是否完整。
-			BP.Port.Emp emp = new BP.Port.Emp();
+			Emp emp = new Emp();
 			emp.setNo(executer);
 			if (emp.RetrieveFromDBSources() == 0) {
 				err += "@账号:" + starter + ",不存在。";
@@ -3067,7 +3067,7 @@ public class Glo {
 			}
 			// /#endregion 检查数据是否完整。
 
-			BP.Web.WebUser.SignInOfGener(emp);
+			WebUser.SignInOfGener(emp);
 			Flow fl = nd.getHisFlow();
 			Work wk = fl.NewWork();
 
@@ -3105,8 +3105,8 @@ public class Glo {
 				}
 			}
 
-			wk.SetValByKey(WorkAttr.Rec, BP.Web.WebUser.getNo());
-			wk.SetValByKey(StartWorkAttr.FK_Dept, BP.Web.WebUser.getFK_Dept());
+			wk.SetValByKey(WorkAttr.Rec, WebUser.getNo());
+			wk.SetValByKey(StartWorkAttr.FK_Dept, WebUser.getFK_Dept());
 			wk.SetValByKey("FK_NY", DataType.getCurrentYearMonth());
 			wk.SetValByKey(WorkAttr.MyNum, 1);
 			wk.Update();
@@ -3208,7 +3208,7 @@ public class Glo {
 
 			// /#region 检查数据是否完整。
 			// 发起人发起。
-			BP.Port.Emp emp = new BP.Port.Emp();
+			Emp emp = new Emp();
 			emp.setNo(executer);
 			if (emp.RetrieveFromDBSources() == 0) {
 				err += "@账号:" + starter + ",不存在。";
@@ -3220,7 +3220,7 @@ public class Glo {
 				continue;
 			}
 
-			emp = new BP.Port.Emp();
+			emp = new Emp();
 			emp.setNo(starter);
 			if (emp.RetrieveFromDBSources() == 0) {
 				err += "@账号:" + starter + ",不存在。";
@@ -3234,15 +3234,15 @@ public class Glo {
 			}
 			// /#endregion 检查数据是否完整。
 
-			BP.Web.WebUser.SignInOfGener(emp);
+			WebUser.SignInOfGener(emp);
 			Flow fl = ndOfEnd.getHisFlow();
 			Work wk = fl.NewWork();
 			for (DataColumn dc : dt.Columns) {
 				wk.SetValByKey(dc.ColumnName.trim(), dr.getValue(dc.ColumnName).toString().trim());
 			}
 
-			wk.SetValByKey(WorkAttr.Rec, BP.Web.WebUser.getNo());
-			wk.SetValByKey(StartWorkAttr.FK_Dept, BP.Web.WebUser.getFK_Dept());
+			wk.SetValByKey(WorkAttr.Rec, WebUser.getNo());
+			wk.SetValByKey(StartWorkAttr.FK_Dept, WebUser.getFK_Dept());
 			wk.SetValByKey("FK_NY", DataType.getCurrentYearMonth());
 			wk.SetValByKey(WorkAttr.MyNum, 1);
 			wk.Update();
@@ -3261,16 +3261,16 @@ public class Glo {
 			}
 
 			// 结束点结束。
-			emp = new BP.Port.Emp(executer);
-			BP.Web.WebUser.SignInOfGener(emp);
+			emp = new Emp(executer);
+			WebUser.SignInOfGener(emp);
 
 			Work wkEnd = ndOfEnd.GetWork(wk.getOID());
 			for (DataColumn dc : dt.Columns) {
 				wkEnd.SetValByKey(dc.ColumnName.trim(), dr.getValue(dc.ColumnName).toString().trim());
 			}
 
-			wkEnd.SetValByKey(WorkAttr.Rec, BP.Web.WebUser.getNo());
-			wkEnd.SetValByKey(StartWorkAttr.FK_Dept, BP.Web.WebUser.getFK_Dept());
+			wkEnd.SetValByKey(WorkAttr.Rec, WebUser.getNo());
+			wkEnd.SetValByKey(StartWorkAttr.FK_Dept, WebUser.getFK_Dept());
 			wkEnd.SetValByKey("FK_NY", DataType.getCurrentYearMonth());
 			wkEnd.SetValByKey(WorkAttr.MyNum, 1);
 			wkEnd.Update();
@@ -3298,7 +3298,7 @@ public class Glo {
 	public static void IsSingleUser(String userNo) throws Exception {
 		if (StringHelper.isNullOrEmpty(WebUser.getNo()) || !userNo.equals(WebUser.getNo())) {
 			if (!StringHelper.isNullOrEmpty(userNo)) {
-				BP.WF.Dev2Interface.Port_Login(userNo);
+				Dev2Interface.Port_Login(userNo);
 			}
 		}
 	}
@@ -3389,10 +3389,10 @@ public class Glo {
 		int i = DBAccess.RunSQL(p);
 		if (i == 0) {
 			// 如果没有更新到.
-			BP.WF.Port.WFEmp emp = new WFEmp();
-			emp.setNo(BP.Web.WebUser.getNo());
-			emp.setName(BP.Web.WebUser.getName());
-			emp.setFK_Dept(BP.Web.WebUser.getFK_Dept());
+			WFEmp emp = new WFEmp();
+			emp.setNo(WebUser.getNo());
+			emp.setName(WebUser.getName());
+			emp.setFK_Dept(WebUser.getFK_Dept());
 			emp.Insert();
 			DBAccess.RunSQL(p);
 		}
@@ -3427,29 +3427,29 @@ public class Glo {
 		return _FromPageType;
 	}
 
-	private static java.util.Hashtable _SendHTOfTemp = null;
+	private static Hashtable _SendHTOfTemp = null;
 
 	/**
 	 * 临时的发送传输变量.
 	 * 
 	 * @throws Exception
 	 */
-	public static java.util.Hashtable getSendHTOfTemp() throws Exception {
+	public static Hashtable getSendHTOfTemp() throws Exception {
 		if (_SendHTOfTemp == null) {
-			_SendHTOfTemp = new java.util.Hashtable();
+			_SendHTOfTemp = new Hashtable();
 		}
-		return (java.util.Hashtable) ((_SendHTOfTemp.get(BP.Web.WebUser.getNo()) instanceof java.util.Hashtable)
-				? _SendHTOfTemp.get(BP.Web.WebUser.getNo()) : null);
+		return (Hashtable) ((_SendHTOfTemp.get(WebUser.getNo()) instanceof Hashtable)
+				? _SendHTOfTemp.get(WebUser.getNo()) : null);
 	}
 
-	public static void setSendHTOfTemp(java.util.Hashtable value) throws Exception {
+	public static void setSendHTOfTemp(Hashtable value) throws Exception {
 		if (_SendHTOfTemp == null) {
-			_SendHTOfTemp = new java.util.Hashtable();
+			_SendHTOfTemp = new Hashtable();
 		}
 		if (null != value)
-			_SendHTOfTemp.put(BP.Web.WebUser.getNo(), value);
+			_SendHTOfTemp.put(WebUser.getNo(), value);
 		else
-			_SendHTOfTemp.put(BP.Web.WebUser.getNo(), new java.util.Hashtable());
+			_SendHTOfTemp.put(WebUser.getNo(), new Hashtable());
 	}
 
 	/**
@@ -3521,16 +3521,16 @@ public class Glo {
 
 	public static void ClearDBData() {
 		String sql = "DELETE FROM WF_GenerWorkFlow WHERE fk_flow not in (select no from wf_flow )";
-		BP.DA.DBAccess.RunSQL(sql);
+		DBAccess.RunSQL(sql);
 
 		sql = "DELETE FROM WF_GenerWorkerlist WHERE fk_flow not in (select no from wf_flow )";
-		BP.DA.DBAccess.RunSQL(sql);
+		DBAccess.RunSQL(sql);
 	}
 
 	public static String OEM_Flag = "CCS";
 
 	public static String getFlowFileBill() {
-		return BP.Sys.SystemConfig.getPathOfDataUser()  + "/Bill/";
+		return SystemConfig.getPathOfDataUser()  + "/Bill/";
 	}
 
 	private static String _IntallPath = null;
@@ -3538,7 +3538,7 @@ public class Glo {
 	public static String getIntallPath() {
 		if (_IntallPath == null) {
 			if (SystemConfig.getIsBSsystem() == true) {
-				_IntallPath = BP.WF.Glo.getCCFlowAppPath();
+				_IntallPath = Glo.getCCFlowAppPath();
 			}
 		}
 
@@ -3577,8 +3577,8 @@ public class Glo {
 	 * 流程控制器按钮
 	 */
 	public static String getFlowCtrlBtnPos() {
-		String s = (String) ((BP.Sys.SystemConfig.getAppSettings().get("FlowCtrlBtnPos") instanceof String)
-				? BP.Sys.SystemConfig.getAppSettings().get("FlowCtrlBtnPos") : null);
+		String s = (String) ((SystemConfig.getAppSettings().get("FlowCtrlBtnPos") instanceof String)
+				? SystemConfig.getAppSettings().get("FlowCtrlBtnPos") : null);
 		if (s == null || s.equals("Top")) {
 			return "Top";
 		}
@@ -3589,8 +3589,8 @@ public class Glo {
 	 * 全局的安全验证码
 	 */
 	public static String getGloSID() {
-		String s = (String) ((BP.Sys.SystemConfig.getAppSettings().get("GloSID") instanceof String)
-				? BP.Sys.SystemConfig.getAppSettings().get("GloSID") : null);
+		String s = (String) ((SystemConfig.getAppSettings().get("GloSID") instanceof String)
+				? SystemConfig.getAppSettings().get("GloSID") : null);
 		if (s == null || s.equals("")) {
 			s = "sdfq2erre-2342-234sdf23423-323";
 		}
@@ -3603,8 +3603,8 @@ public class Glo {
 	 * 
 	 */
 	public static boolean getIsEnableCheckUseSta() {
-		String s = (String) ((BP.Sys.SystemConfig.getAppSettings().get("IsEnableCheckUseSta") instanceof String)
-				? BP.Sys.SystemConfig.getAppSettings().get("IsEnableCheckUseSta") : null);
+		String s = (String) ((SystemConfig.getAppSettings().get("IsEnableCheckUseSta") instanceof String)
+				? SystemConfig.getAppSettings().get("IsEnableCheckUseSta") : null);
 		if (s == null || s.equals("0")) {
 			return false;
 		}
@@ -3616,8 +3616,8 @@ public class Glo {
 	 * 
 	 */
 	public static boolean getIsEnableMyNodeName() {
-		String s = (String) ((BP.Sys.SystemConfig.getAppSettings().get("IsEnableMyNodeName") instanceof String)
-				? BP.Sys.SystemConfig.getAppSettings().get("IsEnableMyNodeName") : null);
+		String s = (String) ((SystemConfig.getAppSettings().get("IsEnableMyNodeName") instanceof String)
+				? SystemConfig.getAppSettings().get("IsEnableMyNodeName") : null);
 		if (s == null || s.equals("0")) {
 			return false;
 		}
@@ -3647,7 +3647,7 @@ public class Glo {
 	public static String Language = "CH";
 
 	public static boolean getIsQL() {
-		String s = BP.Sys.SystemConfig.getAppSettings().get("IsQL").toString();
+		String s = SystemConfig.getAppSettings().get("IsQL").toString();
 		if (s == null || s.equals("0")) {
 			return false;
 		}
@@ -3658,28 +3658,28 @@ public class Glo {
 	 * 是否启用共享任务池？
 	 */
 	public static boolean getIsEnableTaskPool() {
-		return BP.Sys.SystemConfig.GetValByKeyBoolen("IsEnableTaskPool", false);
+		return SystemConfig.GetValByKeyBoolen("IsEnableTaskPool", false);
 	}
 
 	/**
 	 * 是否显示标题
 	 */
 	public static boolean getIsShowTitle() {
-		return BP.Sys.SystemConfig.GetValByKeyBoolen("IsShowTitle", false);
+		return SystemConfig.GetValByKeyBoolen("IsShowTitle", false);
 	}
 
 	/**
 	 * 是否为工作增加一个优先级
 	 */
 	public static boolean getIsEnablePRI() {
-		return BP.Sys.SystemConfig.GetValByKeyBoolen("IsEnablePRI", false);
+		return SystemConfig.GetValByKeyBoolen("IsEnablePRI", false);
 	}
 
 	/**
 	 * 用户信息显示格式
 	 */
 	public static UserInfoShowModel getUserInfoShowModel() {
-		return UserInfoShowModel.forValue(BP.Sys.SystemConfig.GetValByKeyInt("UserInfoShowModel", 0));
+		return UserInfoShowModel.forValue(SystemConfig.GetValByKeyInt("UserInfoShowModel", 0));
 	}
 
 	/**
@@ -3718,25 +3718,25 @@ public class Glo {
 	 * 更新主表的SQL
 	 */
 	public static String getUpdataMainDeptSQL() {
-		return BP.Sys.SystemConfig.GetValByKey("UpdataMainDeptSQL",
-				"UPDATE Port_Emp SET FK_Dept=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "FK_Dept WHERE No="
-						+ BP.Sys.SystemConfig.getAppCenterDBVarStr() + "No");
+		return SystemConfig.GetValByKey("UpdataMainDeptSQL",
+				"UPDATE Port_Emp SET FK_Dept=" + SystemConfig.getAppCenterDBVarStr() + "FK_Dept WHERE No="
+						+ SystemConfig.getAppCenterDBVarStr() + "No");
 	}
 
 	/**
 	 * 更新SID的SQL
 	 */
 	public static String getUpdataSID() {
-		return BP.Sys.SystemConfig.GetValByKey("UpdataSID",
-				"UPDATE Port_Emp SET SID=" + BP.Sys.SystemConfig.getAppCenterDBVarStr() + "SID WHERE No="
-						+ BP.Sys.SystemConfig.getAppCenterDBVarStr() + "No");
+		return SystemConfig.GetValByKey("UpdataSID",
+				"UPDATE Port_Emp SET SID=" + SystemConfig.getAppCenterDBVarStr() + "SID WHERE No="
+						+ SystemConfig.getAppCenterDBVarStr() + "No");
 	}
 
 	/**
 	 * 下载sl的地址
 	 */
 	public static String getSilverlightDownloadUrl() {
-		return BP.Sys.SystemConfig.GetValByKey("SilverlightDownloadUrl",
+		return SystemConfig.GetValByKey("SilverlightDownloadUrl",
 				"http://go.microsoft.com/fwlink/?LinkID=124807");
 	}
 
@@ -3748,7 +3748,7 @@ public class Glo {
 	 * @return 现实格式
 	 */
 	public static String DealUserInfoShowModel(String no, String name) {
-		switch (BP.WF.Glo.getUserInfoShowModel()) {
+		switch (Glo.getUserInfoShowModel()) {
 		case UserIDOnly:
 			return "(" + no + ")";
 		case UserIDUserName:
@@ -3766,8 +3766,8 @@ public class Glo {
 	 */
 	public static boolean getIsEnable_DingDing() {
 		// 如果两个参数都不为空说明启用
-		String corpid = BP.Sys.SystemConfig.GetValByKey("Ding_CorpID", "");
-		String corpsecret = BP.Sys.SystemConfig.GetValByKey("Ding_CorpSecret", "");
+		String corpid = SystemConfig.GetValByKey("Ding_CorpID", "");
+		String corpsecret = SystemConfig.GetValByKey("Ding_CorpSecret", "");
 		if (StringHelper.isNullOrEmpty(corpid) || StringHelper.isNullOrEmpty(corpsecret)) {
 			return false;
 		}
@@ -3780,8 +3780,8 @@ public class Glo {
 	 */
 	public static boolean getIsEnable_WeiXin() {
 		// 如果两个参数都不为空说明启用
-		String corpid = BP.Sys.SystemConfig.GetValByKey("WX_CorpID", "");
-		String corpsecret = BP.Sys.SystemConfig.GetValByKey("WX_AppSecret", "");
+		String corpid = SystemConfig.GetValByKey("WX_CorpID", "");
+		String corpsecret = SystemConfig.GetValByKey("WX_AppSecret", "");
 		if (StringHelper.isNullOrEmpty(corpid) || StringHelper.isNullOrEmpty(corpsecret)) {
 			return false;
 		}
@@ -3804,63 +3804,63 @@ public class Glo {
 	 * 是否是集团使用
 	 */
 	public static boolean getIsUnit() {
-		return BP.Sys.SystemConfig.GetValByKeyBoolen("IsUnit", false);
+		return SystemConfig.GetValByKeyBoolen("IsUnit", false);
 	}
 
 	/**
 	 * 是否启用制度
 	 */
 	public static boolean getIsEnableZhiDu() {
-		return BP.Sys.SystemConfig.GetValByKeyBoolen("IsEnableZhiDu", false);
+		return SystemConfig.GetValByKeyBoolen("IsEnableZhiDu", false);
 	}
 
 	/**
 	 * 是否删除流程注册表数据？
 	 */
 	public static boolean getIsDeleteGenerWorkFlow() {
-		return BP.Sys.SystemConfig.GetValByKeyBoolen("IsDeleteGenerWorkFlow", false);
+		return SystemConfig.GetValByKeyBoolen("IsDeleteGenerWorkFlow", false);
 	}
 
 	/**
 	 * 是否检查表单树字段填写是否为空
 	 */
 	public static boolean getIsEnableCheckFrmTreeIsNull() {
-		return BP.Sys.SystemConfig.GetValByKeyBoolen("IsEnableCheckFrmTreeIsNull", true);
+		return SystemConfig.GetValByKeyBoolen("IsEnableCheckFrmTreeIsNull", true);
 	}
 
 	/**
 	 * 是否启动工作时打开新窗口
 	 */
 	public static int getIsWinOpenStartWork() {
-		return BP.Sys.SystemConfig.GetValByKeyInt("IsWinOpenStartWork", 1);
+		return SystemConfig.GetValByKeyInt("IsWinOpenStartWork", 1);
 	}
 
 	/**
 	 * 是否打开待办工作时打开窗口
 	 */
 	public static boolean getIsWinOpenEmpWorks() {
-		return BP.Sys.SystemConfig.GetValByKeyBoolen("IsWinOpenEmpWorks", true);
+		return SystemConfig.GetValByKeyBoolen("IsWinOpenEmpWorks", true);
 	}
 
 	/**
 	 * 是否启用消息系统消息。
 	 */
 	public static boolean getIsEnableSysMessage() {
-		return BP.Sys.SystemConfig.GetValByKeyBoolen("IsEnableSysMessage", true);
+		return SystemConfig.GetValByKeyBoolen("IsEnableSysMessage", true);
 	}
 
 	/**
 	 * 与ccflow流程服务相关的配置: 执行自动任务节点，间隔的时间，以分钟计算，默认为2分钟。
 	 */
 	public static int getAutoNodeDTSTimeSpanMinutes() {
-		return BP.Sys.SystemConfig.GetValByKeyInt("AutoNodeDTSTimeSpanMinutes", 2);
+		return SystemConfig.GetValByKeyInt("AutoNodeDTSTimeSpanMinutes", 2);
 	}
 
 	/**
 	 * ccim集成的数据库. 是为了向ccim写入消息.
 	 */
 	public static String getCCIMDBName() {
-		String baseUrl = BP.Sys.SystemConfig.getAppSettings().get("CCIMDBName").toString();
+		String baseUrl = SystemConfig.getAppSettings().get("CCIMDBName").toString();
 		if (StringHelper.isNullOrEmpty(baseUrl) == true) {
 			baseUrl = "ccPort.dbo";
 		}
@@ -3871,11 +3871,11 @@ public class Glo {
 	 * 主机
 	 */
 	public static String getHostURL() {
-		if (BP.Sys.SystemConfig.getIsBSsystem()) {
+		if (SystemConfig.getIsBSsystem()) {
 			// 如果是BS 就要求 路径.
 		}
 
-		String baseUrl = BP.Sys.SystemConfig.getAppSettings().get("HostURL").toString();
+		String baseUrl = SystemConfig.getAppSettings().get("HostURL").toString();
 		if (StringHelper.isNullOrEmpty(baseUrl) == true) {
 			baseUrl = "http://127.0.0.1/";
 		}
@@ -3913,7 +3913,7 @@ public class Glo {
 		// BP.WF.Port.WFEmp emp = new WFEmp(WebUser.getNo());
 		// if(string.IsNullOrEmpty(emp.Style) || emp.Style=="0")
 		// {
-		String userStyle = BP.Sys.SystemConfig.getAppSettings().get("UserStyle").toString();
+		String userStyle = SystemConfig.getAppSettings().get("UserStyle").toString();
 		if (StringHelper.isNullOrEmpty(userStyle)) {
 			return "ccflow默认";
 		} else {
@@ -3929,7 +3929,7 @@ public class Glo {
 	 * @return
 	 * @throws Exception
 	 */
-	public static java.util.Date SetToWorkTime(java.util.Date dt) throws Exception {
+	public static Date SetToWorkTime(Date dt) throws Exception {
 		if (BP.Sys.GloVar.getHolidays().contains(DateUtils.format(dt, "MM-dd"))) {
 			dt = DateUtils.addDay(dt, 1);
 			// 如果当前是节假日，就要从下一个有效期计算。
@@ -4025,7 +4025,7 @@ public class Glo {
 					int leftMuit = (int) (myts / (60 * 1000) - Glo.getAMPMTimeSpan() * 60);
 					if (leftMuit - minutes >= 0) {
 						/* 说明还是在当天的时间内. */
-						java.util.Date mydt = DataType
+						Date mydt = DataType
 								.ParseSysDateTime2DateTime(DateUtils.format(dt, "yyyy-MM-dd") + " " + Glo.getPMTo());
 						return DateUtils.addMinutes(mydt, (minutes - leftMuit));
 					}
@@ -4108,8 +4108,8 @@ public class Glo {
 	 * @return
 	 * @throws Exception
 	 */
-	public static java.util.Date AddMinutes(String sysdt, int minutes) throws Exception {
-		java.util.Date dt = DataType.ParseSysDate2DateTime(sysdt);
+	public static Date AddMinutes(String sysdt, int minutes) throws Exception {
+		Date dt = DataType.ParseSysDate2DateTime(sysdt);
 		return AddMinutes(dt, 0, minutes);
 	}
 
@@ -4124,7 +4124,7 @@ public class Glo {
 	 *            分钟数
 	 * @return 返回计算后的日期
 	 */
-	public static java.util.Date AddDayHoursSpan(Date specDT, int day, int hh, int minutes) {
+	public static Date AddDayHoursSpan(Date specDT, int day, int hh, int minutes) {
 		if (specDT == null) {
 			return null;
 		}
@@ -4143,7 +4143,7 @@ public class Glo {
 		if (specDT == null) {
 			return null;
 		}
-		java.util.Date mydt = DataType.AddDays(specDT, day, tWay);
+		Date mydt = DataType.AddDays(specDT, day, tWay);
 		return Glo.AddMinutes(mydt, hh, minutes);
 	}
 
@@ -4161,7 +4161,7 @@ public class Glo {
 	 */
 	public static void InitCH(Flow fl, Node nd, long workid, long fid, String title, GenerWorkerList gwl)
 			throws Exception {
-		InitCH2017(fl, nd, workid, fid, title, null, null, new java.util.Date(), gwl);
+		InitCH2017(fl, nd, workid, fid, title, null, null, new Date(), gwl);
 	}
 
 	/**
@@ -4186,7 +4186,7 @@ public class Glo {
 	 * @throws Exception
 	 */
 	private static void InitCH2017(Flow fl, Node nd, long workid, long fid, String title, String prvRDT, String sdt,
-			java.util.Date dtNow, GenerWorkerList gwl) throws Exception {
+			Date dtNow, GenerWorkerList gwl) throws Exception {
 		// 开始节点不考核.
 		if (nd.getIsStartNode() || nd.getHisCHWay() == CHWay.None) {
 			return;
@@ -4198,7 +4198,7 @@ public class Glo {
 		}
 
 		if (dtNow == null) {
-			dtNow = new java.util.Date();
+			dtNow = new Date();
 		}
 
 		// 求参与人员 todoEmps ，应完成日期 sdt ，与工作派发日期 prvRDT.
@@ -4220,7 +4220,7 @@ public class Glo {
 			}
 
 			ps.Add("WorkID", workid);
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(ps);
+			DataTable dt = DBAccess.RunSQLReturnTable(ps);
 			if (dt.Rows.size() == 0) {
 				return;
 			}
@@ -4261,7 +4261,7 @@ public class Glo {
 		}
 
 		// 初始化基础数据
-		BP.WF.Data.CH ch = new CH();
+		CH ch = new CH();
 		ch.setWorkID(workid);
 		ch.setFID(fid);
 		ch.setTitle(title);
@@ -4319,15 +4319,15 @@ public class Glo {
 		ch.setWeekNum(cal.get(Calendar.WEEK_OF_YEAR));
 
 		// UseDays . 求出实际使用天数.
-		java.util.Date dtFrom = DataType.ParseSysDate2DateTime(ch.getDTFrom());
-		java.util.Date dtTo = DataType.ParseSysDate2DateTime(ch.getDTTo());
+		Date dtFrom = DataType.ParseSysDate2DateTime(ch.getDTFrom());
+		Date dtTo = DataType.ParseSysDate2DateTime(ch.getDTTo());
 
 		long ts = dtTo.getTime() - dtFrom.getTime();
 		ch.setUseDays(ts / 1000 / 60 / 60 / 24); // 用时，天数
 		ch.setUseMinutes(ts / 1000 / 60); // 用时，分钟
 
 		// OverDays . 求出 逾期天 数.
-		java.util.Date sdtOfDT = DataType.ParseSysDate2DateTime(ch.getSDT());
+		Date sdtOfDT = DataType.ParseSysDate2DateTime(ch.getSDT());
 
 		long myts = dtTo.getTime() - sdtOfDT.getTime();
 		ch.setOverDays(myts / 1000 / 60 / 60 / 24); // 逾期的天数.
@@ -4346,12 +4346,12 @@ public class Glo {
 		// 执行保存.
 		try {
 			ch.DirectInsert();
-		} catch (java.lang.Exception e) {
+		} catch (Exception e) {
 			if (ch.getIsExits()) {
 				ch.Update();
 			} else {
 				// 如果遇到退回的情况就可能涉及到主键重复的问题.
-				ch.setMyPK(BP.DA.DBAccess.GenerGUID());
+				ch.setMyPK(DBAccess.GenerGUID());
 				ch.Insert();
 			}
 		}
@@ -4363,7 +4363,7 @@ public class Glo {
 	 * 
 	 */
 	public static String getAMFrom() {
-		return BP.Sys.SystemConfig.GetValByKey("AMFrom", "08:30");
+		return SystemConfig.GetValByKey("AMFrom", "08:30");
 	}
 
 	/**
@@ -4379,7 +4379,7 @@ public class Glo {
 	 * 
 	 */
 	public static float getAMPMHours() {
-		return BP.Sys.SystemConfig.GetValByKeyFloat("AMPMHours", 8);
+		return SystemConfig.GetValByKeyFloat("AMPMHours", 8);
 	}
 
 	/**
@@ -4387,7 +4387,7 @@ public class Glo {
 	 * 
 	 */
 	public static float getAMPMTimeSpan() {
-		return BP.Sys.SystemConfig.GetValByKeyFloat("AMPMTimeSpan", 1);
+		return SystemConfig.GetValByKeyFloat("AMPMTimeSpan", 1);
 	}
 
 	/**
@@ -4395,7 +4395,7 @@ public class Glo {
 	 * 
 	 */
 	public static String getAMTo() {
-		return BP.Sys.SystemConfig.GetValByKey("AMTo", "11:30");
+		return SystemConfig.GetValByKey("AMTo", "11:30");
 	}
 
 	/**
@@ -4411,7 +4411,7 @@ public class Glo {
 	 * 
 	 */
 	public static String getPMFrom() {
-		return BP.Sys.SystemConfig.GetValByKey("PMFrom", "13:30");
+		return SystemConfig.GetValByKey("PMFrom", "13:30");
 	}
 
 	/**
@@ -4427,7 +4427,7 @@ public class Glo {
 	 * 
 	 */
 	public static String getPMTo() {
-		return BP.Sys.SystemConfig.GetValByKey("PMTo", "17:30");
+		return SystemConfig.GetValByKey("PMTo", "17:30");
 	}
 
 	/**
@@ -4445,13 +4445,13 @@ public class Glo {
 		BP.Sys.FrmAttachmentDBs dbs = new BP.Sys.FrmAttachmentDBs();
 		if (athDesc.getHisCtrlWay() == AthCtrlWay.PWorkID) {
 			String pWorkID = Integer.toString(
-					BP.DA.DBAccess.RunSQLReturnValInt("SELECT PWorkID FROM WF_GenerWorkFlow WHERE WorkID=" + pkval, 0));
+					DBAccess.RunSQLReturnValInt("SELECT PWorkID FROM WF_GenerWorkFlow WHERE WorkID=" + pkval, 0));
 			if (pWorkID == null || pWorkID == "0")
 				pWorkID = pkval;
 
 			if (athDesc.getAthUploadWay() == AthUploadWay.Inherit) {
 				/* 继承模式 */
-				BP.En.QueryObject qo = new BP.En.QueryObject(dbs);
+				QueryObject qo = new QueryObject(dbs);
 				
 				   if (pWorkID.equals(pkval) == true)
                        qo.AddWhere(FrmAttachmentDBAttr.RefPKVal, pkval);
@@ -4472,7 +4472,7 @@ public class Glo {
 
 		if (athDesc.getHisCtrlWay() == AthCtrlWay.WorkID) {
 			/* 继承模式 */
-			BP.En.QueryObject qo = new BP.En.QueryObject(dbs);
+			QueryObject qo = new QueryObject(dbs);
 			qo.AddWhere(FrmAttachmentDBAttr.NoOfObj, athDesc.getNoOfObj());
 			qo.addAnd();
 			qo.AddWhere(FrmAttachmentDBAttr.RefPKVal,  pkval);
@@ -4488,7 +4488,7 @@ public class Glo {
 
 		if (athDesc.getHisCtrlWay() == AthCtrlWay.FID) {
 			/* 继承模式 */
-			BP.En.QueryObject qo = new BP.En.QueryObject(dbs);
+			QueryObject qo = new QueryObject(dbs);
 			qo.AddWhere(FrmAttachmentDBAttr.FK_FrmAttachment, athDesc.getMyPK());
 			qo.addAnd();
 			qo.addLeftBracket();
@@ -4505,7 +4505,7 @@ public class Glo {
 		if (athDesc.getHisCtrlWay() == AthCtrlWay.MySelfOnly || athDesc.getHisCtrlWay() == AthCtrlWay.PK) {
 			if (FK_FrmAttachment.contains("AthMDtl")) {
 				/* 如果是一个明细表的多附件，就直接按照传递过来的PK来查询. */
-				BP.En.QueryObject qo = new BP.En.QueryObject(dbs);
+				QueryObject qo = new QueryObject(dbs);
 				qo.AddWhere(FrmAttachmentDBAttr.RefPKVal, pkval);
 				qo.addAnd();
 				qo.AddWhere(FrmAttachmentDBAttr.FK_FrmAttachment, FK_FrmAttachment);
@@ -4554,7 +4554,7 @@ public class Glo {
 			boolean isCando = false;
 			if (!me.getTag1().equals("")) {
 				String tag1 = me.getTag1() + ",";
-				if (tag1.contains(BP.Web.WebUser.getNo() + ",")) {
+				if (tag1.contains(WebUser.getNo() + ",")) {
 					// 根据设置的人员计算.
 					isCando = true;
 				}
@@ -4564,13 +4564,13 @@ public class Glo {
 				// 根据sql判断.
 				Object tempVar = me.getTag2();
 				String sql = (String) ((tempVar instanceof String) ? tempVar : null);
-				sql = BP.WF.Glo.DealExp(sql, en, null);
-				if (BP.DA.DBAccess.RunSQLReturnValFloat(sql) > 0) {
+				sql = Glo.DealExp(sql, en, null);
+				if (DBAccess.RunSQLReturnValFloat(sql) > 0) {
 					isCando = true;
 				}
 			}
 
-			if (!me.getTag3().equals("") && BP.Web.WebUser.getFK_Dept() == me.getTag3()) {
+			if (!me.getTag3().equals("") && WebUser.getFK_Dept() == me.getTag3()) {
 				// 根据部门编号判断.
 				isCando = true;
 			}
@@ -4605,7 +4605,7 @@ public class Glo {
 			boolean isCando = false;
 			if (!me.getTag1().equals("")) {
 				String tag1 = me.getTag1() + ",";
-				if (tag1.contains(BP.Web.WebUser.getNo() + ",")) {
+				if (tag1.contains(WebUser.getNo() + ",")) {
 					// 根据设置的人员计算.
 					isCando = true;
 				}
@@ -4615,13 +4615,13 @@ public class Glo {
 				// 根据sql判断.
 				Object tempVar = me.getTag2();
 				String sql = (String) ((tempVar instanceof String) ? tempVar : null);
-				sql = BP.WF.Glo.DealExp(sql, en, null);
-				if (BP.DA.DBAccess.RunSQLReturnValFloat(sql) > 0) {
+				sql = Glo.DealExp(sql, en, null);
+				if (DBAccess.RunSQLReturnValFloat(sql) > 0) {
 					isCando = true;
 				}
 			}
 
-			if (!me.getTag3().equals("") && BP.Web.WebUser.getFK_Dept() == me.getTag3()) {
+			if (!me.getTag3().equals("") && WebUser.getFK_Dept() == me.getTag3()) {
 				// 根据部门编号判断.
 				isCando = true;
 			}
@@ -4689,7 +4689,7 @@ public class Glo {
 		String ptable = flow.getPTable();
 
 		// 按照时间的必须是，在表单加载后判断, 不管用户设置是否正确.
-		java.util.Date dtNow = new java.util.Date();
+		Date dtNow = new Date();
 		if (role == StartLimitRole.Day) {
 			// 仅允许一天发起一次
 			sql = "SELECT COUNT(*) as Num FROM " + ptable + " WHERE RDT LIKE '" + DataType.getCurrentDate()
@@ -4891,7 +4891,7 @@ public class Glo {
 
 		// 配置的sql,执行后,返回结果是 0 .
 		if (role == StartLimitRole.ResultIsZero) {
-			sql = BP.WF.Glo.DealExp(flow.getStartLimitPara(), wk, null);
+			sql = Glo.DealExp(flow.getStartLimitPara(), wk, null);
 			if (DBAccess.RunSQLReturnValInt(sql, 0) == 0) {
 				return true;
 			} else {
@@ -4901,7 +4901,7 @@ public class Glo {
 
 		// 配置的sql,执行后,返回结果是 <> 0 .
 		if (role == StartLimitRole.ResultIsNotZero) {
-			sql = BP.WF.Glo.DealExp(flow.getStartLimitPara(), wk, null);
+			sql = Glo.DealExp(flow.getStartLimitPara(), wk, null);
 			if (DBAccess.RunSQLReturnValInt(sql, 0) != 0) {
 				return true;
 			} else {
@@ -4976,7 +4976,7 @@ public class Glo {
 	}
 
 	public static boolean getIsEnableTrackRec() {
-		String s = (String) BP.Sys.SystemConfig.getAppSettings().get("IsEnableTrackRec");// get("IsEnableTrackRec").toString();
+		String s = (String) SystemConfig.getAppSettings().get("IsEnableTrackRec");// get("IsEnableTrackRec").toString();
 		if (DotNetToJavaStringHelper.isNullOrEmpty(s)) {
 			return false;
 		}
@@ -4992,7 +4992,7 @@ public class Glo {
 	 * 
 	 */
 	public static boolean getIsBeta() {
-		String s = BP.Sys.SystemConfig.GetValByKey("IsBeta", "");
+		String s = SystemConfig.GetValByKey("IsBeta", "");
 		if (DotNetToJavaStringHelper.isNullOrEmpty(s)) {
 			return false;
 		}
@@ -5048,7 +5048,7 @@ public class Glo {
 				sql = sql.replaceAll("@" + key, ContextHolderUtils.getRequest().getParameter(key));
 			}
 
-			DataTable dt = BP.DA.DBAccess.RunSQLReturnTable(sql);
+			DataTable dt = DBAccess.RunSQLReturnTable(sql);
 			if (dt.Rows.size() == 0)
 				throw new Exception("err@没有找到那一行数据." + sql);
 
@@ -5073,7 +5073,7 @@ public class Glo {
 
 			}
 			// 保存
-			BP.WF.Dev2Interface.Node_SaveWork(FK_Flow, FK_Node, WorkID, ht);
+			Dev2Interface.Node_SaveWork(FK_Flow, FK_Node, WorkID, ht);
 			return dt;
 		case SubFlowGuideEntity:
 		case BySystemUrlOneEntity:
