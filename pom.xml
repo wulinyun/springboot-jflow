@@ -21,7 +21,7 @@
     <javax.transaction.version>1.0.1B</javax.transaction.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <org.apache.poi.version>3.11</org.apache.poi.version>
-    <org.apache.ant.version>1.9.7</org.apache.ant.version>
+    <org.apache.ant.version>1.10.9</org.apache.ant.version>
     <dom4j.version>1.6.1</dom4j.version>
     <pinyin4j.version>2.5.0</pinyin4j.version>
     <javax.mail.version>1.6.0</javax.mail.version>
